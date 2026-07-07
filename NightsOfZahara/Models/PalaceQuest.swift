@@ -15,6 +15,8 @@ enum QuestObjective: Codable, Equatable {
     case conquerDungeons(Int)
     case bondDjinns(Int)
     case findTreasures(Int)
+    case reachStat(StatKind, Int)
+    case ownItem(String)
 
     /// How far along the player is, as (current, target).
     func progress(in s: GameState) -> (current: Int, target: Int) {
@@ -25,6 +27,8 @@ enum QuestObjective: Codable, Equatable {
         case .conquerDungeons(let t): return (s.completedDungeons.count, t)
         case .bondDjinns(let t):      return (s.djinns.count, t)
         case .findTreasures(let t):   return (s.treasuresFound, t)
+        case .reachStat(let k, let t): return (s.stats[k], t)
+        case .ownItem(let id):        return ((s.inventory[id] ?? 0) > 0 ? 1 : 0, 1)
         }
     }
 
@@ -41,6 +45,8 @@ enum QuestObjective: Codable, Equatable {
         case .conquerDungeons(let t): return "Conquer \(t) dungeons"
         case .bondDjinns(let t):      return "Bond with \(t) Djinns"
         case .findTreasures(let t):   return "Find \(t) treasures"
+        case .reachStat(let k, let t): return "Reach \(t) \(k.title)"
+        case .ownItem(let id):        return "Obtain \(ItemCatalog.item(id: id)?.name ?? id)"
         }
     }
 }

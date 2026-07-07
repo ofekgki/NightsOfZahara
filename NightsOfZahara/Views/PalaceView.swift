@@ -24,6 +24,8 @@ struct PalaceView: View {
         .nightBackground()
         .navigationTitle("The Palace")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { AudioManager.shared.setMood(.palace) }
+        .onDisappear { AudioManager.shared.setMood(.city) }
     }
 
     private func banner(_ s: GameState) -> some View {

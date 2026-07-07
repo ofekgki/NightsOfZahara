@@ -52,9 +52,14 @@ struct CharacterView: View {
                 .font(.system(size: 44))
                 .foregroundStyle(Theme.goldSheen)
             Text(s.characterName).font(Theme.title(26)).foregroundStyle(Theme.parchment)
-            Text(s.role.rawValue).font(Theme.body(14)).foregroundStyle(Theme.gold)
-            Text("Night \(s.night) of \(GameState.totalNights) • \(s.era)")
+            Text(TitleSystem.currentTitle(for: s))
+                .font(Theme.heading(15)).foregroundStyle(Theme.brightGold)
+            Text("\(s.role.rawValue) • Night \(s.night) of \(GameState.totalNights) • \(s.era)")
                 .font(Theme.body(12)).foregroundStyle(Theme.sand)
+            if s.meta.injuries > 0 {
+                Label("Injured (\(s.meta.injuries))", systemImage: "bandage.fill")
+                    .font(Theme.body(12).weight(.semibold)).foregroundStyle(Theme.danger)
+            }
         }
         .frame(maxWidth: .infinity)
         .zaharaCard()
@@ -115,8 +120,10 @@ struct CharacterView: View {
             SectionTitle(text: "Deeds")
             achievement("Treasures found", "\(s.treasuresFound)", "shippingbox")
             achievement("Dungeons conquered", "\(s.completedDungeons.count)", "building.columns")
+            achievement("Artifacts held", "\(s.meta.artifacts.count)/10", "wand.and.stars")
             achievement("Highest stat", s.stats.highest.title, s.stats.highest.icon)
             achievement("Gold amassed", "\(s.gold)", "creditcard")
+            achievement("Magical dust", "\(s.meta.magicalDust)", "sparkles")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .zaharaCard()

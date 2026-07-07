@@ -76,6 +76,19 @@ struct DungeonRow: View {
                 }
             }
 
+            // Recommended stats (#3)
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "checklist").font(.system(size: 11)).foregroundStyle(Theme.sand).padding(.top, 2)
+                Text("Recommended: " + dungeon.recommendedStats.map { "\($0.0.title) \($0.1)" }.joined(separator: ", ")
+                     + ", Endurance \(dungeon.recommendedEndurance)")
+                    .font(Theme.body(11)).foregroundStyle(Theme.sand)
+            }
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "gift").font(.system(size: 11)).foregroundStyle(Theme.gold).padding(.top, 2)
+                Text("Spoils: \(dungeon.rewardSummary)")
+                    .font(Theme.body(11)).foregroundStyle(Theme.sand)
+            }
+
             if completed {
                 Text("Conquered. Its Djinn is yours.")
                     .font(Theme.body(12).italic()).foregroundStyle(Theme.success)

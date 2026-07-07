@@ -41,6 +41,10 @@ struct GameState: Codable {
     // Journal — recent story lines shown in the city
     var journal: [String] = []
 
+    /// Backing store for all expansion features (see `MetaState` / `meta`).
+    /// Optional so pre-expansion saves still decode; back-filled on load.
+    var _meta: MetaState? = nil
+
     static let totalNights = 1000
 
     // MARK: - Derived

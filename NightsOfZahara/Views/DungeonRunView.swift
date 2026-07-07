@@ -17,6 +17,12 @@ struct DungeonRunView: View {
                 VStack(spacing: 16) {
                     header(run, s)
                     roomList(run)
+                    if let room = run.currentRoom, !run.finished,
+                       room.kind == .monster || room.kind == .boss {
+                        MonsterCardView(
+                            monster: MonsterFactory.make(for: room, in: run.dungeon, night: s.night),
+                            isBoss: room.kind == .boss)
+                    }
                     Divider().overlay(Theme.gold.opacity(0.3))
                     logView(run)
                     Spacer(minLength: 0)

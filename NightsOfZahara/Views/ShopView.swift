@@ -23,8 +23,9 @@ struct ShopView: View {
                             .foregroundStyle(Theme.gold)
                     }
 
-                    ForEach(ItemCatalog.all) { item in
-                        ShopRow(item: item, canAfford: s.gold >= item.price) {
+                    ForEach(ItemCatalog.shopItems) { item in
+                        let price = game.shopPrice(item, in: s)
+                        ShopRow(item: item, price: price, canAfford: s.gold >= price) {
                             game.buy(item)
                         }
                     }
@@ -35,6 +36,8 @@ struct ShopView: View {
         .nightBackground()
         .navigationTitle("Shop")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { AudioManager.shared.setMood(.shop) }
+        .onDisappear { AudioManager.shared.setMood(.city) }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") { dismiss() }.foregroundStyle(Theme.brightGold)
@@ -45,6 +48,7 @@ struct ShopView: View {
 
 struct ShopRow: View {
     let item: Item
+    let price: Int
     let canAfford: Bool
     let buy: () -> Void
 
@@ -52,15 +56,19 @@ struct ShopRow: View {
         HStack(spacing: 12) {
             Image(systemName: item.category.icon)
                 .font(.system(size: 22))
-                .foregroundStyle(Theme.brightGold)
+                .foregroundStyle(item.rarity.color)
                 .frame(width: 34)
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.name).font(Theme.heading(15)).foregroundStyle(Theme.parchment)
+                HStack(spacing: 6) {
+                    Text(item.name).font(Theme.heading(15)).foregroundStyle(Theme.parchment)
+                    Text(item.rarity.title).font(Theme.body(10).weight(.bold))
+                        .foregroundStyle(item.rarity.color)
+                }
                 Text(item.detail).font(Theme.body(12)).foregroundStyle(Theme.sand)
             }
             Spacer()
             Button(action: buy) {
-                Text("\(item.price)")
+                Text("\(price)")
                     .font(Theme.body(14).weight(.bold))
                     .padding(.horizontal, 14).padding(.vertical, 8)
                     .background(canAfford ? Theme.goldSheen : LinearGradient(colors: [.gray], startPoint: .top, endPoint: .bottom))

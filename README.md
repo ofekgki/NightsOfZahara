@@ -41,6 +41,33 @@ Your goal: build a personal legend. Work and study, brave journeys, uncover hidd
 - **Endgame** — after Night 1000, a computed final title and a generated legend recapping your deeds.
 - **Arabian-fantasy UI** — night-blue / gold / purple theme, parchment cards, five-tab navigation, portrait, one-handed friendly.
 
+### Expansion systems
+
+- **Procedural Arabian music** — an original ambient score synthesized live on a *Hijaz* scale (no audio files); different moods for city, palace, shop, dungeon and victory. Mute + volume in Settings.
+- **Settings & haptics** — music/SFX/haptics toggles, volume, save status, credits, reset; contextual haptic feedback on key moments.
+- **Night Summary** — a story-page recap of each night: deeds, gold/stat changes, injuries, events, blessing and title changes.
+- **Blessings & curses** — a nightly modifier (e.g. *Blessing of the Desert Moon*, *Curse of the Silent Sands*) that colors your fortunes.
+- **Injuries & recovery** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer.
+- **Relationships & factions** — standing with Scheherazade, King Sinbad and eight factions, shaped by your actions and feeding the ending.
+- **Titles & ranks** — from *Market Survivor* to *Legend of Zahara*, shown on your character sheet and in the finale.
+- **Milestone events** every 100 nights, with gifts and words from Scheherazade and Sinbad.
+- **Djinn artifacts** — each conquered dungeon yields a rare equippable artifact (Ember of Amon, Feather of Phenex, Seed of Zagan…).
+- **Rarity, categories & unique inventory** — Common→Mythic tiers, six source categories, one-of-each items (duplicates become magical dust).
+- **Equipment & upgrades** — six equip slots; reforge gear with gold + dust from Level 1 to Legendary.
+- **Codex / Lore Book** — world, character, Djinn, dungeon and faction lore that unlocks as you progress.
+- **Detailed monsters** — every monster/boss room shows a full stat card (level, HP, attack, defense, magic, special, weakness, reward).
+- **Action previews** — confirm each action with a card showing energy, rewards, risks, helpful stats and estimated odds.
+- **Multiple endings & richer finale** — nine named endings (King's Champion, Merchant Prince, Master of Djinns…) chosen from your stats, Djinns, artifacts, relationships and title.
+- **Scheherazade tutorial** — story-driven guidance across the first nights.
+- **Difficulty scaling** — dungeons and foes grow tougher as the nights pass.
+- **Quest log** — main, side, dungeon, role, Djinn and treasure quests with progress tracking, NPCs, locations and rewards (alongside the palace's royal missions).
+- **Faction reputation** — eight factions whose standing affects shop prices, palace access, treasure/dungeon fortune and journeys.
+- **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions with materials + magical dust.
+- **Home upgrades** — build nine rooms (library, training, treasure, crafting…) for lasting passive bonuses.
+- **Companions** — recruit five NPC allies (healer, thief, sailor, magician, guard) whose talents boost combat, treasure, dungeon safety, shop prices and more.
+- **Rare & story events** — conditional rare events (high luck, low endurance, specific Djinn/role…) and branching story choices whose consequences persist to the ending.
+- **Recommended stats** — dungeons show recommended stats, endurance and spoils before you enter.
+
 ---
 
 ## 🧭 The Gameplay Loop

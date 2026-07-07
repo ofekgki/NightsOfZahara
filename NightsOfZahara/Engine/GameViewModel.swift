@@ -75,6 +75,16 @@ final class GameViewModel: ObservableObject {
     @Published var outcome: ActionOutcome?
     @Published var pendingEvent: GameEvent?
     @Published var activeRun: DungeonRun?
+    @Published var nightSummary: NightSummary?
+    /// An event queued to appear after the night-summary sheet is dismissed.
+    var bufferedEvent: GameEvent?
+
+    // Transient night-summary tracking (reset each night)
+    var nightStartGold = 0
+    var nightStartStats: Stats = .zero
+    var nightStartInjuries = 0
+    var nightEntries: [NightSummary.Entry] = []
+    var nightEventLines: [String] = []
 
     var hasSave: Bool { SaveManager.hasSave() }
 
@@ -82,6 +92,7 @@ final class GameViewModel: ObservableObject {
         if let saved = SaveManager.load() {
             state = saved
             phase = saved.isFinished ? .ended : .playing
+            beginNightTracking()
         }
     }
 
@@ -91,6 +102,7 @@ final class GameViewModel: ObservableObject {
         if let saved = SaveManager.load() {
             state = saved
             phase = saved.isFinished ? .ended : .playing
+            beginNightTracking()
         }
     }
 
@@ -98,9 +110,21 @@ final class GameViewModel: ObservableObject {
         var fresh = GameState.new(name: name, role: role)
         fresh.energy = fresh.energyForCurrentEra
         fresh.maxEnergy = fresh.energyForCurrentEra
+        fresh.meta = MetaState()   // ensure expansion state is present
         state = fresh
         phase = .playing
+        beginNightTracking()
         save()
+    }
+
+    /// Snapshot the current gold/stats/injuries so we can compute night deltas.
+    func beginNightTracking() {
+        guard let s = state else { return }
+        nightStartGold = s.gold
+        nightStartStats = s.stats
+        nightStartInjuries = s.meta.injuries
+        nightEntries = []
+        nightEventLines = []
     }
 
     func abandonAndRestart() {
@@ -126,18 +150,26 @@ final class GameViewModel: ObservableObject {
     // MARK: - Dice
 
     /// A stat check with a small random swing; luck nudges the result.
-    private func check(_ value: Int, difficulty: Int, luck: Int = 0) -> Bool {
-        let roll = value + Int.random(in: 0...12) + luck / 4
+    /// Injuries sap the roll; an active blessing's luck helps.
+    func check(_ value: Int, difficulty: Int, luck: Int = 0) -> Bool {
+        let injuries = state?.meta.injuries ?? 0
+        let blessLuck = state?.meta.blessing?.luck ?? 0
+        let roll = value + Int.random(in: 0...12) + (luck + blessLuck) / 4 - injuries
         return roll >= difficulty
     }
 
-    private func present(_ outcome: ActionOutcome) {
+    func present(_ outcome: ActionOutcome) {
         self.outcome = outcome
         addJournal(outcome.message)
+        // Record for the night summary.
+        nightEntries.append(NightSummary.Entry(title: outcome.title,
+                                               deltas: outcome.deltas,
+                                               tone: String(describing: outcome.tone)))
+        HapticManager.forTone(outcome.tone)
         save()
     }
 
-    private func addJournal(_ line: String) {
+    func addJournal(_ line: String) {
         state?.journal.insert("Night \(state?.night ?? 0): \(line)", at: 0)
         if let count = state?.journal.count, count > 40 {
             state?.journal.removeLast(count - 40)
@@ -179,6 +211,7 @@ final class GameViewModel: ObservableObject {
         case .rest:           doRest()
         case .shop, .upgrade, .eat: break
         }
+        creditFactions(for: action)
         return true
     }
 
@@ -206,8 +239,8 @@ final class GameViewModel: ObservableObject {
 
     private func doStudy() {
         guard var s = state else { return }
-        let wis = Int.random(in: 1...3)
-        let mag = (s.role == .wizardApprentice ? 2 : Int.random(in: 0...1))
+        let wis = Int.random(in: 1...3) + homeBonus(.study)
+        let mag = (s.role == .wizardApprentice ? 2 : Int.random(in: 0...1)) + homeBonus(.magicStudy)
         s.stats.wisdom += wis
         s.stats.magic += mag
         state = s
@@ -220,7 +253,7 @@ final class GameViewModel: ObservableObject {
 
     private func doTrain() {
         guard var s = state else { return }
-        let cour = Int.random(in: 1...3)
+        let cour = Int.random(in: 1...3) + homeBonus(.train)
         let end = Int.random(in: 1...2)
         s.stats.courage += cour
         s.stats.endurance += end
@@ -233,7 +266,7 @@ final class GameViewModel: ObservableObject {
 
     private func doJourney() {
         guard var s = state else { return }
-        let luckMod = s.role == .sailor ? 6 : 0
+        let luckMod = (s.role == .sailor ? 6 : 0) + factionBonus(.sailors) * 2
         let roll = Int.random(in: 0...100) + (s.stats.luck + luckMod) / 3
         if roll > 78 {
             // Discover a dungeon clue.
@@ -264,8 +297,9 @@ final class GameViewModel: ObservableObject {
     private func doSearchDungeon() {
         guard var s = state else { return }
         let roleBonus = (s.role == .wizardApprentice ? 8 : 0)
-        let clueBonus = s.pendingDungeonClues * 6
-        let score = s.stats.luck + s.stats.wisdom + s.stats.magic + roleBonus + clueBonus + Int.random(in: 0...20)
+        let clueBonus = (s.pendingDungeonClues + (s.meta.blessing?.dungeonClueBonus ?? 0)) * 6
+        let helpBonus = homeBonus(.dungeonSearch) * 3 + factionBonus(.magicians) + factionBonus(.djinnSpirits)
+        let score = s.stats.luck + s.stats.wisdom + s.stats.magic + roleBonus + clueBonus + helpBonus + Int.random(in: 0...20)
 
         // Consume one clue per search if any.
         if s.pendingDungeonClues > 0 { s.pendingDungeonClues -= 1 }
@@ -295,7 +329,8 @@ final class GameViewModel: ObservableObject {
 
     private func doPalace() {
         guard var s = state else { return }
-        let requiredHonor = 15
+        // Guard & noble favor lowers the honor needed to enter.
+        let requiredHonor = max(5, 15 - factionBonus(.guards) - factionBonus(.nobles))
         if s.stats.honor < requiredHonor && !s.palaceUnlocked {
             present(ActionOutcome(title: "Turned Away",
                                   message: "The guards bar your path. You need at least \(requiredHonor) Honor or an invitation to enter Sinbad's palace.",
@@ -344,7 +379,9 @@ final class GameViewModel: ObservableObject {
     private func doSearchTreasure() {
         guard var s = state else { return }
         let cunningBonus = s.role == .marketOrphan ? 6 : 0
-        let score = s.stats.luck + s.stats.cunning + cunningBonus + Int.random(in: 0...25)
+        let treasureBonus = (s.meta.blessing?.treasureBonus ?? 0) + homeBonus(.treasure)
+            + factionBonus(.thieves) + companionBonus(.treasure)
+        let score = s.stats.luck + s.stats.cunning + cunningBonus + treasureBonus + Int.random(in: 0...25)
         if score > 55 {
             let gold = Int.random(in: 80...180)
             s.gold += gold
@@ -354,6 +391,19 @@ final class GameViewModel: ObservableObject {
             if Int.random(in: 0...100) < 30 {
                 s.pendingDungeonClues += 1
                 deltas.append("+1 Dungeon Clue")
+            }
+            // Sometimes a rare found item or crafting material.
+            if Int.random(in: 0...100) < 45 {
+                let findable = ItemCatalog.searchItems + CraftCatalog.materials
+                if let found = findable.randomElement() {
+                    let (_, extra) = grant(found, to: &s)
+                    deltas.append(extra.isEmpty ? "Found \(found.name)" : extra[0])
+                }
+            }
+            // Storage room turns up extra dust.
+            if homeBonus(.dust) > 0 {
+                s.meta.magicalDust += homeBonus(.dust)
+                deltas.append("+\(homeBonus(.dust)) Dust")
             }
             state = s
             present(ActionOutcome(title: "Buried Fortune!",
@@ -378,11 +428,18 @@ final class GameViewModel: ObservableObject {
         guard var s = state else { return }
         var restore = 2
         if has(.phenex) { restore += 1 }
+        restore += (s.meta.blessing?.restBonus ?? 0) + homeBonus(.rest)
         s.energy = min(s.maxEnergy, s.energy + restore)
+        var deltas = ["+\(restore) Energy"]
+        // Rest also tends injuries.
+        if s.meta.injuries > 0 {
+            s.meta.injuries -= 1
+            deltas.append("An injury mends")
+        }
         state = s
         present(ActionOutcome(title: "Rest",
                               message: "You breathe, recover, and perhaps dream a prophetic dream.",
-                              deltas: ["+\(restore) Energy"], tone: .good))
+                              deltas: deltas, tone: .good))
     }
 
     // MARK: - Combat (used by journeys and events)
@@ -392,7 +449,10 @@ final class GameViewModel: ObservableObject {
         var power = s.stats.courage + s.stats.endurance + s.stats.magic / 2
         if has(.barbatos) { power += 6 }
         if has(.baal)     { power += 4 }
-        let won = check(power, difficulty: difficulty, luck: s.stats.luck)
+        power += (s.meta.blessing?.combatBonus ?? 0) + companionBonus(.combat)
+        // Difficulty scales gently with the night number.
+        let scaledDifficulty = difficulty + s.night / 120
+        let won = check(power, difficulty: scaledDifficulty, luck: s.stats.luck)
         if won {
             let gold = Int.random(in: 30...80)
             s.gold += gold
@@ -408,31 +468,29 @@ final class GameViewModel: ObservableObject {
             s.stats.endurance = max(0, s.stats.endurance - damage)
             let goldLoss = min(s.gold, Int.random(in: 10...40))
             s.gold -= goldLoss
+            s.meta.injuries += 1
             state = s
             present(ActionOutcome(title: "Wounded",
                                   message: "The \(name) get the better of you \(context). You flee, battered.",
-                                  deltas: ["-\(damage) Endurance", "-\(goldLoss) Gold"], tone: .bad))
+                                  deltas: ["-\(damage) Endurance", "-\(goldLoss) Gold", "Injured"], tone: .bad))
         }
     }
 
     // MARK: - Shop / items / upgrades
 
     func buy(_ item: Item) {
-        guard var s = state, s.gold >= item.price else {
+        guard var s = state else { return }
+        let price = shopPrice(item, in: s)
+        guard s.gold >= price else {
             outcome = ActionOutcome(title: "Not Enough Gold",
                                     message: "You cannot afford \(item.name).", tone: .bad)
             return
         }
-        s.gold -= item.price
-        if item.consumable {
-            s.inventory[item.id, default: 0] += 1
-        } else {
-            applyEffect(item.effect, to: &s)
-        }
+        s.gold -= price
+        let (msg, extra) = grant(item, to: &s)
         state = s
-        let msg = item.consumable ? "\(item.name) added to your pack." : "\(item.name): \(item.detail)"
         present(ActionOutcome(title: "Purchased", message: msg,
-                              deltas: ["-\(item.price) Gold"], tone: .good))
+                              deltas: ["-\(price) Gold"] + extra, tone: .good))
     }
 
     /// Uses a consumable from the inventory (e.g. food, keys, maps).
@@ -445,7 +503,7 @@ final class GameViewModel: ObservableObject {
         present(ActionOutcome(title: "Used \(item.name)", message: item.detail, tone: .good))
     }
 
-    private func applyEffect(_ effect: ItemEffect, to s: inout GameState) {
+    func applyEffect(_ effect: ItemEffect, to s: inout GameState) {
         switch effect {
         case .restoreEnergy(let n):
             s.energy = min(s.maxEnergy, s.energy + n)
@@ -462,6 +520,10 @@ final class GameViewModel: ObservableObject {
                 .min(by: { $0.difficulty < $1.difficulty }) {
                 s.discoveredDungeons.append(found.id)
             }
+        case .healInjury(let n):
+            s.meta.injuries = max(0, s.meta.injuries - n)
+        case .none:
+            break
         }
     }
 
@@ -522,7 +584,18 @@ final class GameViewModel: ObservableObject {
         s.energy -= 4
         state = s
         save()
-        activeRun = DungeonRun(dungeon: dungeon,
+        AudioManager.shared.setMood(.dungeon)
+        // Scale room difficulty gently with the night number.
+        var scaled = dungeon
+        let bump = s.night / 100
+        if bump > 0 {
+            scaled.rooms = dungeon.rooms.map { room in
+                var r = room
+                r.difficulty += bump
+                return r
+            }
+        }
+        activeRun = DungeonRun(dungeon: scaled,
                                log: ["You step into \(dungeon.name). The air is thick with old magic."])
     }
 
@@ -546,6 +619,12 @@ final class GameViewModel: ObservableObject {
                 s.treasuresFound += 1
                 run.log.insert("   You loot \(gold) gold from the hoard.", at: 0)
             }
+            // Monsters may drop crafting materials.
+            if (room.kind == .monster || room.kind == .boss), Int.random(in: 0...100) < 50 {
+                let matID = CraftCatalog.randomMaterialID()
+                s.inventory[matID, default: 0] += 1
+                run.log.insert("   You gather \(ItemCatalog.item(id: matID)?.name ?? "material").", at: 0)
+            }
             run.roomIndex += 1
             if run.roomIndex >= run.dungeon.rooms.count {
                 run.finished = true
@@ -556,7 +635,9 @@ final class GameViewModel: ObservableObject {
             // Take a wound; the run may end if endurance breaks.
             var damage = Int.random(in: 2...4)
             if has(.phenex) { damage = max(1, damage - 1) }
+            damage = max(1, damage - companionBonus(.dungeonSafety) / 3)   // companions soften blows
             s.stats.endurance = max(0, s.stats.endurance - damage)
+            s.meta.injuries += 1
             run.log.insert("✘ \(room.name): the challenge wounds you. -\(damage) Endurance.", at: 0)
             if s.stats.endurance <= 3 {
                 run.finished = true
@@ -581,13 +662,36 @@ final class GameViewModel: ObservableObject {
             s.completedDungeons.append(run.dungeon.id)
         }
         var deltas = ["+\(run.dungeon.goldReward) Gold"]
-        if let djinn = run.dungeon.djinnReward, !s.djinns.contains(djinn) {
-            s.djinns.append(djinn)
-            s.stats = s.stats + djinn.statBonus
-            deltas.append("Bonded with \(djinn.name)!")
+        if let djinn = run.dungeon.djinnReward {
+            if !s.djinns.contains(djinn) {
+                s.djinns.append(djinn)
+                s.stats = s.stats + djinn.statBonus
+                deltas.append("Bonded with \(djinn.name)!")
+            }
+            // Award the Djinn's magical artifact.
+            let artifact = ArtifactCatalog.artifact(for: djinn)
+            if !s.meta.artifacts.contains(artifact.id) {
+                s.meta.artifacts.append(artifact.id)
+                let (_, extra) = grant(artifact, to: &s)
+                deltas.append("Artifact: \(artifact.name)")
+                deltas += extra
+            }
+            bumpRelationship("scheherazade", 3, in: &s)
+            bumpFaction(.djinnSpirits, 5, in: &s)
         }
+        // A chance at a piece of dungeon gear.
+        if let gear = ItemCatalog.dungeonGear.randomElement(), Int.random(in: 0...100) < 60 {
+            let (_, extra) = grant(gear, to: &s)
+            deltas += extra.isEmpty ? ["Found \(gear.name)"] : extra
+        }
+        // Magical dust and a crafting material from the hoard.
+        s.meta.magicalDust += Int.random(in: 2...5)
+        let matID = CraftCatalog.randomMaterialID()
+        s.inventory[matID, default: 0] += 1
+        deltas.append("Material: \(ItemCatalog.item(id: matID)?.name ?? matID)")
         state = s
         activeRun = nil
+        AudioManager.shared.setMood(.victory)
         present(ActionOutcome(title: "Dungeon Conquered",
                               message: "You emerge from \(run.dungeon.name) a legend richer.",
                               deltas: deltas, tone: .epic))
@@ -697,10 +801,24 @@ final class GameViewModel: ObservableObject {
 
     func endNight() {
         guard var s = state else { return }
+        let endingNight = s.night
+        let titleBefore = TitleSystem.currentTitle(for: s)
 
         // Passive Djinn blessings applied at the turn of the night.
         if has(.ugo) { s.gold += 5 }
         if has(.zagan) && Int.random(in: 0...100) < 20 { s.stats.luck += 1 }
+
+        // Build the summary for the night that just ended.
+        var summary = NightSummary(nightNumber: endingNight, nextNight: endingNight + 1)
+        summary.entries = nightEntries
+        summary.goldChange = s.gold - nightStartGold
+        summary.injuriesGained = max(0, s.meta.injuries - nightStartInjuries)
+        summary.events = nightEventLines
+        summary.statChanges = StatKind.allCases.compactMap { kind in
+            let d = s.stats[kind] - nightStartStats[kind]
+            return d != 0 ? "\(kind.title) \(d > 0 ? "+" : "")\(d)" : nil
+        }
+        if let b = s.meta.blessing { summary.events.append("\(b.name)") }
 
         s.night += 1
 
@@ -711,16 +829,56 @@ final class GameViewModel: ObservableObject {
             return
         }
 
-        // Scale and restore energy for the new era.
-        s.maxEnergy = s.energyForCurrentEra
-        s.energy = s.maxEnergy
+        // Injuries slowly recover on their own by one at night's turn.
+        if s.meta.injuries > 0 && Int.random(in: 0...100) < 40 { s.meta.injuries -= 1 }
+
+        // Roll a new blessing/curse for the coming night.
+        let newMod = BlessingCatalog.roll(luckAffinity: s.stats.luck)
+        s.meta.blessing = newMod
+        if let mod = newMod {
+            summary.tonightBlessing = mod.name
+        }
+
+        // Scale and restore energy for the new era, reduced by lingering injuries.
+        s.maxEnergy = s.energyForCurrentEra + (newMod?.energyDelta ?? 0)
+        s.energy = max(3, s.maxEnergy - s.meta.injuries)
+
+        // Title advancement note.
+        let titleAfter = TitleSystem.currentTitle(for: s)
+        if titleAfter != titleBefore { summary.newTitle = titleAfter }
+
+        // Milestone every 100 nights (folded into the summary, no extra sheet).
+        if s.night % 100 == 0 {
+            if let (line, deltas) = applyMilestone(&s) {
+                summary.events.append(line)
+                summary.entries.append(NightSummary.Entry(title: "Milestone — Night \(s.night)",
+                                                          deltas: deltas, tone: "epic"))
+            }
+        }
+
+        s.meta.lastSummary = summary
         state = s
 
-        // Maybe surface a random event.
-        if let event = RandomEvents.maybeTrigger(for: s) {
-            pendingEvent = event
-        }
+        // Present the summary popup first…
+        nightSummary = summary
+
+        // …then queue an event to fire once the summary is dismissed.
+        // Priority: story choice > rare event > ordinary event.
+        bufferedEvent = StoryChoices.pending(for: s)
+            ?? RareEvents.maybeTrigger(for: s)
+            ?? RandomEvents.maybeTrigger(for: s)
+
+        beginNightTracking()
+        AudioManager.shared.setMood(.city)
         save()
+    }
+
+    /// Called when the night-summary sheet is dismissed, to surface any queued event.
+    func flushBufferedEvent() {
+        if let e = bufferedEvent {
+            bufferedEvent = nil
+            pendingEvent = e
+        }
     }
 
     func resolve(_ event: GameEvent, choosing option: EventOption) {
@@ -729,6 +887,7 @@ final class GameViewModel: ObservableObject {
         state = s
         pendingEvent = nil
         addJournal(result)
+        nightEventLines.append("\(event.title): \(result)")
         outcome = ActionOutcome(title: event.title, message: result, tone: .neutral)
         save()
     }

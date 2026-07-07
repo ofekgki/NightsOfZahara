@@ -24,6 +24,12 @@ struct ContentView: View {
         }
         .environmentObject(game)
         .preferredColorScheme(.dark)
+        .onAppear { AudioManager.shared.startIfNeeded() }
+        // Night summary at the start of each new night (shown first).
+        .sheet(item: $game.nightSummary) { summary in
+            NightSummaryView(summary: summary)
+                .environmentObject(game)
+        }
         // Random event between nights.
         .sheet(item: eventBinding) { event in
             EventView(event: event)

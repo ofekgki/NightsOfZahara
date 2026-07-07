@@ -11,6 +11,7 @@ import SwiftUI
 struct NightActionsView: View {
     @EnvironmentObject private var game: GameViewModel
     @State private var sheet: NightAction?
+    @State private var preview: NightAction?
 
     private let columns = [GridItem(.flexible(), spacing: 14),
                            GridItem(.flexible(), spacing: 14)]
@@ -41,7 +42,7 @@ struct NightActionsView: View {
                                         if action.opensScreen {
                                             sheet = action
                                         } else {
-                                            _ = game.perform(action)
+                                            preview = action
                                         }
                                     }
                                 }
@@ -66,6 +67,11 @@ struct NightActionsView: View {
                     }
                 }
                 .environmentObject(game)
+            }
+            .sheet(item: $preview) { action in
+                ActionPreviewView(action: action)
+                    .environmentObject(game)
+                    .presentationDetents([.large])
             }
         }
     }

@@ -11,6 +11,7 @@ import SwiftUI
 struct CityView: View {
     @EnvironmentObject private var game: GameViewModel
     @State private var showEndNightConfirm = false
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
@@ -19,8 +20,10 @@ struct CityView: View {
                     ScrollView {
                         VStack(spacing: 18) {
                             header(s)
+                            if let tip = game.tutorialTip { tutorialBanner(tip) }
+                            if let bless = s.meta.blessing { blessingBanner(bless) }
                             quickStats(s)
-                            palaceAndDungeons(s)
+                            places(s)
                             journal(s)
                             endNightButton(s)
                         }
@@ -33,12 +36,51 @@ struct CityView: View {
             .nightBackground()
             .navigationTitle("Zahara")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { AudioManager.shared.setMood(.city) }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Zahara").font(Theme.heading(20)).foregroundStyle(Theme.brightGold)
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape.fill").foregroundStyle(Theme.gold)
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView().environmentObject(game)
             }
         }
+    }
+
+    private func tutorialBanner(_ tip: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "sparkles").foregroundStyle(Theme.brightGold)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Scheherazade").font(Theme.body(12).weight(.bold)).foregroundStyle(Theme.brightGold)
+                Text(tip).font(Theme.body(13).italic()).foregroundStyle(Theme.parchment)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Theme.royalPurple.opacity(0.25))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Theme.gold.opacity(0.3), lineWidth: 1))
+    }
+
+    private func blessingBanner(_ mod: DailyModifier) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: mod.icon)
+                .foregroundStyle(mod.kind == .blessing ? Theme.success : Theme.danger)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(mod.name).font(Theme.body(13).weight(.semibold)).foregroundStyle(Theme.parchment)
+                Text(mod.flavor).font(Theme.body(11).italic()).foregroundStyle(Theme.sand)
+            }
+            Spacer()
+        }
+        .padding(10)
+        .background((mod.kind == .blessing ? Theme.success : Theme.danger).opacity(0.15))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Sections
@@ -89,7 +131,7 @@ struct CityView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func palaceAndDungeons(_ s: GameState) -> some View {
+    private func places(_ s: GameState) -> some View {
         VStack(spacing: 12) {
             NavigationLink {
                 DungeonListView()
@@ -107,7 +149,59 @@ struct CityView: View {
                         title: "Sinbad's Palace",
                         subtitle: palaceSubtitle(s))
             }
+            NavigationLink {
+                QuestLogView()
+            } label: {
+                cityRow(icon: "list.bullet.clipboard.fill", title: "Quests",
+                        subtitle: questsSubtitle())
+            }
+            NavigationLink {
+                GearView()
+            } label: {
+                cityRow(icon: "backpack.fill", title: "Equipment",
+                        subtitle: "Equip gear & reforge with dust")
+            }
+            NavigationLink {
+                CraftingView()
+            } label: {
+                cityRow(icon: "hammer.fill", title: "Crafting",
+                        subtitle: "Forge items from materials & dust")
+            }
+            NavigationLink {
+                HomeUpgradeView()
+            } label: {
+                cityRow(icon: "house.fill", title: "Home",
+                        subtitle: "Build rooms for lasting bonuses")
+            }
+            NavigationLink {
+                CompanionView()
+            } label: {
+                cityRow(icon: "person.3.fill", title: "Companions",
+                        subtitle: companionsSubtitle())
+            }
+            NavigationLink {
+                RelationshipsView()
+            } label: {
+                cityRow(icon: "person.2.fill", title: "Bonds",
+                        subtitle: "Scheherazade, Sinbad & factions")
+            }
+            NavigationLink {
+                CodexView()
+            } label: {
+                cityRow(icon: "books.vertical.fill", title: "Codex",
+                        subtitle: "The lore of Zahara")
+            }
         }
+    }
+
+    private func questsSubtitle() -> String {
+        let active = game.sideQuestsActive().count
+        return active > 0 ? "\(active) active" : "Find quests to guide your path"
+    }
+
+    private func companionsSubtitle() -> String {
+        let n = game.companionsActive().count
+        return n > 0 ? "\(n) at your side" : "Recruit allies to aid you"
     }
 
     private func palaceSubtitle(_ s: GameState) -> String {

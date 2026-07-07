@@ -81,6 +81,32 @@ struct Dungeon: Codable, Identifiable, Equatable {
         default:   return "Deadly"
         }
     }
+
+    /// The distinct stats this dungeon's rooms will test.
+    var testedStats: [StatKind] {
+        var seen: [StatKind] = []
+        for room in rooms where !seen.contains(room.kind.testedStat) {
+            seen.append(room.kind.testedStat)
+        }
+        return seen
+    }
+
+    /// A recommended minimum for each tested stat, scaled by difficulty.
+    var recommendedStats: [(StatKind, Int)] {
+        let target = 10 + difficulty * 6
+        return testedStats.map { ($0, target) }
+    }
+
+    /// Recommended endurance to survive the crawl.
+    var recommendedEndurance: Int { 12 + difficulty * 7 }
+
+    /// Short human summary of what conquering it yields.
+    var rewardSummary: String {
+        var parts = ["\(goldReward) gold"]
+        if let d = djinnReward { parts.append("the Djinn \(d.name)"); parts.append("its artifact") }
+        parts.append("a chance at gear & materials")
+        return parts.joined(separator: ", ")
+    }
 }
 
 // MARK: - Starter dungeon catalog
