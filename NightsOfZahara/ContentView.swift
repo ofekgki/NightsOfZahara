@@ -1,21 +1,45 @@
 //
 //  ContentView.swift
-//  NightsOfZahara
+//  Nights Of Zahara
 //
-//  Created by Ofek Kanari on 07/07/2026.
+//  Root router: switches between onboarding, the main game and the ending
+//  based on the engine's phase. Also hosts the global event & outcome sheets.
 //
 
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var game = GameViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            switch game.phase {
+            case .onboarding:
+                OnboardingView()
+            case .playing:
+                MainTabView()
+            case .ended:
+                EndGameView()
+            }
         }
-        .padding()
+        .environmentObject(game)
+        .preferredColorScheme(.dark)
+        // Random event between nights.
+        .sheet(item: eventBinding) { event in
+            EventView(event: event)
+                .environmentObject(game)
+                .presentationDetents([.medium])
+        }
+        // Result of an action / event.
+        .sheet(item: $game.outcome) { outcome in
+            OutcomeView(outcome: outcome)
+                .presentationDetents([.height(300)])
+        }
+    }
+
+    // Bridge the non-Identifiable-optional event into a sheet(item:) binding.
+    private var eventBinding: Binding<GameEvent?> {
+        Binding(get: { game.pendingEvent }, set: { game.pendingEvent = $0 })
     }
 }
 
