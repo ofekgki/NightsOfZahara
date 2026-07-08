@@ -86,6 +86,9 @@ final class GameViewModel: ObservableObject {
     var nightEntries: [NightSummary.Entry] = []
     var nightEventLines: [String] = []
 
+    /// True once the player has Rested this night — Rest is limited to once per turn.
+    @Published var restedThisNight = false
+
     var hasSave: Bool { SaveManager.hasSave() }
 
     init() {
@@ -125,6 +128,7 @@ final class GameViewModel: ObservableObject {
         nightStartInjuries = s.meta.injuries
         nightEntries = []
         nightEventLines = []
+        restedThisNight = false
     }
 
     func abandonAndRestart() {
@@ -137,8 +141,22 @@ final class GameViewModel: ObservableObject {
     }
 
     func save() {
-        guard let state else { return }
-        SaveManager.save(state)
+        guard var s = state else { return }
+        syncWealth(&s)
+        clampStats(&s)
+        state = s
+        SaveManager.save(s)
+    }
+
+    /// Wealth tracks the player's actual fortune: it rises and falls with the
+    /// gold they currently hold, rather than manual upgrades alone.
+    private func syncWealth(_ s: inout GameState) {
+        s.stats.wealth = min(Stats.cap, 5 + s.gold / 40)
+    }
+
+    /// Enforce the hard stat ceiling everywhere (e.g. after equipping gear).
+    private func clampStats(_ s: inout GameState) {
+        for k in StatKind.allCases { s.stats[k] = s.stats[k] }   // subscript clamps 0...cap
     }
 
     // MARK: - Djinn helpers
@@ -185,9 +203,25 @@ final class GameViewModel: ObservableObject {
         guard var s = state else { return false }
         guard !action.opensScreen else { return false }
 
-        // Paimon lets journeys cost less.
-        var cost = action.energyCost
-        if action == .journey, has(.paimon) { cost = max(1, cost - 1) }
+        // Rest is limited to once per night.
+        if action == .rest, restedThisNight {
+            outcome = ActionOutcome(title: "Already Rested",
+                                    message: "You have already rested tonight. End the night for a full recovery.",
+                                    tone: .bad)
+            return true
+        }
+
+        // If every dungeon is already known, searching is pointless (no energy spent).
+        if action == .searchDungeon, allDungeonsDiscovered {
+            outcome = ActionOutcome(title: "Nothing Left to Find",
+                                    message: "All known dungeons have already been discovered.",
+                                    tone: .neutral)
+            return true
+        }
+
+        // Energy cost is fixed per action (no Djinn/item discounts) so the UI,
+        // confirmation and deduction always agree.
+        let cost = action.energyCost
 
         guard s.energy >= cost else {
             outcome = ActionOutcome(title: "Too Tired",
@@ -228,6 +262,7 @@ final class GameViewModel: ObservableObject {
         default:           break
         }
         gold += s.stats.wealth
+        gold += homeBonus(.workIncome) * 20     // Work Room income bonus
         s.gold += gold
         s.stats.reputation += rep
         state = s
@@ -267,7 +302,8 @@ final class GameViewModel: ObservableObject {
     private func doJourney() {
         guard var s = state else { return }
         let luckMod = (s.role == .sailor ? 6 : 0) + factionBonus(.sailors) * 2
-        let roll = Int.random(in: 0...100) + (s.stats.luck + luckMod) / 3
+        // Speed helps you cover more ground and slip past trouble on the road.
+        let roll = Int.random(in: 0...100) + (s.stats.luck + luckMod) / 3 + s.stats.speed / 4
         if roll > 78 {
             // Discover a dungeon clue.
             s.pendingDungeonClues += 1
@@ -296,28 +332,44 @@ final class GameViewModel: ObservableObject {
 
     private func doSearchDungeon() {
         guard var s = state else { return }
+
+        // The easiest still-undiscovered dungeon is the one you might find.
+        guard let target = undiscoveredDungeons.min(by: { $0.difficulty < $1.difficulty }) else {
+            present(ActionOutcome(title: "Nothing Left to Find",
+                                  message: "All known dungeons have already been discovered.",
+                                  tone: .neutral))
+            return
+        }
+
         let roleBonus = (s.role == .wizardApprentice ? 8 : 0)
-        let clueBonus = (s.pendingDungeonClues + (s.meta.blessing?.dungeonClueBonus ?? 0)) * 6
+        let cluesInHand = s.pendingDungeonClues + (s.meta.blessing?.dungeonClueBonus ?? 0)
+        let clueBonus = cluesInHand * 6
         let helpBonus = homeBonus(.dungeonSearch) * 3 + factionBonus(.magicians) + factionBonus(.djinnSpirits)
         let score = s.stats.luck + s.stats.wisdom + s.stats.magic + roleBonus + clueBonus + helpBonus + Int.random(in: 0...20)
 
         // Consume one clue per search if any.
         if s.pendingDungeonClues > 0 { s.pendingDungeonClues -= 1 }
 
-        // Which dungeons are still undiscovered?
-        let undiscovered = DungeonCatalog.all.filter { !s.discoveredDungeons.contains($0.id) }
+        // Higher-level Djinn dungeons are far harder to locate and demand that
+        // you already hold clues before the trail can even be found.
+        let required = 45 + target.difficulty * 10
+        let cluesNeeded = max(0, target.difficulty - 2)
 
-        if score > 45, let found = undiscovered.min(by: { $0.difficulty < $1.difficulty }) {
-            s.discoveredDungeons.append(found.id)
+        if score >= required && cluesInHand >= cluesNeeded {
+            s.discoveredDungeons.append(target.id)
+            s.pendingDungeonClues = 0     // discovering a dungeon consumes all clues
             state = s
             present(ActionOutcome(title: "A Dungeon Revealed!",
-                                  message: "Your searching uncovers the entrance to \(found.name). Scheherazade's lore rings true.",
-                                  deltas: ["Discovered \(found.name)"], tone: .epic))
+                                  message: "Your searching uncovers the entrance to \(target.name). Scheherazade's lore rings true.",
+                                  deltas: ["Discovered \(target.name)", "Clues spent"], tone: .epic))
         } else if score > 25 {
             s.pendingDungeonClues += 1
             state = s
+            let hint = cluesInHand < cluesNeeded
+                ? "The trail to \(target.name) demands more clues than you hold."
+                : "You find no entrance, but a clue toward one."
             present(ActionOutcome(title: "A Faint Trail",
-                                  message: "You find no entrance, but a clue toward one.",
+                                  message: hint,
                                   deltas: ["+1 Dungeon Clue"], tone: .good))
         } else {
             state = s
@@ -338,22 +390,83 @@ final class GameViewModel: ObservableObject {
             return
         }
         s.palaceUnlocked = true
-        let roll = s.stats.honor + s.stats.reputation + Int.random(in: 0...15)
-        if roll > 40 {
-            let gold = Int.random(in: 60...140)
-            s.gold += gold
-            s.stats.honor += 3
+
+        // The court is a living thing — each visit plays out differently.
+        // Favor (honor + reputation) tilts the odds toward the finer outcomes.
+        let favor = s.stats.honor + s.stats.reputation
+        let outcome = palaceOutcome(favor: favor, into: &s)
+        state = s
+        present(outcome)
+    }
+
+    /// Rolls one of many possible palace outcomes and applies it to `s`.
+    private func palaceOutcome(favor: Int, into s: inout GameState) -> ActionOutcome {
+        var roll = Int.random(in: 0..<100)
+        // Higher favor nudges the roll upward toward the better events.
+        roll = min(99, roll + favor / 6)
+
+        switch roll {
+        case 90...99:
+            // Audience with King Sinbad himself.
+            let gold = Int.random(in: 80...160)
+            s.gold += gold; s.stats.honor += 3
+            bumpRelationship("sinbad", 3, in: &s)
             if !s.connections.contains("Palace Advisor") { s.connections.append("Palace Advisor") }
-            state = s
-            present(ActionOutcome(title: "Audience with Sinbad",
-                                  message: "King Sinbad, the legendary sailor-king, rewards your service and names you a friend of the court.",
-                                  deltas: ["+\(gold) Gold", "+3 Honor", "New ally: Palace Advisor"], tone: .epic))
-        } else {
+            return ActionOutcome(title: "Audience with Sinbad",
+                                 message: "King Sinbad, the legendary sailor-king, receives you and names you a friend of the court.",
+                                 deltas: ["+\(gold) Gold", "+3 Honor", "New ally: Palace Advisor"], tone: .epic)
+        case 80...89:
+            // The king hints at a royal mission.
+            s.pendingDungeonClues += 1; s.stats.honor += 1
+            return ActionOutcome(title: "A Royal Summons",
+                                 message: "A steward says the king has need of you — a mission awaits at the palace board.",
+                                 deltas: ["+1 Honor", "+1 Dungeon Clue"], tone: .good)
+        case 68...79:
+            // A rare story of the court's secrets.
+            let gold = Int.random(in: 40...90)
+            s.gold += gold; s.stats.wisdom += 2
+            return ActionOutcome(title: "Whispers in the Halls",
+                                 message: "An old courtier shares a tale of the palace's hidden history. You learn much.",
+                                 deltas: ["+\(gold) Gold", "+2 Wisdom"], tone: .epic)
+        case 56...67:
+            // Meet a noble — a new connection.
+            let nobles = ["Lady Suha", "Vizier Ramel", "Prince Kalim", "Countess Dunya"]
+            let name = nobles.filter { !s.connections.contains($0) }.randomElement()
+            if let name { s.connections.append(name) }
+            bumpFaction(.nobles, 2, in: &s)
+            return ActionOutcome(title: "A Noble's Favor",
+                                 message: "You charm a member of the court and win their goodwill.",
+                                 deltas: name != nil ? ["New ally: \(name!)", "+Nobles favor"] : ["+Nobles favor"], tone: .good)
+        case 44...55:
+            // Unlock a faction event with the guards.
+            bumpFaction(.guards, 3, in: &s); s.stats.honor += 1
+            return ActionOutcome(title: "The Guard's Respect",
+                                 message: "You share a drink with Sinbad's guards and earn their trust.",
+                                 deltas: ["+1 Honor", "+Guards favor"], tone: .good)
+        case 32...43:
+            // Find a rumor.
+            s.pendingDungeonClues += 1
+            return ActionOutcome(title: "A Rumor at Court",
+                                 message: "Between the marble columns you overhear talk of a sealed dungeon beyond the dunes.",
+                                 deltas: ["+1 Dungeon Clue"], tone: .good)
+        case 20...31:
+            // Simply gain a little honor mingling.
             s.stats.honor += 1
-            state = s
-            present(ActionOutcome(title: "Among the Nobles",
-                                  message: "You mingle in the palace halls and earn a measure of respect.",
-                                  deltas: ["+1 Honor"], tone: .good))
+            return ActionOutcome(title: "Among the Nobles",
+                                 message: "You mingle in the palace halls and earn a measure of respect.",
+                                 deltas: ["+1 Honor"], tone: .good)
+        case 10...19:
+            // Court politics cost you reputation.
+            let loss = min(s.stats.reputation, Int.random(in: 2...4))
+            s.stats.reputation -= loss
+            return ActionOutcome(title: "Court Politics",
+                                 message: "A rival whispers against you in the king's ear. Your standing suffers.",
+                                 deltas: ["-\(loss) Reputation"], tone: .bad)
+        default:
+            // Turned away by suspicious guards.
+            return ActionOutcome(title: "Turned Away",
+                                 message: "The guards are wary tonight and send you back to the streets, empty-handed.",
+                                 tone: .bad)
         }
     }
 
@@ -426,9 +539,9 @@ final class GameViewModel: ObservableObject {
 
     private func doRest() {
         guard var s = state else { return }
-        var restore = 2
-        if has(.phenex) { restore += 1 }
-        restore += (s.meta.blessing?.restBonus ?? 0) + homeBonus(.rest)
+        // Rest always restores exactly 2 energy — no Djinn, item, room, artifact
+        // or upgrade may increase this.
+        let restore = 2
         s.energy = min(s.maxEnergy, s.energy + restore)
         var deltas = ["+\(restore) Energy"]
         // Rest also tends injuries.
@@ -437,6 +550,7 @@ final class GameViewModel: ObservableObject {
             deltas.append("An injury mends")
         }
         state = s
+        restedThisNight = true      // Rest is limited to once per night.
         present(ActionOutcome(title: "Rest",
                               message: "You breathe, recover, and perhaps dream a prophetic dream.",
                               deltas: deltas, tone: .good))
@@ -449,6 +563,7 @@ final class GameViewModel: ObservableObject {
         var power = s.stats.courage + s.stats.endurance + s.stats.magic / 2
         if has(.barbatos) { power += 6 }
         if has(.baal)     { power += 4 }
+        power += s.stats.speed / 3      // Speed lets you strike first
         power += (s.meta.blessing?.combatBonus ?? 0) + companionBonus(.combat)
         // Difficulty scales gently with the night number.
         let scaledDifficulty = difficulty + s.night / 120
@@ -462,17 +577,27 @@ final class GameViewModel: ObservableObject {
                                   message: "You defeat the \(name) \(context) and claim the spoils.",
                                   deltas: ["+\(gold) Gold", "+1 Courage"], tone: .good))
         } else {
-            let loss = Int.random(in: 2...4)
-            var damage = loss
+            // A quick hero can escape the worst of a lost fight.
+            let escaped = check(s.stats.speed, difficulty: 13)
+            var damage = Int.random(in: 2...4)
             if has(.phenex) { damage = max(1, damage - 1) }
+            if escaped { damage = max(1, damage - 2) }
             s.stats.endurance = max(0, s.stats.endurance - damage)
             let goldLoss = min(s.gold, Int.random(in: 10...40))
             s.gold -= goldLoss
-            s.meta.injuries += 1
+            var deltas = ["-\(damage) Endurance", "-\(goldLoss) Gold"]
+            if escaped {
+                deltas.append("Escaped unhurt")
+            } else {
+                s.meta.injuries += 1
+                deltas.append("Injured")
+            }
             state = s
-            present(ActionOutcome(title: "Wounded",
-                                  message: "The \(name) get the better of you \(context). You flee, battered.",
-                                  deltas: ["-\(damage) Endurance", "-\(goldLoss) Gold", "Injured"], tone: .bad))
+            present(ActionOutcome(title: escaped ? "A Narrow Escape" : "Wounded",
+                                  message: escaped
+                                    ? "The \(name) get the better of you \(context), but your quickness saves you from lasting harm."
+                                    : "The \(name) get the better of you \(context). You flee, battered.",
+                                  deltas: deltas, tone: .bad))
         }
     }
 
@@ -516,9 +641,10 @@ final class GameViewModel: ObservableObject {
         case .treasureMap:
             // Reveal the easiest undiscovered dungeon.
             if let found = DungeonCatalog.all
-                .filter({ !s.discoveredDungeons.contains($0.id) })
+                .filter({ !s.discoveredDungeons.contains($0.id) && !s.completedDungeons.contains($0.id) })
                 .min(by: { $0.difficulty < $1.difficulty }) {
                 s.discoveredDungeons.append(found.id)
+                s.pendingDungeonClues = 0     // a discovery consumes all clues
             }
         case .healInjury(let n):
             s.meta.injuries = max(0, s.meta.injuries - n)
@@ -537,8 +663,13 @@ final class GameViewModel: ObservableObject {
     /// Each upgrade costs 2 energy plus gold.
     static let upgradeEnergyCost = 2
 
+    /// A stat that has reached the cap can no longer be improved.
+    func isStatMaxed(_ kind: StatKind) -> Bool {
+        (state?.stats[kind] ?? 0) >= Stats.cap
+    }
+
     func canUpgrade(_ kind: StatKind) -> Bool {
-        guard let s = state else { return false }
+        guard let s = state, !isStatMaxed(kind) else { return false }
         return s.energy >= GameViewModel.upgradeEnergyCost && s.gold >= upgradeCost(for: kind)
     }
 
@@ -569,6 +700,23 @@ final class GameViewModel: ObservableObject {
     var discoveredDungeons: [Dungeon] {
         guard let s = state else { return [] }
         return DungeonCatalog.all.filter { s.discoveredDungeons.contains($0.id) }
+    }
+
+    /// Dungeons neither discovered nor already conquered — the pool a search can reveal.
+    var undiscoveredDungeons: [Dungeon] {
+        guard let s = state else { return [] }
+        return DungeonCatalog.all.filter {
+            !s.discoveredDungeons.contains($0.id) && !s.completedDungeons.contains($0.id)
+        }
+    }
+
+    /// True when there is nothing left to discover.
+    var allDungeonsDiscovered: Bool { state != nil && undiscoveredDungeons.isEmpty }
+
+    /// Rest may be taken only once per night.
+    var canRest: Bool {
+        guard let s = state else { return false }
+        return !restedThisNight && s.energy >= NightAction.rest.energyCost
     }
 
     func isCompleted(_ dungeon: Dungeon) -> Bool {
@@ -643,6 +791,9 @@ final class GameViewModel: ObservableObject {
                 run.finished = true
                 run.conquered = false
                 run.log.insert("Too wounded to go on, you retreat from \(run.dungeon.name).", at: 0)
+                // Losing a dungeon loses its location — it must be discovered anew.
+                s.discoveredDungeons.removeAll { $0 == run.dungeon.id }
+                run.log.insert("The path caves in behind you. \(run.dungeon.name) is lost to the sands — you must find it again.", at: 0)
             }
         }
         state = s
@@ -698,6 +849,12 @@ final class GameViewModel: ObservableObject {
     }
 
     func retreatDungeon() {
+        // Retreating from an unconquered dungeon loses its location; you must
+        // search for and discover it again before another attempt.
+        if let run = activeRun, !run.conquered, var s = state {
+            s.discoveredDungeons.removeAll { $0 == run.dungeon.id }
+            state = s
+        }
         activeRun = nil
         save()
     }
@@ -839,8 +996,9 @@ final class GameViewModel: ObservableObject {
             summary.tonightBlessing = mod.name
         }
 
-        // Scale and restore energy for the new era, reduced by lingering injuries.
-        s.maxEnergy = s.energyForCurrentEra + (newMod?.energyDelta ?? 0)
+        // Scale and restore energy for the new era, plus the Resting Room's
+        // bonus to maximum energy, reduced by lingering injuries.
+        s.maxEnergy = s.energyForCurrentEra + (newMod?.energyDelta ?? 0) + homeBonus(.maxEnergy)
         s.energy = max(3, s.maxEnergy - s.meta.injuries)
 
         // Title advancement note.

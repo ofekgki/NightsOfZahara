@@ -75,6 +75,16 @@ struct RelationshipsView: View {
                                 .frame(width: max(4, geo.size.width * min(1, Double(max(0, value)) / 80.0)))
                         }
                     }.frame(height: 6)
+                    // Benefits begin at the Friendly tier and above.
+                    if let benefit = faction.benefit(for: value) {
+                        Label(benefit, systemImage: "gift.fill")
+                            .font(Theme.body(11).weight(.semibold))
+                            .foregroundStyle(Theme.success)
+                    } else {
+                        Text("Reach Friendly for benefits")
+                            .font(Theme.body(10).italic())
+                            .foregroundStyle(Theme.sand.opacity(0.6))
+                    }
                 }
             }
         }

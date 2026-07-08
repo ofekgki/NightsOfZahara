@@ -48,11 +48,7 @@ struct ActionPreviewView: View {
         .nightBackground()
     }
 
-    private var effectiveCost: Int {
-        var cost = action.energyCost
-        if action == .journey, game.owns(.paimon) { cost = max(1, cost - 1) }
-        return cost
-    }
+    private var effectiveCost: Int { action.energyCost }
 
     private func chip(icon: String, text: String, color: Color) -> some View {
         HStack(spacing: 5) {
@@ -83,7 +79,7 @@ struct ActionPreviewView: View {
         case .work:           return [.wealth, .reputation]
         case .study:          return [.wisdom, .magic]
         case .train:          return [.courage, .endurance]
-        case .journey:        return [.luck, .endurance, .courage]
+        case .journey:        return [.luck, .endurance, .speed]
         case .searchDungeon:  return [.luck, .wisdom, .magic]
         case .palace:         return [.honor, .reputation]
         case .connections:    return [.reputation, .cunning]

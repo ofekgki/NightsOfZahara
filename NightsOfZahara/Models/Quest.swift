@@ -137,7 +137,48 @@ enum QuestCatalogGeneral {
               objective: .reachStat(.cunning, 35), rewardGold: 220, rewardStat: (.luck, 4),
               risk: .medium, location: "The Back Alleys", npc: "The Thief Rashid",
               completion: "Rashid smirks. \"The streets raised you well.\"",
-              role: .marketOrphan)
+              role: .marketOrphan),
+
+        // Quests unlocked when a faction or key figure warms to you (Friendly+).
+        Quest(id: "fq_merchants", type: .side,
+              name: "The Merchant's Trust",
+              description: "The Merchants' Guild counts you a friend. Prove your worth in trade.",
+              objective: .amassGold(800), rewardGold: 150, rewardStat: (.wealth, 3),
+              risk: .none, location: "The Bazaar", npc: "Merchants' Guild",
+              completion: "The guild toasts your fortune and opens its ledgers to you.",
+              available: { ($0._meta?.faction("merchants") ?? 0) >= 10 }),
+
+        Quest(id: "fq_sailors", type: .side,
+              name: "Charted Waters",
+              description: "The Sailors of the Port trust you now. Brave the far routes and bring back proof.",
+              objective: .findTreasures(8), rewardGold: 180, rewardItemID: "nomad_pack",
+              risk: .medium, location: "The Port", npc: "Sailors of the Port",
+              completion: "The sailors sing your name in the dockside taverns.",
+              available: { ($0._meta?.faction("sailors") ?? 0) >= 10 }),
+
+        Quest(id: "fq_thieves", type: .side,
+              name: "A Thief's Pact",
+              description: "The Thieves' Guild welcomes you into the shadows. Show your cunning.",
+              objective: .reachStat(.cunning, 30), rewardGold: 200, rewardStat: (.luck, 3),
+              risk: .medium, location: "The Back Alleys", npc: "Thieves' Guild",
+              completion: "The guild marks you as one of their own.",
+              available: { ($0._meta?.faction("thieves") ?? 0) >= 10 }),
+
+        Quest(id: "fq_scheherazade", type: .main,
+              name: "The Sorceress's Confidence",
+              description: "Scheherazade sees greatness in you. Master the arcane to earn her deepest trust.",
+              objective: .reachStat(.magic, 30), rewardGold: 200, rewardStat: (.wisdom, 4),
+              risk: .low, location: "Scheherazade's Tower", npc: "Scheherazade",
+              completion: "Scheherazade shares a secret of the Djinns with you alone.",
+              available: { ($0._meta?.relationship("scheherazade") ?? 0) >= 25 }),
+
+        Quest(id: "fq_sinbad", type: .side,
+              name: "The King's Confidant",
+              description: "King Sinbad has grown to trust you. Rise in honor to serve at his side.",
+              objective: .reachHonor(35), rewardGold: 220, rewardStat: (.honor, 3),
+              risk: .low, location: "Sinbad's Palace", npc: "King Sinbad",
+              completion: "Sinbad names you among his most trusted advisors.",
+              available: { ($0._meta?.relationship("sinbad") ?? 0) >= 10 })
     ]
 
     static func quest(id: String) -> Quest? { all.first { $0.id == id } }

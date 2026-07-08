@@ -68,42 +68,70 @@ extension GameViewModel {
     }
 
     /// Effective equip bonus for an item at its current upgrade level.
+    /// Built via the memberwise initializer (not the subscript) so negative
+    /// bonuses — e.g. a Speed penalty from heavy armor — are preserved.
     private func scaledBonus(_ item: Item, level: Int) -> Stats {
         guard let base = item.equipBonus else { return .zero }
         let mult = 1.0 + Double(level) * 0.25
-        var out = Stats.zero
-        for k in StatKind.allCases { out[k] = Int(Double(base[k]) * mult) }
-        return out
+        func v(_ x: Int) -> Int { Int(Double(x) * mult) }
+        return Stats(wealth: v(base.wealth), wisdom: v(base.wisdom), magic: v(base.magic),
+                     reputation: v(base.reputation), honor: v(base.honor), luck: v(base.luck),
+                     courage: v(base.courage), cunning: v(base.cunning), endurance: v(base.endurance),
+                     speed: v(base.speed))
     }
 
     func equip(_ item: Item) {
         guard var s = state, let slot = item.slot else { return }
-        // Unequip whatever is there.
+        // Bonus from whatever is currently in the slot (if anything).
+        var oldBonus = Stats.zero
         if let currentID = s.meta.equipped[slot.rawValue],
            let current = ItemCatalog.item(id: currentID) {
-            s.stats = subtract(s.stats, scaledBonus(current, level: s.meta.itemLevels[currentID] ?? 0))
+            oldBonus = scaledBonus(current, level: s.meta.itemLevels[currentID] ?? 0)
+            s.stats = subtract(s.stats, oldBonus)
         }
+        let newBonus = scaledBonus(item, level: s.meta.itemLevels[item.id] ?? 0)
         s.meta.equipped[slot.rawValue] = item.id
-        s.stats = s.stats + scaledBonus(item, level: s.meta.itemLevels[item.id] ?? 0)
+        s.stats = s.stats + newBonus
         state = s
         HapticManager.play(.selection)
+        // Show exactly what changed compared to what was worn before.
+        let deltas = statDeltaLines(from: oldBonus, to: newBonus)
         present(ActionOutcome(title: "Equipped \(item.name)",
-                              message: "You ready your \(slot.title.lowercased()).", tone: .good))
+                              message: deltas.isEmpty
+                                ? "You ready your \(slot.title.lowercased()); its power is subtle."
+                                : "You ready your \(slot.title.lowercased()). Stat changes:",
+                              deltas: deltas, tone: .good))
     }
 
     func unequip(_ slot: EquipmentSlot) {
         guard var s = state, let id = s.meta.equipped[slot.rawValue],
               let item = ItemCatalog.item(id: id) else { return }
-        s.stats = subtract(s.stats, scaledBonus(item, level: s.meta.itemLevels[id] ?? 0))
+        let bonus = scaledBonus(item, level: s.meta.itemLevels[id] ?? 0)
+        s.stats = subtract(s.stats, bonus)
         s.meta.equipped[slot.rawValue] = nil
         state = s
         HapticManager.play(.selection)
+        // Removing the item reverses its bonus — show the change.
+        let deltas = statDeltaLines(from: bonus, to: .zero)
+        present(ActionOutcome(title: "Unequipped \(item.name)",
+                              message: deltas.isEmpty ? "You stow your \(slot.title.lowercased())."
+                                                      : "You stow your \(slot.title.lowercased()). Stat changes:",
+                              deltas: deltas, tone: .neutral))
     }
 
     private func subtract(_ a: Stats, _ b: Stats) -> Stats {
         var out = a
         for k in StatKind.allCases { out[k] = max(0, a[k] - b[k]) }
         return out
+    }
+
+    /// Human-readable per-stat change lines (e.g. "Endurance +4", "Speed -1")
+    /// for the difference between two equip bonuses.
+    private func statDeltaLines(from old: Stats, to new: Stats) -> [String] {
+        StatKind.allCases.compactMap { k in
+            let d = new[k] - old[k]
+            return d != 0 ? "\(k.title) \(d > 0 ? "+" : "")\(d)" : nil
+        }
     }
 
     // MARK: - Item upgrades
@@ -161,10 +189,29 @@ extension GameViewModel {
     // MARK: - Relationships & factions
 
     func bumpRelationship(_ key: String, _ amount: Int, in s: inout GameState) {
-        s.meta.relationships[key, default: 0] += amount
+        let before = s.meta.relationships[key, default: 0]
+        let after = before + amount
+        s.meta.relationships[key] = after
+        if amount > 0, Faction.standing(after) != Faction.standing(before) {
+            let who = key == "scheherazade" ? "Scheherazade"
+                    : key == "sinbad" ? "King Sinbad" : key.capitalized
+            noteInJournal(&s, "Your bond with \(who) rises to \(Faction.standing(after)). A new quest may await.")
+        }
     }
     func bumpFaction(_ faction: Faction, _ amount: Int, in s: inout GameState) {
-        s.meta.factions[faction.rawValue, default: 0] += amount
+        let before = s.meta.factions[faction.rawValue, default: 0]
+        let after = before + amount
+        s.meta.factions[faction.rawValue] = after
+        if amount > 0, Faction.standing(after) != Faction.standing(before) {
+            noteInJournal(&s, "The \(faction.title) now regard you as \(Faction.standing(after)). A new quest may await.")
+        }
+    }
+
+    /// Insert a journal line directly into the passed-in state copy (so it
+    /// survives the caller's `state = s` write-back).
+    private func noteInJournal(_ s: inout GameState, _ line: String) {
+        s.journal.insert("Night \(s.night): \(line)", at: 0)
+        if s.journal.count > 40 { s.journal.removeLast(s.journal.count - 40) }
     }
 
     /// Credit factions based on the action just taken.

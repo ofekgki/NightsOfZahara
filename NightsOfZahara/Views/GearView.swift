@@ -76,8 +76,12 @@ struct GearView: View {
                 Text("\(item.name) · \(game.itemLevelName(game.itemLevel(item)))")
                     .font(Theme.body(14).weight(.semibold)).foregroundStyle(item.rarity.color)
                 Text(item.detail).font(Theme.body(11)).foregroundStyle(Theme.sand)
+                if !item.equipSummary.isEmpty {
+                    Text(item.equipSummary).font(Theme.body(11).weight(.semibold)).foregroundStyle(Theme.success)
+                }
             }
             Spacer()
+            InfoDot(title: item.name, message: item.infoText, color: item.rarity.color)
         }
         .padding(10)
         .background(Color.black.opacity(0.2))
@@ -93,6 +97,7 @@ struct GearView: View {
                 Text("\(item.rarity.title) · \(game.itemLevelName(game.itemLevel(item)))")
                     .font(Theme.body(10)).foregroundStyle(Theme.sand)
             }
+            InfoDot(title: item.name, message: item.infoText, color: item.rarity.color)
             Spacer()
             if game.canUpgradeItem(item) {
                 Button {

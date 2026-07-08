@@ -19,7 +19,9 @@ struct CodexView: View {
                 if let s = game.state {
                     let entries = Codex.entries(in: category)
                     ForEach(entries) { entry in
-                        entryCard(entry, unlocked: entry.unlock(s))
+                        entryCard(entry,
+                                  unlocked: entry.unlock(s),
+                                  revealed: entry.revealTitle?(s) ?? entry.unlock(s))
                     }
                     let unlocked = entries.filter { $0.unlock(s) }.count
                     Text("\(unlocked) / \(entries.count) unlocked in this section")
@@ -53,19 +55,27 @@ struct CodexView: View {
         }
     }
 
-    private func entryCard(_ entry: CodexEntry, unlocked: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+    private func entryCard(_ entry: CodexEntry, unlocked: Bool, revealed: Bool) -> some View {
+        // Three states: fully unlocked, name-known (lore sealed), and undiscovered.
+        let icon = unlocked ? "book.closed.fill" : (revealed ? "book.closed" : "lock.fill")
+        let iconColor = unlocked ? Theme.brightGold : (revealed ? Theme.gold : Theme.sand.opacity(0.5))
+        let titleText = (unlocked || revealed) ? entry.title : "Undiscovered"
+        let bodyText: String = unlocked
+            ? entry.body
+            : (revealed
+               ? "Its name is known to you, but its full story stays sealed until you conquer its dungeon."
+               : "This lore is yet to be uncovered. Explore Zahara and grow your legend to reveal it.")
+        return VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Image(systemName: unlocked ? "book.closed.fill" : "lock.fill")
-                    .foregroundStyle(unlocked ? Theme.brightGold : Theme.sand.opacity(0.5))
-                Text(unlocked ? entry.title : "Undiscovered")
+                Image(systemName: icon).foregroundStyle(iconColor)
+                Text(titleText)
                     .font(Theme.heading(16)).foregroundStyle(Theme.parchment)
             }
-            Text(unlocked ? entry.body : "This lore is yet to be uncovered. Explore Zahara and grow your legend to reveal it.")
-                .font(Theme.body(13)).foregroundStyle(Theme.sand)
+            Text(bodyText)
+                .font(Theme.body(13)).italic(!unlocked).foregroundStyle(Theme.sand)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .zaharaCard()
-        .opacity(unlocked ? 1 : 0.6)
+        .opacity(unlocked ? 1 : (revealed ? 0.8 : 0.6))
     }
 }

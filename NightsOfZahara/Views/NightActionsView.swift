@@ -38,7 +38,8 @@ struct NightActionsView: View {
                             LazyVGrid(columns: columns, spacing: 14) {
                                 ForEach(NightAction.allCases) { action in
                                     ActionCardView(action: action,
-                                                   available: s.energy >= action.energyCost) {
+                                                   available: isAvailable(action, s),
+                                                   note: disabledNote(action, s)) {
                                         if action.opensScreen {
                                             sheet = action
                                         } else {
@@ -73,6 +74,24 @@ struct NightActionsView: View {
                     .environmentObject(game)
                     .presentationDetents([.large])
             }
+        }
+    }
+
+    /// Whether an action can currently be taken (energy + per-action rules).
+    private func isAvailable(_ action: NightAction, _ s: GameState) -> Bool {
+        switch action {
+        case .rest:          return game.canRest
+        case .searchDungeon: return s.energy >= action.energyCost && !game.allDungeonsDiscovered
+        default:             return s.energy >= action.energyCost
+        }
+    }
+
+    /// A short reason an action is disabled, shown on its card.
+    private func disabledNote(_ action: NightAction, _ s: GameState) -> String? {
+        switch action {
+        case .rest where game.restedThisNight:                 return "Already rested tonight"
+        case .searchDungeon where game.allDungeonsDiscovered:  return "All dungeons discovered"
+        default:                                               return nil
         }
     }
 }

@@ -57,8 +57,22 @@ struct CharacterView: View {
             Text("\(s.role.rawValue) • Night \(s.night) of \(GameState.totalNights) • \(s.era)")
                 .font(Theme.body(12)).foregroundStyle(Theme.sand)
             if s.meta.injuries > 0 {
-                Label("Injured (\(s.meta.injuries))", systemImage: "bandage.fill")
-                    .font(Theme.body(12).weight(.semibold)).foregroundStyle(Theme.danger)
+                HStack(spacing: 6) {
+                    Label("Injured (\(s.meta.injuries))", systemImage: "bandage.fill")
+                        .font(Theme.body(12).weight(.semibold)).foregroundStyle(Theme.danger)
+                    InfoDot(title: "Injuries",
+                            message: "You carry \(s.meta.injuries) injur\(s.meta.injuries == 1 ? "y" : "ies"). Each injury lowers every action and combat roll by 1 and cuts the energy you wake with each night. Heal them by Resting, eating, drinking a potion, or paying a healer.",
+                            icon: "exclamationmark.triangle.fill", color: Theme.danger)
+                }
+            }
+            if s.energy <= 2 {
+                HStack(spacing: 6) {
+                    Label("Fatigued", systemImage: "zzz")
+                        .font(Theme.body(12).weight(.semibold)).foregroundStyle(Theme.ember)
+                    InfoDot(title: "Fatigue",
+                            message: "Your energy is nearly spent. End the night to recover, or Rest once for +2 energy.",
+                            icon: "exclamationmark.triangle.fill", color: Theme.ember)
+                }
             }
         }
         .frame(maxWidth: .infinity)

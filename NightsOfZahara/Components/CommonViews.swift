@@ -32,10 +32,17 @@ struct StatRowView: View {
                 }
             }
             .frame(height: 8)
-            Text("\(value)")
-                .font(Theme.body(15).monospacedDigit())
-                .foregroundStyle(Theme.brightGold)
-                .frame(width: 36, alignment: .trailing)
+            if value >= Stats.cap {
+                Text("Max")
+                    .font(Theme.body(13).weight(.bold))
+                    .foregroundStyle(Theme.success)
+                    .frame(width: 36, alignment: .trailing)
+            } else {
+                Text("\(value)")
+                    .font(Theme.body(15).monospacedDigit())
+                    .foregroundStyle(Theme.brightGold)
+                    .frame(width: 36, alignment: .trailing)
+            }
         }
     }
 }
@@ -71,6 +78,9 @@ struct TopHUD: View {
 struct ActionCardView: View {
     let action: NightAction
     let available: Bool
+    /// Shown in place of the risk badge when the action is disabled for a
+    /// specific reason (e.g. "Already rested", "All discovered").
+    var note: String? = nil
     let tap: () -> Void
 
     var body: some View {
@@ -95,11 +105,18 @@ struct ActionCardView: View {
                     .foregroundStyle(Theme.sand.opacity(0.9))
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                HStack(spacing: 4) {
-                    Circle().fill(action.risk.color).frame(width: 7, height: 7)
-                    Text(action.risk.rawValue)
+                if !available, let note {
+                    Label(note, systemImage: "lock.fill")
                         .font(Theme.body(11))
-                        .foregroundStyle(action.risk.color)
+                        .foregroundStyle(Theme.danger)
+                        .lineLimit(2)
+                } else {
+                    HStack(spacing: 4) {
+                        Circle().fill(action.risk.color).frame(width: 7, height: 7)
+                        Text(action.risk.rawValue)
+                            .font(Theme.body(11))
+                            .foregroundStyle(action.risk.color)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
@@ -131,6 +148,30 @@ struct PrimaryButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .disabled(!enabled)
+    }
+}
+
+/// A tappable little info / warning badge that explains a status effect,
+/// item or artifact. Tapping it shows an alert with the full explanation.
+struct InfoDot: View {
+    let title: String
+    let message: String
+    var icon: String = "info.circle"
+    var color: Color = Theme.gold
+    @State private var show = false
+
+    var body: some View {
+        Button { show = true } label: {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(color)
+        }
+        .buttonStyle(.plain)
+        .alert(title, isPresented: $show) {
+            Button("Got it", role: .cancel) {}
+        } message: {
+            Text(message)
+        }
     }
 }
 

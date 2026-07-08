@@ -22,8 +22,11 @@ struct CodexEntry: Identifiable {
     let category: CodexCategory
     let title: String
     let body: String
-    /// When this entry becomes readable.
+    /// When this entry's full lore becomes readable.
     let unlock: (GameState) -> Bool
+    /// When the entry's *title* becomes known (its lore may still be hidden).
+    /// Defaults to the same condition as `unlock` when nil.
+    var revealTitle: ((GameState) -> Bool)? = nil
 }
 
 enum Codex {
@@ -56,10 +59,16 @@ enum Codex {
     ]
 
     // MARK: Djinns
+    // A Djinn's name is revealed once you discover its dungeon, but its full
+    // story stays sealed until you conquer that dungeon and bond with it.
     static let djinnEntries: [CodexEntry] = Djinn.allCases.map { d in
         CodexEntry(id: "djinn_\(d.rawValue)", category: .djinns, title: d.name,
                    body: "\(d.domain). \(d.bonusText) Signature: \(d.abilityName) — \(d.abilityText)",
-                   unlock: { $0.djinns.contains(d) })
+                   unlock: { $0.djinns.contains(d) },
+                   revealTitle: { s in
+                       s.djinns.contains(d)
+                       || (DungeonCatalog.dungeon(forDjinn: d).map { s.discoveredDungeons.contains($0.id) } ?? false)
+                   })
     }
 
     // MARK: Dungeons

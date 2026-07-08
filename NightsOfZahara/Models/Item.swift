@@ -15,6 +15,19 @@ enum ItemEffect: Codable, Equatable {
     case luckCharm(Int)                 // permanent luck
     case healInjury(Int)                // reduces injuries
     case none                           // equippables, materials, quest items
+
+    /// A plain-language explanation of what the effect does (for info tooltips).
+    var explanation: String {
+        switch self {
+        case .restoreEnergy(let n): return "Restores \(n) energy when used."
+        case .grantStat(let k, let n): return "Permanently grants +\(n) \(k.title)."
+        case .dungeonKey:           return "Sharpens your next dungeon search (grants clues)."
+        case .treasureMap:          return "Reveals the location of a hidden dungeon."
+        case .luckCharm(let n):     return "Permanently grants +\(n) Luck."
+        case .healInjury(let n):    return "Heals \(n) injur\(n == 1 ? "y" : "ies")."
+        case .none:                 return "No direct effect."
+        }
+    }
 }
 
 enum ItemCategory: String, Codable {
@@ -72,6 +85,26 @@ struct Item: Codable, Identifiable, Equatable {
     var equipBonus: Stats? = nil
 
     var isEquippable: Bool { slot != nil }
+
+    /// A short "+4 Courage, -2 Speed" style summary of the equip bonus.
+    var equipSummary: String {
+        guard let b = equipBonus else { return "" }
+        let parts: [String] = StatKind.allCases.compactMap { k in
+            let v = b[k]
+            return v != 0 ? "\(v > 0 ? "+" : "")\(v) \(k.title)" : nil
+        }
+        return parts.joined(separator: ", ")
+    }
+
+    /// A full info-tooltip explanation of what this item does.
+    var infoText: String {
+        if isEquippable {
+            let s = equipSummary
+            return s.isEmpty ? detail : "\(detail)\nWhile equipped: \(s)."
+        }
+        if case .none = effect { return detail }
+        return "\(detail)\n\(effect.explanation)"
+    }
 }
 
 enum ItemCatalog {
@@ -80,20 +113,20 @@ enum ItemCatalog {
 
     // MARK: Shop-only
     static let shopItems: [Item] = [
-        Item(id: "dates", name: "Handful of Dates", category: .food, price: 10,
-             effect: .restoreEnergy(1), detail: "Restores 1 energy.", consumable: true, rarity: .common, source: .shop),
-        Item(id: "warm_meal", name: "Warm Meal", category: .food, price: 25,
-             effect: .restoreEnergy(3), detail: "Restores 3 energy.", consumable: true, rarity: .common, source: .shop),
+        // The single energy-restoring food. Deliberately costly and capped at
+        // +2 energy so it never becomes a cheap fountain of free actions.
+        Item(id: "warm_meal", name: "Hearty Feast", category: .food, price: 150,
+             effect: .restoreEnergy(2), detail: "A rich, restoring meal. Restores exactly 2 energy.", consumable: true, rarity: .common, source: .shop),
         Item(id: "magic_tea", name: "Magic Tea", category: .potion, price: 40,
              effect: .grantStat(.luck, 2), detail: "A soothing brew. +2 Luck when drunk.", consumable: true, rarity: .rare, source: .shop),
         Item(id: "healing_soup", name: "Healing Soup", category: .potion, price: 55,
              effect: .healInjury(1), detail: "Mends wounds. Heals an injury.", consumable: true, rarity: .rare, source: .shop),
         Item(id: "curved_blade", name: "Curved Blade", category: .weapon, price: 120,
              effect: .none, detail: "A fine scimitar.", consumable: false, rarity: .rare, source: .shop,
-             slot: .weapon, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 4, cunning: 0, endurance: 0)),
+             slot: .weapon, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 4, cunning: 0, endurance: 0, speed: -1)),
         Item(id: "leather_armor", name: "Traveler's Armor", category: .armor, price: 140,
              effect: .none, detail: "Worn but sturdy.", consumable: false, rarity: .rare, source: .shop,
-             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 5)),
+             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 5, speed: -2)),
         Item(id: "luck_charm", name: "Charm of Fortune", category: .charm, price: 90,
              effect: .none, detail: "An old talisman.", consumable: false, rarity: .rare, source: .shop,
              slot: .charm, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 3, courage: 0, cunning: 0, endurance: 0)),
@@ -126,10 +159,10 @@ enum ItemCatalog {
     static let dungeonGear: [Item] = [
         Item(id: "guardian_blade", name: "Guardian's Blade", category: .weapon, price: 0,
              effect: .none, detail: "Taken from a fallen dungeon guardian.", consumable: false, rarity: .epic, source: .dungeon,
-             slot: .weapon, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 6, cunning: 0, endurance: 2)),
+             slot: .weapon, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 6, cunning: 0, endurance: 2, speed: -1)),
         Item(id: "warden_plate", name: "Warden's Plate", category: .armor, price: 0,
              effect: .none, detail: "Heavy armor of an ancient warden.", consumable: false, rarity: .epic, source: .dungeon,
-             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 8))
+             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 8, speed: -4))
     ]
 
     // MARK: Quest items

@@ -17,17 +17,24 @@ struct CityView: View {
         NavigationStack {
             Group {
                 if let s = game.state {
-                    ScrollView {
-                        VStack(spacing: 18) {
-                            header(s)
-                            if let tip = game.tutorialTip { tutorialBanner(tip) }
-                            if let bless = s.meta.blessing { blessingBanner(bless) }
-                            quickStats(s)
-                            places(s)
-                            journal(s)
-                            endNightButton(s)
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            VStack(spacing: 18) {
+                                header(s)
+                                    .id("cityTop")
+                                if let tip = game.tutorialTip { tutorialBanner(tip) }
+                                if let bless = s.meta.blessing { blessingBanner(bless) }
+                                quickStats(s)
+                                places(s)
+                                journal(s)
+                                endNightButton(s)
+                            }
+                            .padding()
                         }
-                        .padding()
+                        // When the night advances, snap back to the top of the city.
+                        .onChange(of: game.state?.night) { _, _ in
+                            withAnimation { proxy.scrollTo("cityTop", anchor: .top) }
+                        }
                     }
                 } else {
                     Text("No game in progress.").foregroundStyle(Theme.sand)
@@ -77,10 +84,26 @@ struct CityView: View {
                 Text(mod.flavor).font(Theme.body(11).italic()).foregroundStyle(Theme.sand)
             }
             Spacer()
+            InfoDot(title: mod.name, message: blessingEffectText(mod),
+                    icon: mod.kind == .blessing ? "info.circle" : "exclamationmark.triangle.fill",
+                    color: mod.kind == .blessing ? Theme.success : Theme.danger)
         }
         .padding(10)
         .background((mod.kind == .blessing ? Theme.success : Theme.danger).opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    /// Spell out exactly what a blessing / curse does, for the info popup.
+    private func blessingEffectText(_ mod: DailyModifier) -> String {
+        var lines: [String] = []
+        if mod.luck != 0 { lines.append("\(mod.luck > 0 ? "+" : "")\(mod.luck) to luck on rolls") }
+        if mod.treasureBonus != 0 { lines.append("\(mod.treasureBonus > 0 ? "+" : "")\(mod.treasureBonus)% treasure fortune") }
+        if mod.dungeonClueBonus != 0 { lines.append("\(mod.dungeonClueBonus > 0 ? "+" : "")\(mod.dungeonClueBonus) dungeon-search fortune") }
+        if mod.energyDelta != 0 { lines.append("\(mod.energyDelta > 0 ? "+" : "")\(mod.energyDelta) maximum energy tonight") }
+        if mod.combatBonus != 0 { lines.append("\(mod.combatBonus > 0 ? "+" : "")\(mod.combatBonus) combat power") }
+        if mod.shopDiscount != 0 { lines.append("\(mod.shopDiscount)% off shop prices") }
+        let effects = lines.isEmpty ? "A subtle turn of fortune." : lines.joined(separator: "\n")
+        return "\(mod.flavor)\n\n\(effects)"
     }
 
     // MARK: - Sections

@@ -9,13 +9,14 @@
 import SwiftUI
 
 enum HomeRoom: String, CaseIterable, Identifiable, Codable {
-    case resting, library, training, magic, storage, treasure, crafting, map, guest
+    case resting, work, library, training, magic, storage, treasure, crafting, map, guest
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .resting:  return "Resting Room"
+        case .work:     return "Work Room"
         case .library:  return "Library"
         case .training: return "Training Room"
         case .magic:    return "Magic Room"
@@ -30,6 +31,7 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
     var icon: String {
         switch self {
         case .resting:  return "bed.double.fill"
+        case .work:     return "bag.fill"
         case .library:  return "books.vertical.fill"
         case .training: return "figure.strengthtraining.traditional"
         case .magic:    return "wand.and.stars"
@@ -43,7 +45,8 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
 
     var benefit: String {
         switch self {
-        case .resting:  return "+1 Energy restored when you Rest, per level."
+        case .resting:  return "+1 Maximum Energy, per level."
+        case .work:     return "+20 gold earned from Work, per level."
         case .library:  return "+1 Wisdom from Study, per level."
         case .training: return "+1 Courage from Training, per level."
         case .magic:    return "+1 Magic from Study, per level."
@@ -64,4 +67,4 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
 }
 
 /// Which gameplay aspect a home bonus applies to.
-enum HomeAspect { case rest, study, magicStudy, train, dust, treasure, craftDiscount, dungeonSearch }
+enum HomeAspect { case maxEnergy, workIncome, study, magicStudy, train, dust, treasure, craftDiscount, dungeonSearch }

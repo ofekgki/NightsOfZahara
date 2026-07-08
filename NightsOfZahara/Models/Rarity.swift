@@ -17,7 +17,9 @@ enum Rarity: String, Codable, CaseIterable, Comparable {
         case .common:    return Color(white: 0.75)
         case .rare:      return .cyan
         case .epic:      return .purple
-        case .legendary: return Theme.brightGold
+        // A bold, saturated amber-gold so Legendary reads clearly apart from
+        // the game's softer gold/parchment theme.
+        case .legendary: return Color(red: 1.0, green: 0.60, blue: 0.05)
         case .mythic:    return Theme.ember
         }
     }

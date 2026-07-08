@@ -55,7 +55,7 @@ struct DungeonRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: dungeon.type.icon)
+                Image(systemName: dungeon.displayIcon)
                     .font(.system(size: 26)).foregroundStyle(Theme.brightGold).frame(width: 38)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(dungeon.name).font(Theme.heading(17)).foregroundStyle(Theme.parchment)

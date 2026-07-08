@@ -69,8 +69,16 @@ extension GameViewModel {
         return (gold, recipe.dust)
     }
 
+    /// True if the recipe's output is already sitting in the player's pack.
+    /// Each crafted item may exist only once at a time.
+    func alreadyCrafted(_ recipe: CraftRecipe) -> Bool {
+        (state?.inventory[recipe.outputID] ?? 0) > 0
+    }
+
     func canCraft(_ recipe: CraftRecipe) -> Bool {
         guard let s = state else { return false }
+        // Can't craft a second copy while one is still in the inventory.
+        guard !alreadyCrafted(recipe) else { return false }
         let cost = craftCost(recipe)
         guard s.gold >= cost.gold, s.meta.magicalDust >= cost.dust else { return false }
         for (mat, need) in recipe.materials where (s.inventory[mat] ?? 0) < need { return false }
@@ -122,7 +130,8 @@ extension GameViewModel {
         guard let s = state else { return 0 }
         func lvl(_ r: HomeRoom) -> Int { s.meta.homeRooms[r.rawValue] ?? 0 }
         switch aspect {
-        case .rest:          return lvl(.resting)
+        case .maxEnergy:     return lvl(.resting)
+        case .workIncome:    return lvl(.work)
         case .study:         return lvl(.library)
         case .magicStudy:    return lvl(.magic)
         case .train:         return lvl(.training)

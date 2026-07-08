@@ -68,7 +68,7 @@ enum Djinn: String, CaseIterable, Codable, Identifiable {
         case .dantalion: return "Increased wisdom; puzzles solved easier, traps revealed."
         case .baal:      return "Combat advantage; strike first, escape more easily."
         case .zepar:     return "Reputation grows faster; better connection-building."
-        case .paimon:    return "Journeys cost less energy; finds hidden locations."
+        case .paimon:    return "Journeys go further and turn up hidden locations."
         case .amon:      return "Higher magic damage; strong advantage in dungeons."
         case .ugo:       return "Cheaper upgrades; better rest; a small nightly blessing."
         case .zagan:     return "Increased luck & endurance; more positive events."

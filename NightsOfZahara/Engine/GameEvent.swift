@@ -95,7 +95,7 @@ enum RandomEvents {
         title: "A Sudden Sandstorm",
         text: "The sky turns copper as a sandstorm sweeps through Zahara. The streets empty.",
         options: [
-            EventOption(label: "Shelter and wait") { s in
+            EventOption(label: "Shelter and wait (−1 Energy)") { s in
                 s.energy = max(0, s.energy - 1)
                 return "You lose an hour of the night sheltering. -1 Energy."
             },

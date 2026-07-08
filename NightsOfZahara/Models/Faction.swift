@@ -51,6 +51,23 @@ enum Faction: String, CaseIterable, Identifiable, Codable {
         }
     }
 
+    /// The concrete benefit the player currently receives from this faction.
+    /// Benefits only begin at the Friendly tier (value >= 10); returns nil below.
+    func benefit(for value: Int) -> String? {
+        guard value >= 10 else { return nil }
+        let b = value / 10          // matches the engine's `factionBonus`
+        switch self {
+        case .merchants:    return "\(b)% off shop prices"
+        case .guards:       return "-\(b) Honor needed to enter the palace"
+        case .nobles:       return "-\(b) Honor needed at court"
+        case .magicians:    return "+\(b) dungeon-search fortune"
+        case .djinnSpirits: return "+\(b) dungeon-search fortune"
+        case .thieves:      return "+\(b) treasure-hunting fortune"
+        case .sailors:      return "+\(b * 2) journey fortune"
+        case .citizens:     return "A warmer welcome across Zahara's markets"
+        }
+    }
+
     /// A human-readable standing label for a reputation value.
     static func standing(_ value: Int) -> String {
         switch value {

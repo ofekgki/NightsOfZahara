@@ -40,7 +40,7 @@ struct DungeonRunView: View {
     private func header(_ run: DungeonRun, _ s: GameState) -> some View {
         VStack(spacing: 8) {
             HStack {
-                Image(systemName: run.dungeon.type.icon).foregroundStyle(Theme.brightGold)
+                Image(systemName: run.dungeon.displayIcon).foregroundStyle(Theme.brightGold)
                 Text(run.dungeon.name).font(Theme.title(22)).foregroundStyle(Theme.parchment)
             }
             ProgressView(value: run.progress).tint(Theme.gold)

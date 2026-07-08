@@ -71,6 +71,11 @@ struct Dungeon: Codable, Identifiable, Equatable {
     var difficulty: Int          // 1 (easy) ... 5 (deadly)
     var rooms: [DungeonRoom]
     var goldReward: Int
+    /// Optional custom icon overriding the dungeon type's default.
+    var icon: String? = nil
+
+    /// The icon to show for this dungeon (custom override, else its type's).
+    var displayIcon: String { icon ?? type.icon }
 
     var difficultyLabel: String {
         switch difficulty {
@@ -123,6 +128,11 @@ enum DungeonCatalog {
 
     static func dungeon(id: String) -> Dungeon? {
         all.first { $0.id == id }
+    }
+
+    /// The dungeon that rewards a given Djinn, if any.
+    static func dungeon(forDjinn djinn: Djinn) -> Dungeon? {
+        all.first { $0.djinnReward == djinn }
     }
 
     /// Amon — Temple of Fire (from the spec's worked example).
@@ -261,7 +271,8 @@ enum DungeonCatalog {
             DungeonRoom(name: "The Old Warden",    kind: .boss,        difficulty: 19),
             DungeonRoom(name: "Hearth Chamber",    kind: .djinnChamber, difficulty: 14)
         ],
-        goldReward: 320
+        goldReward: 320,
+        icon: "house.fill"          // Ugo is the Djinn of Home — its own icon
     )
 
     /// Baal — Storm Spire (ancient temple).

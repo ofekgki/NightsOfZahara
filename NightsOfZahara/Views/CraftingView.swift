@@ -60,10 +60,11 @@ struct CraftingView: View {
                 reqLine(name: "Magical Dust", have: s.meta.magicalDust, need: cost.dust)
                 reqLine(name: "Gold", have: s.gold, need: cost.gold)
             }
+            let owned = game.alreadyCrafted(recipe)
             Button {
                 game.craft(recipe)
             } label: {
-                Text("Craft").font(Theme.body(13).weight(.bold))
+                Text(owned ? "Already Owned" : "Craft").font(Theme.body(13).weight(.bold))
                     .frame(maxWidth: .infinity).padding(.vertical, 9)
                     .background(game.canCraft(recipe) ? Theme.goldSheen
                                 : LinearGradient(colors: [.gray], startPoint: .top, endPoint: .bottom))
@@ -71,6 +72,10 @@ struct CraftingView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .disabled(!game.canCraft(recipe))
+            if owned {
+                Text("You may hold only one of each crafted item at a time.")
+                    .font(Theme.body(10).italic()).foregroundStyle(Theme.sand.opacity(0.7))
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .zaharaCard()
