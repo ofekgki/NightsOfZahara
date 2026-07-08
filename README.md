@@ -97,10 +97,12 @@ A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search fo
 
 ## 🤝 Major Characters
 
-Beyond Scheherazade and King Sinbad, three great figures of Zahara have their own relationship arcs (tiers **Friendly → Trusted → Loyal → Legendary Bond**), quests, dialogue events and endings:
+Two figures frame your whole story, and three more great figures of Zahara have their own relationship arcs (tiers **Friendly → Trusted → Loyal → Legendary Bond**), quests, dialogue events and endings:
 
-| Character | Role | Rewards as your bond deepens |
-|-----------|------|------------------------------|
+| Character | Role | What they bring to your legend |
+|-----------|------|--------------------------------|
+| **Scheherazade** | Sorceress, storyteller & guide | Narrates your nights, teaches you in the early game, weaves your deeds into lore, and rewards a deep bond in the finale |
+| **King Sinbad** | The sailor-king, ruler of Zahara | Grants royal missions from the palace board, judges your honor and courage, and counts the worthy among his most trusted |
 | **Ali Baba** | Treasure hunter & cave expert | Treasure-search fortune → hidden-cave quests → joins as a companion → *Master of the Hidden Caves* ending |
 | **Jasmine** | Noble diplomat & voice of the people | Palace honor → diplomacy quests → safer palace events → *Protector of Zahara* ending |
 | **Aladdin** | Street-smart artifact seeker | Magical-item finds → artifact quests → companion & fewer trap wounds → rare Djinn-artifact questline |
