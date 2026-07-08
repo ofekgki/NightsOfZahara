@@ -12,8 +12,8 @@ import Combine
 final class AppSettings: ObservableObject {
     static let shared = AppSettings()
 
-    @Published var musicOn: Bool { didSet { persist(); AudioManager.shared.apply(self) } }
-    @Published var musicVolume: Double { didSet { persist(); AudioManager.shared.apply(self) } }
+    @Published var musicOn: Bool { didSet { persist(); AudioManager.shared.apply(self); SoundManager.shared.applyMusicSettings() } }
+    @Published var musicVolume: Double { didSet { persist(); AudioManager.shared.apply(self); SoundManager.shared.applyMusicSettings() } }
     @Published var sfxOn: Bool { didSet { persist() } }
     @Published var hapticsOn: Bool { didSet { persist() } }
 

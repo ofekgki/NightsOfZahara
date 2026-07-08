@@ -112,7 +112,7 @@ enum StoryChoices {
     private struct Choice { let id: String; let night: Int; let event: GameEvent }
 
     private static let all: [Choice] = [
-        Choice(id: "choice_thieves", night: 30, event: GameEvent(
+        Choice(id: "choice_thieves", night: 5, event: GameEvent(
             title: "A Crossroads of Loyalty",
             text: "The Thieves' Guild offers you a place among them — but the Palace Guards would frown on such company. Where do your loyalties lie?",
             options: [
@@ -134,7 +134,7 @@ enum StoryChoices {
                 }
             ])),
 
-        Choice(id: "choice_relic", night: 150, event: GameEvent(
+        Choice(id: "choice_relic", night: 20, event: GameEvent(
             title: "The Merchant's Relic",
             text: "A dying merchant entrusts you with a sacred relic. Do you return it to the temple, or sell it for a fortune?",
             options: [
@@ -155,7 +155,7 @@ enum StoryChoices {
                 }
             ])),
 
-        Choice(id: "choice_djinn_war", night: 400, event: GameEvent(
+        Choice(id: "choice_djinn_war", night: 45, event: GameEvent(
             title: "The Djinn's Bargain",
             text: "An imprisoned Djinn offers great power in exchange for its freedom — but Scheherazade warns of the cost.",
             options: [

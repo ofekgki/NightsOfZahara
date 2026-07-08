@@ -36,7 +36,10 @@ struct ShopView: View {
         .nightBackground()
         .navigationTitle("Shop")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { AudioManager.shared.setMood(.shop) }
+        .onAppear {
+            AudioManager.shared.setMood(.shop)
+            SoundManager.shared.play(.door)     // the shop door swings open
+        }
         .onDisappear { AudioManager.shared.setMood(.city) }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

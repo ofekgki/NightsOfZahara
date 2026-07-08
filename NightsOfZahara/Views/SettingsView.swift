@@ -105,7 +105,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 6) {
             SectionTitle(text: "Credits")
             Text("Nights Of Zahara").font(Theme.heading(15)).foregroundStyle(Theme.brightGold)
-            Text("A 1000-night Arabian-fantasy life sim.\nWorld of Zahara, Scheherazade & King Sinbad.\nBuilt with SwiftUI.")
+            Text("An Arabian-fantasy life sim in the spirit of the thousand nights.\nWorld of Zahara, Scheherazade & King Sinbad.\nBuilt with SwiftUI.")
                 .font(Theme.body(12)).foregroundStyle(Theme.sand)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

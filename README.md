@@ -4,7 +4,7 @@
 
 # Nights Of Zahara
 
-**A 1000-night life-simulation / light RPG for iPhone, inspired by *One Thousand and One Nights*.**
+**A life-simulation / light RPG for iPhone, inspired by *One Thousand and One Nights*.**
 
 Built with **SwiftUI** · **MVVM** · Local save · iOS 26
 
@@ -14,9 +14,11 @@ Built with **SwiftUI** · **MVVM** · Local save · iOS 26
 
 ## ✨ Overview
 
-You arrive in **Zahara**, a magical desert city of markets, storytellers, sailors and palace intrigue. Guided by the sorceress **Scheherazade** and ruled by the legendary sailor-king **Sinbad**, you live out **1000 nights** — one turn each. Every night you spend a limited pool of energy on actions that shape your stats, wealth, reputation and fate.
+You arrive in **Zahara**, a magical desert city of markets, storytellers, sailors and palace intrigue. Guided by the sorceress **Scheherazade** and ruled by the legendary sailor-king **Sinbad**, you live out your legend one night at a time. Every night you spend a limited pool of energy on actions that shape your stats, wealth, reputation and fate.
 
-Your goal: build a personal legend. Work and study, brave journeys, uncover hidden **Djinn dungeons**, conquer them to bond with one of **10 Djinns**, complete King Sinbad's royal missions, and by **Night 1000** earn a final title based on everything you did.
+The game is **100 playable nights** — told in the spirit of the thousand nights. When you reach the hundredth night you're shown a **grand retrospective of your whole journey** and given a choice: **continue** onward (your legend keeps going, with another checkpoint every 100 nights) or **finish** and read the final legend of the life you built.
+
+Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bond with the **22 Djinns of Zahara** (and, if you prove worthy, the legendary **King of the Djinns**), win the favor of the city's great figures, complete King Sinbad's royal missions, and earn a final title based on everything you did.
 
 <div align="center">
 <img src="Screenshots/onboarding.png" width="260" alt="Title screen" />
@@ -28,45 +30,43 @@ Your goal: build a personal legend. Work and study, brave journeys, uncover hidd
 
 ## 🎮 Features
 
-- **The 1000-Night loop** — energy resets each night and scales as your legend grows (6 → 8 → 9 → 10).
+- **The night loop** — 100 playable nights; energy resets each night and scales as your legend grows (6 → 8 → 9 → 10). Reach the hundredth night to view a full-journey retrospective and **choose to continue or finish** — play never force-ends.
 - **5 starting roles** — Market Orphan, Wizard Apprentice, Merchant, Sailor, Storyteller — each with distinct stat bonuses, strengths, weaknesses and playstyles.
-- **9 character stats** — Wealth, Wisdom, Magic, Reputation, Honor, Luck, Courage, Cunning, Endurance — that drive every success roll.
-- **12 nightly actions** — Work, Study, Train, Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat.
-- **All 10 Djinns & 10 dungeons** — every Djinn has its own themed, room-by-room dungeon to discover and conquer.
-- **Interactive dungeon crawls** — advance through monsters, puzzles, traps, treasure and a boss to the Djinn chamber. Bonded Djinns grant **signature abilities** (Amon's Flame, Light of Truth, Lightning Strike, Hidden Current) that can clear a room outright.
-- **King Sinbad's royal missions** — a palace quest board with 7 escalating missions, live progress tracking and rewards.
-- **Random events** — mysterious merchants, sandstorms, palace invitations, whispering lamps and more, weighted by your stats and progress.
-- **Economy & items** — a 12-item bazaar, consumable provisions, gear that permanently boosts stats, and gold-and-energy stat upgrades.
+- **10 character stats** — Wealth, Wisdom, Magic, Reputation, Honor, Luck, Courage, Cunning, Endurance and **Speed** — that drive every success roll. Wealth tracks your actual gold; every stat caps at **125** (shown as `Max`).
+- **12 nightly actions** — Work, Study, Train, Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat — each with a clear energy cost and an action-preview card.
+- **22 Djinns & 22 dungeons** — every Djinn has its own themed, room-by-room dungeon with related monsters and a named boss, plus a legendary **23rd figure**, Al-Mudhib the King of the Djinns, with a secret endgame dungeon.
+- **Interactive dungeon crawls** — advance through monsters, puzzles, traps, treasure and a boss to the Djinn chamber. Every bonded Djinn grants a **signature ability** that can clear a matching room outright (Amon's Flame, Terror Gaze, Blink Step, Warflame Command, Verdict of Truth…).
+- **King Sinbad's royal missions** — a palace quest board with escalating missions, live progress tracking and rewards.
+- **Major characters** — Ali Baba, Jasmine and Aladdin: recurring allies with their own relationship arcs, quests, dialogue and bonuses (see below).
+- **Events & choices** — mysterious merchants, sandstorms, palace invitations, whispering lamps, character encounters and branching **story choices** whose consequences persist to the ending.
+- **Economy & items** — a bazaar, consumable provisions, gear that boosts stats (heavy gear can cost you Speed), and gold-and-energy stat upgrades.
+- **Sound & music** — a procedural *Hijaz*-scale ambient score, plus real sound effects for work, treasure, shops/connections and the palace.
 - **Local save/load** — the whole run persists automatically via `Codable` (JSON file + `UserDefaults` mirror).
-- **Endgame** — after Night 1000, a computed final title and a generated legend recapping your deeds.
+- **Endgame** — a computed final title and a generated legend recapping your deeds, told in the grand style of the thousand nights.
 - **Arabian-fantasy UI** — night-blue / gold / purple theme, parchment cards, five-tab navigation, portrait, one-handed friendly.
 
 ### Expansion systems
 
-- **Procedural Arabian music** — an original ambient score synthesized live on a *Hijaz* scale (no audio files); different moods for city, palace, shop, dungeon and victory. Mute + volume in Settings.
-- **Settings & haptics** — music/SFX/haptics toggles, volume, save status, credits, reset; contextual haptic feedback on key moments.
+- **Journey retrospective** — at each 100-night checkpoint, a full recap of your journey with **Continue / Finish the Journey** options.
+- **Procedural Arabian music + SFX** — an original ambient score synthesized live (different moods for city, palace, shop, dungeon and victory) alongside real effect sounds. Mute + volume in Settings.
 - **Night Summary** — a story-page recap of each night: deeds, gold/stat changes, injuries, events, blessing and title changes.
-- **Blessings & curses** — a nightly modifier (e.g. *Blessing of the Desert Moon*, *Curse of the Silent Sands*) that colors your fortunes.
-- **Injuries & recovery** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer.
-- **Relationships & factions** — standing with Scheherazade, King Sinbad and eight factions, shaped by your actions and feeding the ending.
+- **Blessings & curses** — a nightly modifier that colors your fortunes, with a tap-to-read info icon.
+- **Injuries & fatigue** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer. Info icons explain every condition.
+- **Relationships & factions** — standing with Scheherazade, King Sinbad, three major characters and eight factions, shaped by your actions and feeding the ending. Factions show the concrete benefit they grant from **Friendly** upward.
 - **Titles & ranks** — from *Market Survivor* to *Legend of Zahara*, shown on your character sheet and in the finale.
-- **Milestone events** every 100 nights, with gifts and words from Scheherazade and Sinbad.
-- **Djinn artifacts** — each conquered dungeon yields a rare equippable artifact (Ember of Amon, Feather of Phenex, Seed of Zagan…).
-- **Rarity, categories & unique inventory** — Common→Mythic tiers, six source categories, one-of-each items (duplicates become magical dust).
-- **Equipment & upgrades** — six equip slots; reforge gear with gold + dust from Level 1 to Legendary.
-- **Codex / Lore Book** — world, character, Djinn, dungeon and faction lore that unlocks as you progress.
+- **Milestone events** every 10 nights, with gifts and words from Scheherazade and Sinbad.
+- **Djinn artifacts** — each conquered dungeon yields a rare equippable artifact, each with an info icon spelling out its exact effect.
+- **Rarity, categories & unique inventory** — Common→Mythic tiers (Legendary now a bold amber gold), one-of-each items (duplicates become magical dust).
+- **Equipment & upgrades** — six equip slots with clear before/after **stat-change feedback**; reforge gear with gold + dust.
+- **Codex / Lore Book** — world, character, Djinn, **artifact**, dungeon and faction lore. A Djinn's name appears when you discover its dungeon; its full story unlocks only after you conquer it.
 - **Detailed monsters** — every monster/boss room shows a full stat card (level, HP, attack, defense, magic, special, weakness, reward).
 - **Action previews** — confirm each action with a card showing energy, rewards, risks, helpful stats and estimated odds.
-- **Multiple endings & richer finale** — nine named endings (King's Champion, Merchant Prince, Master of Djinns…) chosen from your stats, Djinns, artifacts, relationships and title.
-- **Scheherazade tutorial** — story-driven guidance across the first nights.
-- **Difficulty scaling** — dungeons and foes grow tougher as the nights pass.
-- **Quest log** — main, side, dungeon, role, Djinn and treasure quests with progress tracking, NPCs, locations and rewards (alongside the palace's royal missions).
-- **Faction reputation** — eight factions whose standing affects shop prices, palace access, treasure/dungeon fortune and journeys.
-- **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions with materials + magical dust.
-- **Home upgrades** — build nine rooms (library, training, treasure, crafting…) for lasting passive bonuses.
-- **Companions** — recruit five NPC allies (healer, thief, sailor, magician, guard) whose talents boost combat, treasure, dungeon safety, shop prices and more.
-- **Rare & story events** — conditional rare events (high luck, low endurance, specific Djinn/role…) and branching story choices whose consequences persist to the ending.
-- **Recommended stats** — dungeons show recommended stats, endurance and spoils before you enter.
+- **Multiple endings** — named endings (King's Champion, Merchant Prince, Master of Djinns, Protector of Zahara, **Sovereign of the Djinns**…) chosen from your stats, Djinns, artifacts, relationships and title.
+- **Quest log** — main, side, dungeon, role, Djinn, treasure and character quests, plus quests unlocked by faction/relationship level-ups.
+- **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions (each craftable item may exist only once at a time).
+- **Home upgrades** — build ten rooms (Resting → +max energy, Work → +work gold, Library, Training, Crafting, Treasure…) for lasting passive bonuses.
+- **Companions** — recruit NPC allies whose talents boost combat, treasure, dungeon safety, shop prices and more; some major characters join once your bond runs deep.
+- **Recommended stats** — dungeons show recommended stats, endurance and spoils before you enter, and grow harder to *find* the higher their level.
 
 ---
 
@@ -74,12 +74,12 @@ Your goal: build a personal legend. Work and study, brave journeys, uncover hidd
 
 ```
 Start night → energy restored → choose an action → energy spent →
-result resolved → rewards/penalties → (maybe a random event) →
+result resolved → rewards/penalties → (maybe an event) →
 repeat while energy remains → End Night → night++ →
-… → Night 1000 → Final legend
+… → Night 100 → Journey Retrospective → Continue ↺  or  Finish → Final legend
 ```
 
-A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search for Dungeon* to chase a clue, then *End Night* — perhaps a rumor of a desert dungeon surfaces before dawn.
+A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search for Dungeon* to chase a clue, then *End Night* — perhaps a rumor of a desert dungeon, or a stranger named Ali Baba, surfaces before dawn.
 
 ---
 
@@ -95,7 +95,21 @@ A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search fo
 
 ---
 
-## 🔥 The 10 Djinns & Their Dungeons
+## 🤝 Major Characters
+
+Beyond Scheherazade and King Sinbad, three great figures of Zahara have their own relationship arcs (tiers **Friendly → Trusted → Loyal → Legendary Bond**), quests, dialogue events and endings:
+
+| Character | Role | Rewards as your bond deepens |
+|-----------|------|------------------------------|
+| **Ali Baba** | Treasure hunter & cave expert | Treasure-search fortune → hidden-cave quests → joins as a companion → *Master of the Hidden Caves* ending |
+| **Jasmine** | Noble diplomat & voice of the people | Palace honor → diplomacy quests → safer palace events → *Protector of Zahara* ending |
+| **Aladdin** | Street-smart artifact seeker | Magical-item finds → artifact quests → companion & fewer trap wounds → rare Djinn-artifact questline |
+
+---
+
+## 🔥 The Djinns & Their Dungeons
+
+Every Djinn grants a permanent stat bonus, a passive perk, and a signature ability, and hides in a unique dungeon with themed monsters and a named boss.
 
 | Djinn | Domain | Dungeon | Difficulty |
 |-------|--------|---------|:---------:|
@@ -106,11 +120,24 @@ A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search fo
 | **Dantalion** | Light | Tower of Dawn | ★★★ |
 | **Zepar** | Voice | Hall of Echoes | ★★★ |
 | **Ugo** | Home | The Deep Foundations | ★★★ |
+| **Nasnas** | Speed | The Shifting Passage | ★★★ |
+| **Khanzan** | Prayer | The Silent Shrine | ★★★ |
+| **Maymunah** | Beauty | The Palace of Glass Roses | ★★★ |
+| **Danhash** | Happiness | The Garden of Laughing Stars | ★★★ |
 | **Barbatos** | Strength | Cavern of Strength | ★★★★ |
 | **Baal** | Lightning | Storm Spire | ★★★★ |
+| **Shiqq** | Fear | The Nightmare Hollow | ★★★★ |
+| **Barqan** | Lightning | The Thunder Spire | ★★★★ |
+| **Zalmbur** | Merchants | The Vault of Endless Bargains | ★★★★ |
+| **Sut** | Lies | The Labyrinth of False Doors | ★★★★ |
+| **Dasim** | Conflict | The Hall of Broken Oaths | ★★★★ |
 | **Zagan** | Life | Garden of Renewal | ★★★★★ |
+| **Ifrit** | War | The Battlefield of Ashes | ★★★★★ |
+| **Zawba'ah** | Storms | The Cyclone Ruins | ★★★★★ |
+| **Shamhurish** | Judgment | The Court Beneath the Sand | ★★★★★ |
+| 👑 **Al-Mudhib** | King of the Djinns | The Throne of the Hidden Flame | ★★★★★★ |
 
-Each Djinn grants a permanent stat bonus, a passive perk, and a signature ability.
+**Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — several dungeons conquered, the trust of Scheherazade and Sinbad, a high night number, strong Wisdom/Magic/Honor/Reputation, and meaningful moral choices. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, and opens the rarest ending.
 
 ---
 
@@ -121,42 +148,48 @@ The project follows **MVVM** with a single game engine and `Codable` state.
 ```
 NightsOfZahara/
 ├── NightsOfZaharaApp.swift      # App entry
-├── ContentView.swift            # Root router (onboarding / playing / ended)
+├── ContentView.swift            # Root router (onboarding / playing / ended) + global sheets
 │
-├── Theme/
-│   └── Theme.swift              # Colors, gradients, fonts, card styles
+├── Theme/Theme.swift            # Colors, gradients, fonts, card styles
 │
-├── Models/                      # Pure data, all Codable
-│   ├── Stats.swift              # 9 stats + StatKind
+├── Models/                      # Pure data, mostly Codable
+│   ├── Stats.swift              # 10 stats (+Speed) + StatKind, cap 125
 │   ├── Role.swift               # 5 roles & bonuses
-│   ├── Djinn.swift              # 10 Djinns, domains, abilities
-│   ├── Dungeon.swift            # Dungeon/room types + 10-dungeon catalog
-│   ├── Item.swift               # Shop items & effects
+│   ├── Djinn.swift              # 22 Djinns: domains, bonuses, abilities
+│   ├── KingOfDjinns.swift       # Al-Mudhib: throne dungeon, crown, unlock rules
+│   ├── Dungeon.swift            # Dungeon/room types + full catalog
+│   ├── Monster.swift            # Procedural monsters per dungeon theme
+│   ├── ArtifactCatalog.swift    # One artifact per Djinn (+ the King's crown)
+│   ├── Item.swift / Rarity.swift / Crafting.swift
+│   ├── MajorCharacters.swift    # Ali Baba, Jasmine, Aladdin + bond tiers
+│   ├── Companion.swift / HomeRoom.swift / Faction.swift
+│   ├── Quest.swift / PalaceQuest.swift / Codex.swift / Title.swift
 │   ├── NightAction.swift        # Actions, energy costs, risk
-│   ├── PalaceQuest.swift        # Royal missions & objectives
+│   ├── MetaState.swift          # Expansion state container (forward-compatible)
 │   └── GameState.swift          # The full saved snapshot
 │
 ├── Engine/
-│   ├── GameViewModel.swift      # ObservableObject engine: actions, combat,
-│   │                            #   dungeons, quests, events, night flow
-│   ├── GameEvent.swift          # Random events
-│   └── SaveManager.swift        # JSON + UserDefaults persistence
+│   ├── GameViewModel.swift              # Core engine: actions, combat, dungeons, night flow
+│   ├── GameViewModel+Features.swift     # Inventory, equipment, factions, milestones, titles
+│   ├── GameViewModel+Features2.swift    # Quests, crafting, home, companions
+│   ├── GameViewModel+Characters.swift   # Ali Baba / Jasmine / Aladdin bonuses
+│   ├── GameEvent.swift / RareAndStoryEvents.swift / CharacterEvents.swift
+│   ├── AudioManager.swift / SoundManager.swift / HapticManager.swift / AppSettings.swift
+│   └── SaveManager.swift               # JSON + UserDefaults persistence
 │
-├── Components/
-│   └── CommonViews.swift        # StatRow, TopHUD, ActionCard, buttons
+├── Components/CommonViews.swift  # StatRow, TopHUD, ActionCard, InfoDot, buttons
 │
-└── Views/                       # One file per screen
-    ├── OnboardingView.swift     ├── CharacterView.swift
-    ├── CharacterCreationView.swift ├── DjinnCollectionView.swift
-    ├── MainTabView.swift        ├── InventoryView.swift
-    ├── CityView.swift           ├── DungeonListView.swift
-    ├── NightActionsView.swift   ├── DungeonRunView.swift
-    ├── ShopView.swift           ├── PalaceView.swift
-    ├── UpgradeView.swift        ├── EndGameView.swift
-    ├── FoodView.swift           └── Overlays.swift
+└── Views/                        # One file per screen
+    ├── OnboardingView · CharacterCreationView · MainTabView · CityView
+    ├── NightActionsView · ActionPreviewView · CharacterView · DjinnCollectionView
+    ├── DungeonListView · DungeonRunView · MonsterCardView · PalaceView
+    ├── ShopView · UpgradeView · FoodView · GearView · InventoryView
+    ├── CraftingView · HomeUpgradeView · CompanionView · QuestLogView
+    ├── RelationshipsView · CodexView · SettingsView · Overlays
+    ├── NightSummaryView · JourneyRetrospectiveView · EndGameView
 ```
 
-**Data flow:** views observe `GameViewModel` (an `@StateObject` created at the root and shared via `@EnvironmentObject`). All mutations go through the engine, which updates the published `GameState` and saves after every action. The Xcode project uses a *file-system–synchronized* group, so new Swift files under `NightsOfZahara/` are compiled automatically.
+**Data flow:** views observe `GameViewModel` (an `@StateObject` created at the root and shared via `@EnvironmentObject`). All mutations go through the engine, which updates the published `GameState` and saves after every action. All expansion state lives in one optional `MetaState`, so older saves keep loading as the game grows. The Xcode project uses a *file-system–synchronized* group, so new Swift files under `NightsOfZahara/` are compiled automatically.
 
 ---
 
@@ -187,19 +220,7 @@ xcodebuild \
 
 ## 💾 Save Data
 
-A run is stored as `zahara_save.json` in the app's Documents directory, mirrored to `UserDefaults`. It captures the night, character, role, stats, energy, gold, inventory, Djinns, discovered/completed dungeons, connections, active/completed quests and the story journal. Starting a new legend or abandoning one clears the slot.
-
----
-
-## 🗺️ Roadmap
-
-Foundations exist for several future chapters:
-
-- Active Djinn abilities outside dungeons (e.g. Paimon's extra journey, Zagan's second chance)
-- Deeper palace politics & branching royal storylines
-- NPC relationship system and rare artifacts
-- More endings, achievements, New Game Plus
-- Sound, music, animation and iCloud sync
+A run is stored as `zahara_save.json` in the app's Documents directory, mirrored to `UserDefaults`. It captures the night, character, role, stats, energy, gold, inventory, Djinns, discovered/completed dungeons, connections, quests, the story journal and all expansion state (relationships, factions, artifacts, companions, home, crafting materials, choices, and whether the journey has been ended). Starting a new legend or abandoning one clears the slot.
 
 ---
 
@@ -207,6 +228,7 @@ Foundations exist for several future chapters:
 
 - **Game:** Nights Of Zahara  ·  **City / hub:** Zahara
 - **Sorceress / narrator:** Scheherazade  ·  **King:** Sinbad
+- **Great figures:** Ali Baba · Jasmine · Aladdin  ·  **King of the Djinns:** Al-Mudhib
 
 ---
 

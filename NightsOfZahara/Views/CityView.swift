@@ -134,7 +134,7 @@ struct CityView: View {
                 miniStat(.magic, s.stats.magic)
             }
             HStack(spacing: 14) {
-                Label("\(s.djinns.count)/10 Djinns", systemImage: "flame")
+                Label("\(s.djinns.count)/\(Djinn.allCases.count) Djinns", systemImage: "flame")
                 Label("\(s.completedDungeons.count) Dungeons", systemImage: "building.columns")
                 Label("\(s.treasuresFound) Treasures", systemImage: "shippingbox")
             }
@@ -256,7 +256,9 @@ struct CityView: View {
             if s.journal.isEmpty {
                 Text("Your tale is yet unwritten.").font(Theme.body(13)).foregroundStyle(Theme.sand)
             } else {
-                ForEach(s.journal.prefix(6), id: \.self) { line in
+                // Index-based IDs: journal lines can repeat (e.g. studying
+                // twice), so \.self would produce colliding IDs.
+                ForEach(Array(s.journal.prefix(6).enumerated()), id: \.offset) { _, line in
                     HStack(alignment: .top, spacing: 8) {
                         Image(systemName: "book.pages")
                             .font(.system(size: 11))

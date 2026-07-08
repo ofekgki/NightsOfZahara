@@ -24,7 +24,13 @@ struct ContentView: View {
         }
         .environmentObject(game)
         .preferredColorScheme(.dark)
-        .onAppear { AudioManager.shared.startIfNeeded() }
+        .onAppear { SoundManager.shared.startBackground() }
+        // The grand retrospective at each 100-night checkpoint (Continue / Finish).
+        .fullScreenCover(isPresented: Binding(
+            get: { game.journeyCheckpointNight != nil },
+            set: { if !$0 { game.journeyCheckpointNight = nil } })) {
+            JourneyRetrospectiveView().environmentObject(game)
+        }
         // Night summary at the start of each new night (shown first).
         .sheet(item: $game.nightSummary) { summary in
             NightSummaryView(summary: summary)

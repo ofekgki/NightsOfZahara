@@ -110,6 +110,7 @@ struct Item: Codable, Identifiable, Equatable {
 enum ItemCatalog {
     static let all: [Item] = shopItems + searchItems + dungeonGear + questItems
         + ArtifactCatalog.all + CraftCatalog.materials + CraftCatalog.outputs
+        + [KingOfDjinns.artifact]
 
     // MARK: Shop-only
     static let shopItems: [Item] = [

@@ -46,6 +46,14 @@ struct CharacterView: View {
         }
     }
 
+    /// "Night 12 of 100" during the first hundred nights; "Night 137" beyond.
+    private func nightLine(_ s: GameState) -> String {
+        let night = s.night <= GameState.totalNights
+            ? "Night \(s.night) of \(GameState.totalNights)"
+            : "Night \(s.night)"
+        return "\(s.role.rawValue) • \(night) • \(s.era)"
+    }
+
     private func profile(_ s: GameState) -> some View {
         VStack(spacing: 6) {
             Image(systemName: s.role.icon)
@@ -54,7 +62,7 @@ struct CharacterView: View {
             Text(s.characterName).font(Theme.title(26)).foregroundStyle(Theme.parchment)
             Text(TitleSystem.currentTitle(for: s))
                 .font(Theme.heading(15)).foregroundStyle(Theme.brightGold)
-            Text("\(s.role.rawValue) • Night \(s.night) of \(GameState.totalNights) • \(s.era)")
+            Text(nightLine(s))
                 .font(Theme.body(12)).foregroundStyle(Theme.sand)
             if s.meta.injuries > 0 {
                 HStack(spacing: 6) {
@@ -91,7 +99,7 @@ struct CharacterView: View {
 
     private func djinnCard(_ s: GameState) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionTitle(text: "Djinns (\(s.djinns.count)/10)")
+            SectionTitle(text: "Djinns (\(s.djinns.count)/\(Djinn.allCases.count))")
             if s.djinns.isEmpty {
                 Text("You have bonded with no Djinns yet. Conquer their dungeons to earn them.")
                     .font(Theme.body(13)).foregroundStyle(Theme.sand)
@@ -134,7 +142,7 @@ struct CharacterView: View {
             SectionTitle(text: "Deeds")
             achievement("Treasures found", "\(s.treasuresFound)", "shippingbox")
             achievement("Dungeons conquered", "\(s.completedDungeons.count)", "building.columns")
-            achievement("Artifacts held", "\(s.meta.artifacts.count)/10", "wand.and.stars")
+            achievement("Artifacts held", "\(s.meta.artifacts.count)/\(Djinn.allCases.count)", "wand.and.stars")
             achievement("Highest stat", s.stats.highest.title, s.stats.highest.icon)
             achievement("Gold amassed", "\(s.gold)", "creditcard")
             achievement("Magical dust", "\(s.meta.magicalDust)", "sparkles")

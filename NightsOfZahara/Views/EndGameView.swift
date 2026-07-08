@@ -2,8 +2,8 @@
 //  EndGameView.swift
 //  Nights Of Zahara
 //
-//  Shown after Night 1000: a final title, legend and summary of the life
-//  the player built across a thousand nights.
+//  Shown when the player ends their journey: a final title, legend and summary
+//  of the life they built, told in the spirit of the thousand nights.
 //
 
 import SwiftUI
@@ -20,7 +20,7 @@ struct EndGameView: View {
                         Image(systemName: "moon.stars.fill")
                             .font(.system(size: 56)).foregroundStyle(Theme.goldSheen)
 
-                        Text("The 1000th Night")
+                        Text("The Final Night")
                             .font(Theme.body(15)).foregroundStyle(Theme.sand)
                         Text(finalTitle(s))
                             .font(Theme.title(30)).foregroundStyle(Theme.brightGold)
@@ -57,12 +57,17 @@ struct EndGameView: View {
             row("Strongest Djinn", strongestDjinn(s))
             row("Key Artifact", keyArtifact(s))
             row("Final Gold", "\(s.gold)")
-            row("Djinns Bonded", "\(s.djinns.count) / 10")
+            row("Djinns Bonded", "\(s.djinns.count) / \(Djinn.allCases.count)")
+            if KingOfDjinns.isBonded(s) { row("King of the Djinns", "Crowned by Al-Mudhib") }
             row("Dungeons Conquered", "\(s.completedDungeons.count)")
             row("Treasures Found", "\(s.treasuresFound)")
             row("Greatest Strength", s.stats.highest.title)
             row("Scheherazade", Faction.standing(s.meta.relationship("scheherazade")))
             row("King Sinbad", Faction.standing(s.meta.relationship("sinbad")))
+            // Major characters who became part of the story.
+            ForEach(MajorCharacter.allCases.filter { s.meta.relationship($0.relationshipKey) > 0 }) { c in
+                row(c.name, CharacterTier.from(s.meta.relationship(c.relationshipKey)).title)
+            }
             row("Allies", "\(s.connections.count)")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -105,6 +110,8 @@ struct EndGameView: View {
     /// One of several named endings, chosen by the shape of the player's life.
     private func finalTitle(_ s: GameState) -> String {
         let sc = score(s)
+        // The rarest ending of all: crowned by the King of the Djinns.
+        if KingOfDjinns.isBonded(s) { return "Sovereign of the Djinns" }
         // Distinctive endings first.
         if s.djinns.count >= 8 { return "Master of Djinns" }
         if s.meta.relationship("sinbad") >= 25 && s.completedQuestIDs.count >= 4 { return "King's Champion" }
@@ -113,6 +120,10 @@ struct EndGameView: View {
         if s.stats.reputation >= 60 && s.djinns.contains(.zepar) { return "Eternal Storyteller" }
         if s.palaceUnlocked && s.stats.honor >= 50 { return "Palace Hero" }
         if s.treasuresFound >= 15 && s.stats.honor < 20 { return "Cursed Treasure Seeker" }
+        // Legendary bonds with the major characters open their own ending paths.
+        if s.meta.relationship("aladdin") >= 80 { return "Keeper of the Lamp" }
+        if s.meta.relationship("jasmine") >= 80 { return "Protector of Zahara" }
+        if s.meta.relationship("alibaba") >= 80 { return "Master of the Hidden Caves" }
         // Otherwise fall back to a tier by overall score.
         switch sc {
         case ..<100:  return "Forgotten Wanderer"
@@ -146,7 +157,20 @@ struct EndGameView: View {
         if !s.meta.artifacts.isEmpty {
             parts.append("The artifacts they gathered still hum with power in the vaults of Zahara.")
         }
-        parts.append("And so the thousandth night closed, and a legend was written.")
+        if KingOfDjinns.isBonded(s) {
+            parts.append("And in the end they climbed the Throne of the Hidden Flame and were crowned by Al-Mudhib himself — sovereign of all Djinns, a name spoken in awe for a thousand years after.")
+        }
+        // The major characters, if their bonds grew strong.
+        if s.meta.relationship("alibaba") >= 50 {
+            parts.append("Ali Baba named them a partner, and together they emptied caves no other soul could find.")
+        }
+        if s.meta.relationship("jasmine") >= 50 {
+            parts.append("Beside Jasmine they became a voice for Zahara's people, ending wars with words instead of blades.")
+        }
+        if s.meta.relationship("aladdin") >= 50 {
+            parts.append("Aladdin walked the dungeons at their side, and the two chased the last of the Djinn's lamps into legend.")
+        }
+        parts.append("And so their nights drew to a close, and a legend was written that would be retold for a thousand more.")
         return parts.joined(separator: " ")
     }
 }

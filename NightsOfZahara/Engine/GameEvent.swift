@@ -35,7 +35,7 @@ enum RandomEvents {
         if state.stats.honor >= 15 || state.palaceUnlocked {
             events.append(palaceInvitation)
         }
-        if state.night > 100 {
+        if state.night > 10 {
             events.append(whisperingLamp)
         }
         return events

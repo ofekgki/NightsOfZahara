@@ -15,6 +15,20 @@ enum DungeonType: String, Codable {
     case wizardTower     = "Wizard Tower"
     case catacombs       = "Catacombs"
     case abandonedPalace = "Abandoned Palace"
+    // Themed homes for the additional Djinns.
+    case nightmareHollow  = "Nightmare Hollow"
+    case shiftingPassage  = "Shifting Passage"
+    case battlefieldAshes = "Ashen Battlefield"
+    case silentShrine     = "Silent Shrine"
+    case thunderSpire     = "Thunder Spire"
+    case glassRoses       = "Glass-Rose Palace"
+    case laughingStars    = "Star Garden"
+    case endlessVault     = "Merchant Vault"
+    case falseDoors       = "False Labyrinth"
+    case brokenOaths      = "Hall of Oaths"
+    case cycloneRuins     = "Cyclone Ruins"
+    case sandCourt        = "Sunken Court"
+    case hiddenFlame      = "Throne of Flame"
 
     var icon: String {
         switch self {
@@ -24,6 +38,19 @@ enum DungeonType: String, Codable {
         case .wizardTower:     return "building"
         case .catacombs:       return "skull"
         case .abandonedPalace: return "crown"
+        case .nightmareHollow:  return "theatermasks.fill"
+        case .shiftingPassage:  return "arrow.triangle.branch"
+        case .battlefieldAshes: return "flame.circle.fill"
+        case .silentShrine:     return "hand.raised.fill"
+        case .thunderSpire:     return "bolt.circle.fill"
+        case .glassRoses:       return "sparkles"
+        case .laughingStars:    return "sparkle"
+        case .endlessVault:     return "banknote.fill"
+        case .falseDoors:       return "door.left.hand.closed"
+        case .brokenOaths:      return "scroll.fill"
+        case .cycloneRuins:     return "tornado"
+        case .sandCourt:        return "scalemass.fill"
+        case .hiddenFlame:      return "flame.fill"
         }
     }
 }
@@ -118,12 +145,18 @@ struct Dungeon: Codable, Identifiable, Equatable {
 
 enum DungeonCatalog {
 
-    /// All dungeons that exist in the game world — one per Djinn.
+    /// All discoverable dungeons — one per collectible Djinn. (Al-Mudhib's
+    /// Throne of the Hidden Flame is a separate, gated endgame dungeon and is
+    /// intentionally not listed here — see KingOfDjinns.swift.)
     static let all: [Dungeon] = [
         healingTemple, sunkenGalleon, caveOfWhispers,     // difficulty 2
         templeOfFire, towerOfDawn, hallOfEchoes, deepFoundations, // difficulty 3
         cavernOfStrength, stormSpire,                     // difficulty 4
-        gardenOfRenewal                                   // difficulty 5
+        gardenOfRenewal,                                  // difficulty 5
+        // Additional Djinn dungeons.
+        shiftingPassage, silentShrine, palaceGlassRoses, gardenLaughingStars, // difficulty 3
+        nightmareHollow, thunderSpire, vaultBargains, labyrinthFalseDoors, hallBrokenOaths, // difficulty 4
+        battlefieldAshes, cycloneRuins, courtBeneathSand  // difficulty 5
     ]
 
     static func dungeon(id: String) -> Dungeon? {
@@ -311,4 +344,161 @@ enum DungeonCatalog {
         ],
         goldReward: 600
     )
+
+    // MARK: - Additional Djinn dungeons
+
+    /// Nasnas — The Shifting Passage (difficulty 3).
+    static let shiftingPassage = Dungeon(
+        id: "shifting_passage", name: "The Shifting Passage", type: .shiftingPassage,
+        djinnReward: .nasnas, difficulty: 3,
+        rooms: [
+            DungeonRoom(name: "Moving Walls",      kind: .trap,        difficulty: 15),
+            DungeonRoom(name: "Speed Trial",       kind: .puzzle,      difficulty: 16),
+            DungeonRoom(name: "Swift Stalkers",    kind: .monster,     difficulty: 16),
+            DungeonRoom(name: "Blade Corridor",    kind: .trap,        difficulty: 17),
+            DungeonRoom(name: "The Blur",          kind: .boss,        difficulty: 20),
+            DungeonRoom(name: "Chamber of Haste",  kind: .djinnChamber, difficulty: 14)
+        ], goldReward: 330)
+
+    /// Khanzan — The Silent Shrine (difficulty 3).
+    static let silentShrine = Dungeon(
+        id: "silent_shrine", name: "The Silent Shrine", type: .silentShrine,
+        djinnReward: .khanzan, difficulty: 3,
+        rooms: [
+            DungeonRoom(name: "Cursed Prayers",    kind: .trap,        difficulty: 15),
+            DungeonRoom(name: "Spirit Guardians",  kind: .monster,     difficulty: 16),
+            DungeonRoom(name: "Room of Judgment",  kind: .puzzle,      difficulty: 17),
+            DungeonRoom(name: "The Corrupted Priest", kind: .boss,     difficulty: 20),
+            DungeonRoom(name: "Chamber of Faith",  kind: .djinnChamber, difficulty: 14)
+        ], goldReward: 320)
+
+    /// Maymunah — The Palace of Glass Roses (difficulty 3).
+    static let palaceGlassRoses = Dungeon(
+        id: "palace_glass_roses", name: "The Palace of Glass Roses", type: .glassRoses,
+        djinnReward: .maymunah, difficulty: 3,
+        rooms: [
+            DungeonRoom(name: "Enchanted Statues", kind: .monster,     difficulty: 15),
+            DungeonRoom(name: "Charm Illusions",   kind: .puzzle,      difficulty: 17),
+            DungeonRoom(name: "Mirror Garden",     kind: .trap,        difficulty: 16),
+            DungeonRoom(name: "Jealous Spirits",   kind: .monster,     difficulty: 17),
+            DungeonRoom(name: "The Graceful Guardian", kind: .boss,    difficulty: 20),
+            DungeonRoom(name: "Chamber of Roses",  kind: .djinnChamber, difficulty: 14)
+        ], goldReward: 340)
+
+    /// Danhash — The Garden of Laughing Stars (difficulty 3).
+    static let gardenLaughingStars = Dungeon(
+        id: "garden_laughing_stars", name: "The Garden of Laughing Stars", type: .laughingStars,
+        djinnReward: .danhash, difficulty: 3,
+        rooms: [
+            DungeonRoom(name: "Glowing Flowers",   kind: .trap,        difficulty: 14),
+            DungeonRoom(name: "Joy Spirits",       kind: .monster,     difficulty: 16),
+            DungeonRoom(name: "Emotional Trial",   kind: .puzzle,      difficulty: 17),
+            DungeonRoom(name: "Dreamlike Riddle",  kind: .puzzle,      difficulty: 16),
+            DungeonRoom(name: "The Sorrowful Guardian", kind: .boss,   difficulty: 20),
+            DungeonRoom(name: "Chamber of Joy",    kind: .djinnChamber, difficulty: 14)
+        ], goldReward: 330)
+
+    /// Shiqq — The Nightmare Hollow (difficulty 4).
+    static let nightmareHollow = Dungeon(
+        id: "nightmare_hollow", name: "The Nightmare Hollow", type: .nightmareHollow,
+        djinnReward: .shiqq, difficulty: 4,
+        rooms: [
+            DungeonRoom(name: "Whispering Walls",  kind: .trap,        difficulty: 17),
+            DungeonRoom(name: "Shadow Beasts",     kind: .monster,     difficulty: 18),
+            DungeonRoom(name: "Cursed Mirrors",    kind: .puzzle,      difficulty: 18),
+            DungeonRoom(name: "Fear Traps",        kind: .trap,        difficulty: 19),
+            DungeonRoom(name: "The Nightmare Guardian", kind: .boss,   difficulty: 23),
+            DungeonRoom(name: "Chamber of Dread",  kind: .djinnChamber, difficulty: 16)
+        ], goldReward: 460)
+
+    /// Barqan — The Thunder Spire (difficulty 4).
+    static let thunderSpire = Dungeon(
+        id: "thunder_spire_barqan", name: "The Thunder Spire", type: .thunderSpire,
+        djinnReward: .barqan, difficulty: 4,
+        rooms: [
+            DungeonRoom(name: "Lightning Crystals", kind: .trap,       difficulty: 17),
+            DungeonRoom(name: "Storm Spirits",     kind: .monster,     difficulty: 18),
+            DungeonRoom(name: "Floating Platforms", kind: .puzzle,     difficulty: 18),
+            DungeonRoom(name: "Electric Vault",    kind: .treasure,    difficulty: 15),
+            DungeonRoom(name: "The Thunder Beast", kind: .boss,        difficulty: 23),
+            DungeonRoom(name: "Chamber of Bolts",  kind: .djinnChamber, difficulty: 16)
+        ], goldReward: 470)
+
+    /// Zalmbur — The Vault of Endless Bargains (difficulty 4).
+    static let vaultBargains = Dungeon(
+        id: "vault_bargains", name: "The Vault of Endless Bargains", type: .endlessVault,
+        djinnReward: .zalmbur, difficulty: 4,
+        rooms: [
+            DungeonRoom(name: "Cursed Coins",      kind: .trap,        difficulty: 17),
+            DungeonRoom(name: "Greedy Spirits",    kind: .monster,     difficulty: 18),
+            DungeonRoom(name: "Negotiation Trial", kind: .puzzle,      difficulty: 18),
+            DungeonRoom(name: "Treasure Hoard",    kind: .treasure,    difficulty: 15),
+            DungeonRoom(name: "The Coin Golem",    kind: .boss,        difficulty: 22),
+            DungeonRoom(name: "Chamber of Gold",   kind: .djinnChamber, difficulty: 16)
+        ], goldReward: 500)
+
+    /// Sut — The Labyrinth of False Doors (difficulty 4).
+    static let labyrinthFalseDoors = Dungeon(
+        id: "labyrinth_false_doors", name: "The Labyrinth of False Doors", type: .falseDoors,
+        djinnReward: .sut, difficulty: 4,
+        rooms: [
+            DungeonRoom(name: "Fake Exits",        kind: .trap,        difficulty: 18),
+            DungeonRoom(name: "Illusion Monsters", kind: .monster,     difficulty: 18),
+            DungeonRoom(name: "Lying Statues",     kind: .puzzle,      difficulty: 19),
+            DungeonRoom(name: "False Treasure Room", kind: .treasure,  difficulty: 16),
+            DungeonRoom(name: "The Shapeshifter",  kind: .boss,        difficulty: 23),
+            DungeonRoom(name: "Chamber of Masks",  kind: .djinnChamber, difficulty: 16)
+        ], goldReward: 460)
+
+    /// Dasim — The Hall of Broken Oaths (difficulty 4).
+    static let hallBrokenOaths = Dungeon(
+        id: "hall_broken_oaths", name: "The Hall of Broken Oaths", type: .brokenOaths,
+        djinnReward: .dasim, difficulty: 4,
+        rooms: [
+            DungeonRoom(name: "Arguing Spirits",   kind: .monster,     difficulty: 18),
+            DungeonRoom(name: "Betrayal Traps",    kind: .trap,        difficulty: 18),
+            DungeonRoom(name: "Cursed Contracts",  kind: .puzzle,      difficulty: 19),
+            DungeonRoom(name: "Rival Guardians",   kind: .monster,     difficulty: 19),
+            DungeonRoom(name: "The Duelist",       kind: .boss,        difficulty: 23),
+            DungeonRoom(name: "Chamber of Oaths",  kind: .djinnChamber, difficulty: 16)
+        ], goldReward: 470)
+
+    /// Ifrit — The Battlefield of Ashes (difficulty 5).
+    static let battlefieldAshes = Dungeon(
+        id: "battlefield_ashes", name: "The Battlefield of Ashes", type: .battlefieldAshes,
+        djinnReward: .ifrit, difficulty: 5,
+        rooms: [
+            DungeonRoom(name: "Broken Weapons",    kind: .trap,        difficulty: 19),
+            DungeonRoom(name: "Cursed Soldiers",   kind: .monster,     difficulty: 21),
+            DungeonRoom(name: "Fire Traps",        kind: .trap,        difficulty: 20),
+            DungeonRoom(name: "Siege Beasts",      kind: .monster,     difficulty: 22),
+            DungeonRoom(name: "The Warlord",       kind: .boss,        difficulty: 26),
+            DungeonRoom(name: "Chamber of War",    kind: .djinnChamber, difficulty: 18)
+        ], goldReward: 600)
+
+    /// Zawba'ah — The Cyclone Ruins (difficulty 5).
+    static let cycloneRuins = Dungeon(
+        id: "cyclone_ruins", name: "The Cyclone Ruins", type: .cycloneRuins,
+        djinnReward: .zawbaah, difficulty: 5,
+        rooms: [
+            DungeonRoom(name: "Wind Tunnels",      kind: .trap,        difficulty: 19),
+            DungeonRoom(name: "Sand Beasts",       kind: .monster,     difficulty: 21),
+            DungeonRoom(name: "Storm Puzzle",      kind: .puzzle,      difficulty: 21),
+            DungeonRoom(name: "Flying Horrors",    kind: .monster,     difficulty: 22),
+            DungeonRoom(name: "The Cyclone Guardian", kind: .boss,     difficulty: 26),
+            DungeonRoom(name: "Chamber of Winds",  kind: .djinnChamber, difficulty: 18)
+        ], goldReward: 600)
+
+    /// Shamhurish — The Court Beneath the Sand (difficulty 5).
+    static let courtBeneathSand = Dungeon(
+        id: "court_beneath_sand", name: "The Court Beneath the Sand", type: .sandCourt,
+        djinnReward: .shamhurish, difficulty: 5,
+        rooms: [
+            DungeonRoom(name: "Judgment Statues",  kind: .monster,     difficulty: 20),
+            DungeonRoom(name: "Truth Trial",       kind: .puzzle,      difficulty: 21),
+            DungeonRoom(name: "Law Spirits",       kind: .monster,     difficulty: 22),
+            DungeonRoom(name: "Moral Puzzle",      kind: .puzzle,      difficulty: 21),
+            DungeonRoom(name: "The Final Judge",   kind: .boss,        difficulty: 26),
+            DungeonRoom(name: "Chamber of Law",    kind: .djinnChamber, difficulty: 18)
+        ], goldReward: 620)
 }

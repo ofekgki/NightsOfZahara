@@ -60,10 +60,15 @@ struct CodexView: View {
         let icon = unlocked ? "book.closed.fill" : (revealed ? "book.closed" : "lock.fill")
         let iconColor = unlocked ? Theme.brightGold : (revealed ? Theme.gold : Theme.sand.opacity(0.5))
         let titleText = (unlocked || revealed) ? entry.title : "Undiscovered"
+        // Djinn lore is unlocked by conquering; character lore by deepening a
+        // bond — so the "known name" hint is worded to fit either.
+        let sealedHint = entry.category == .characters
+            ? "Their name is known to you, but their full story stays sealed until your bond grows deeper."
+            : "Its name is known to you, but its full story stays sealed until you conquer its dungeon."
         let bodyText: String = unlocked
             ? entry.body
             : (revealed
-               ? "Its name is known to you, but its full story stays sealed until you conquer its dungeon."
+               ? sealedHint
                : "This lore is yet to be uncovered. Explore Zahara and grow your legend to reveal it.")
         return VStack(alignment: .leading, spacing: 6) {
             HStack {

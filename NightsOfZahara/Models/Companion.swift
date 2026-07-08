@@ -73,7 +73,22 @@ enum CompanionCatalog {
                   bonusKind: .faction, bonusAmount: 3, recruitCost: 300,
                   unlockHint: "Gain the palace's trust (unlock the palace).",
                   questText: "Layla suspects a traitor within the palace walls.",
-                  unlock: { $0.palaceUnlocked })
+                  unlock: { $0.palaceUnlocked }),
+
+        // Major characters who join once your bond reaches Loyal (50+).
+        Companion(id: "alibaba", name: "Ali Baba", role: "Cave Expert",
+                  personality: "Shrewd, lucky, always one step from fortune.",
+                  bonusKind: .treasure, bonusAmount: 6, recruitCost: 250,
+                  unlockHint: "Earn Ali Baba's loyalty (bond 50+).",
+                  questText: "Ali Baba wants a partner for one last, greatest haul.",
+                  unlock: { ($0._meta?.relationship("alibaba") ?? 0) >= 50 }),
+
+        Companion(id: "aladdin", name: "Aladdin", role: "Adventurer",
+                  personality: "Reckless, charming, quick with a lamp.",
+                  bonusKind: .dungeonSafety, bonusAmount: 6, recruitCost: 250,
+                  unlockHint: "Earn Aladdin's loyalty (bond 50+).",
+                  questText: "Aladdin dreams of reaching the fabled Cave of Wonders.",
+                  unlock: { ($0._meta?.relationship("aladdin") ?? 0) >= 50 })
     ]
 
     static func companion(id: String) -> Companion? { all.first { $0.id == id } }

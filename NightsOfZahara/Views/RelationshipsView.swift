@@ -15,6 +15,7 @@ struct RelationshipsView: View {
             VStack(spacing: 16) {
                 if let s = game.state {
                     keyFigures(s)
+                    majorCharacters(s)
                     factions(s)
                 }
             }
@@ -52,6 +53,61 @@ struct RelationshipsView: View {
                 Text("\(value)").font(Theme.body(11).monospacedDigit()).foregroundStyle(Theme.sand)
             }
         }
+    }
+
+    private func majorCharacters(_ s: GameState) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionTitle(text: "Companions of Zahara")
+            ForEach(MajorCharacter.allCases) { c in
+                characterCard(c, value: s.meta.relationship(c.relationshipKey))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .zaharaCard()
+    }
+
+    private func characterCard(_ c: MajorCharacter, value: Int) -> some View {
+        let tier = CharacterTier.from(value)
+        let met = value > 0
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 12) {
+                Image(systemName: c.icon).font(.system(size: 24))
+                    .foregroundStyle(met ? c.color : Theme.sand.opacity(0.4)).frame(width: 32)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(met ? c.name : "A Stranger Yet to Meet")
+                        .font(Theme.heading(16)).foregroundStyle(Theme.parchment)
+                    Text(met ? c.role : "Explore Zahara to cross their path")
+                        .font(Theme.body(11)).foregroundStyle(Theme.sand)
+                }
+                Spacer()
+                if met {
+                    Text(tier.title)
+                        .font(Theme.body(12).weight(.bold)).foregroundStyle(tier.color)
+                }
+            }
+            if met {
+                // Progress toward the next bond tier.
+                if let next = tier.nextThreshold {
+                    ProgressView(value: Double(min(value, next)), total: Double(next))
+                        .tint(tier.color)
+                }
+                let benefits = c.benefits(upTo: tier)
+                if benefits.isEmpty {
+                    Text("Reach Friendly to unlock benefits.")
+                        .font(Theme.body(10).italic()).foregroundStyle(Theme.sand.opacity(0.6))
+                } else {
+                    ForEach(benefits, id: \.self) { benefit in
+                        Label(benefit, systemImage: "checkmark.seal.fill")
+                            .font(Theme.body(11)).foregroundStyle(Theme.success)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color.black.opacity(0.18))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .opacity(met ? 1 : 0.7)
     }
 
     private func factions(_ s: GameState) -> some View {

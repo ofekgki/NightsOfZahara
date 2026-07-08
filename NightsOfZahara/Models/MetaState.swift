@@ -87,6 +87,10 @@ struct MetaState: Codable {
     // Last night's summary (for the popup after loading, too)
     var lastSummary: NightSummary? = nil
 
+    /// True once the player has chosen to end their journey at a 100-night
+    /// checkpoint. The game no longer ends automatically at night 100.
+    var journeyFinished: Bool = false
+
     // MARK: helpers
     func relationship(_ key: String) -> Int { relationships[key] ?? 0 }
     func faction(_ key: String) -> Int { factions[key] ?? 0 }
@@ -118,6 +122,7 @@ struct MetaState: Codable {
         homeRooms           = d(.homeRooms, [:])
         companions          = d(.companions, [])
         lastSummary         = (try? c.decodeIfPresent(NightSummary.self, forKey: .lastSummary)) ?? nil
+        journeyFinished     = d(.journeyFinished, false)
     }
 }
 

@@ -42,7 +42,21 @@ enum MonsterFactory {
         .shipwreck:       ["Barnacle Beast", "Drowned Sailor", "Coral Horror", "The Drowned Captain"],
         .wizardTower:     ["Glass Sentinel", "Mirror Shade", "Arcane Construct", "The Blinding Seer"],
         .catacombs:       ["Bone Stalker", "Crypt Guardian", "Stone Colossus", "The Old Warden"],
-        .abandonedPalace: ["Silent Courtier", "Hollow Noble", "Echo Phantom", "The Hollow King"]
+        .abandonedPalace: ["Silent Courtier", "Hollow Noble", "Echo Phantom", "The Hollow King"],
+        // Additional Djinn dungeons (last entry is the final boss).
+        .nightmareHollow:  ["Shadow Beast", "Dream Stalker", "Fear Wraith", "The Nightmare Guardian"],
+        .shiftingPassage:  ["Swift Stalker", "Blade Dancer", "Maze Runner", "The Blur"],
+        .battlefieldAshes: ["Cursed Soldier", "Ashen Knight", "Siege Beast", "The Warlord"],
+        .silentShrine:     ["Spirit Guardian", "Prayer Wraith", "Judgment Shade", "The Corrupted Priest"],
+        .thunderSpire:     ["Storm Spirit", "Spark Elemental", "Charged Sentry", "The Thunder Beast"],
+        .glassRoses:       ["Enchanted Statue", "Charm Illusion", "Jealous Spirit", "The Graceful Guardian"],
+        .laughingStars:    ["Joy Spirit", "Star Wisp", "Dream Sprite", "The Sorrowful Guardian"],
+        .endlessVault:     ["Greedy Spirit", "Coin Wraith", "Gilded Sentinel", "The Coin Golem"],
+        .falseDoors:       ["Illusion Monster", "Lying Statue", "Mirror Fiend", "The Shapeshifter"],
+        .brokenOaths:      ["Arguing Spirit", "Rival Guardian", "Oathbreaker", "The Duelist"],
+        .cycloneRuins:     ["Sand Beast", "Wind Horror", "Flying Terror", "The Cyclone Guardian"],
+        .sandCourt:        ["Judgment Statue", "Law Spirit", "Truth Warden", "The Final Judge"],
+        .hiddenFlame:      ["Royal Djinn Guardian", "Echo of a Conquered Djinn", "Ancient Seal Warden", "Al-Mudhib, King of the Djinns"]
     ]
 
     private static let specials = [
@@ -54,7 +68,7 @@ enum MonsterFactory {
     static func make(for room: DungeonRoom, in dungeon: Dungeon, night: Int) -> Monster {
         let isBoss = room.kind == .boss
         // Difficulty scales with the dungeon and, gently, with the night number.
-        let nightScale = 1.0 + Double(night) / 1400.0
+        let nightScale = 1.0 + Double(night) / 140.0
         let base = Double(room.difficulty) * nightScale
         let lvl = max(1, Int(base) + dungeon.difficulty * 2 + (isBoss ? 6 : 0))
 

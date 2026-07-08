@@ -48,6 +48,7 @@ extension GameViewModel {
         var discount = s.meta.blessing?.shopDiscount ?? 0
         discount += s.meta.faction(Faction.merchants.rawValue) / 10   // merchant favor
         discount += companionBonus(.shopDiscount)
+        if s.djinns.contains(.zalmbur) { discount += 10 }             // Djinn of Merchants
         let factor = max(0.4, 1.0 - Double(discount) / 100.0)
         return max(1, Int(Double(item.price) * factor))
     }
@@ -192,7 +193,13 @@ extension GameViewModel {
         let before = s.meta.relationships[key, default: 0]
         let after = before + amount
         s.meta.relationships[key] = after
-        if amount > 0, Faction.standing(after) != Faction.standing(before) {
+        guard amount > 0 else { return }
+        // Major characters use their own bond tiers (Friendly/Trusted/Loyal…).
+        if let character = MajorCharacter(rawValue: key) {
+            if CharacterTier.from(after) != CharacterTier.from(before) {
+                noteInJournal(&s, "Your bond with \(character.name) deepens to \(CharacterTier.from(after).title). A new path may open.")
+            }
+        } else if Faction.standing(after) != Faction.standing(before) {
             let who = key == "scheherazade" ? "Scheherazade"
                     : key == "sinbad" ? "King Sinbad" : key.capitalized
             noteInJournal(&s, "Your bond with \(who) rises to \(Faction.standing(after)). A new quest may await.")
@@ -209,7 +216,7 @@ extension GameViewModel {
 
     /// Insert a journal line directly into the passed-in state copy (so it
     /// survives the caller's `state = s` write-back).
-    private func noteInJournal(_ s: inout GameState, _ line: String) {
+    func noteInJournal(_ s: inout GameState, _ line: String) {
         s.journal.insert("Night \(s.night): \(line)", at: 0)
         if s.journal.count > 40 { s.journal.removeLast(s.journal.count - 40) }
     }
@@ -235,28 +242,28 @@ extension GameViewModel {
     var relationshipScheherazade: Int { state?.meta.relationship("scheherazade") ?? 0 }
     var relationshipSinbad: Int { state?.meta.relationship("sinbad") ?? 0 }
 
-    // MARK: - Milestones (every 100 nights)
+    // MARK: - Milestones (every 10 nights)
 
-    /// Applies a 100-night milestone's rewards to `s` and returns a summary
+    /// Applies a 10-night milestone's rewards to `s` and returns a summary
     /// line + delta list, or nil if this milestone was already granted.
     func applyMilestone(_ s: inout GameState) -> (String, [String])? {
-        let milestone = (s.night / 100) * 100
-        guard milestone >= 100, milestone <= 1000,
+        let milestone = (s.night / 10) * 10
+        guard milestone >= 10, milestone <= GameState.totalNights,
               !s.meta.completedMilestones.contains(milestone) else { return nil }
         s.meta.completedMilestones.append(milestone)
 
-        let reward = milestone
+        let reward = milestone * 10          // 100 … 1000 gold
         s.gold += reward
-        s.meta.magicalDust += milestone / 100
+        s.meta.magicalDust += milestone / 10 // 1 … 10 dust
         s.pendingDungeonClues += 1
 
         let messages: [Int: String] = [
-            100: "Scheherazade finds you in the market: \"One hundred nights survived. The city knows your name.\"",
-            500: "King Sinbad holds a grand ceremony in your honor — half your thousand nights are spent.",
-            1000: "The final night dawns. Scheherazade smiles: \"Your legend is nearly written...\""
+            10:  "Scheherazade finds you in the market: \"Ten nights survived. The city begins to know your name.\"",
+            50:  "King Sinbad holds a grand ceremony in your honor — your journey is well and truly underway.",
+            100: "A hundred nights behind you, Scheherazade smiles: \"Your legend grows — yet the tale need not end here.\""
         ]
         let msg = messages[milestone] ?? "Milestone Night \(milestone): Scheherazade marks the occasion with a gift."
-        return (msg, ["+\(reward) Gold", "+\(milestone/100) Dust", "+1 Clue"])
+        return (msg, ["+\(reward) Gold", "+\(milestone/10) Dust", "+1 Clue"])
     }
 
     // MARK: - Title

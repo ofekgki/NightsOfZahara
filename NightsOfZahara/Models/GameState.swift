@@ -45,29 +45,34 @@ struct GameState: Codable {
     /// Optional so pre-expansion saves still decode; back-filled on load.
     var _meta: MetaState? = nil
 
-    static let totalNights = 1000
+    static let totalNights = 100
 
     // MARK: - Derived
 
-    var isFinished: Bool { night > GameState.totalNights }
+    /// The journey ends only when the player chooses to end it at a
+    /// 100-night checkpoint — never automatically by night count.
+    var isFinished: Bool { _meta?.journeyFinished ?? false }
 
-    /// Max energy scales as the legend grows (spec: 6 → 8 → 10+).
+    /// The 100-night checkpoints where the grand retrospective is offered.
+    var isCheckpointNight: Bool { night % GameState.totalNights == 0 }
+
+    /// Max energy scales as the legend grows (6 → 8 → 9 → 10) across 100 nights.
     var energyForCurrentEra: Int {
         switch night {
-        case ...200:  return 6
-        case ...500:  return 8
-        case ...800:  return 9
-        default:      return 10
+        case ...20:  return 6
+        case ...50:  return 8
+        case ...80:  return 9
+        default:     return 10
         }
     }
 
     var era: String {
         switch night {
-        case ...50:   return "Introduction"
-        case ...200:  return "Development"
-        case ...500:  return "Adventure"
-        case ...800:  return "Power"
-        default:      return "Legend"
+        case ...5:   return "Introduction"
+        case ...20:  return "Development"
+        case ...50:  return "Adventure"
+        case ...80:  return "Power"
+        default:     return "Legend"
         }
     }
 

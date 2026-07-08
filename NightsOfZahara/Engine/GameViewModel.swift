@@ -76,6 +76,9 @@ final class GameViewModel: ObservableObject {
     @Published var pendingEvent: GameEvent?
     @Published var activeRun: DungeonRun?
     @Published var nightSummary: NightSummary?
+    /// When set (to 100, 200, …), the grand journey retrospective is shown with
+    /// "Continue" / "Finish the Journey" options instead of a nightly summary.
+    @Published var journeyCheckpointNight: Int?
     /// An event queued to appear after the night-summary sheet is dismissed.
     var bufferedEvent: GameEvent?
 
@@ -246,6 +249,7 @@ final class GameViewModel: ObservableObject {
         case .shop, .upgrade, .eat: break
         }
         creditFactions(for: action)
+        creditCharacters(for: action)
         return true
     }
 
@@ -263,9 +267,11 @@ final class GameViewModel: ObservableObject {
         }
         gold += s.stats.wealth
         gold += homeBonus(.workIncome) * 20     // Work Room income bonus
+        if has(.zalmbur) { gold += 40 }         // Djinn of Merchants
         s.gold += gold
         s.stats.reputation += rep
         state = s
+        SoundManager.shared.play(.coins)
         present(ActionOutcome(title: "A Night's Work",
                               message: "You earn your keep in Zahara's bustle.",
                               deltas: ["+\(gold) Gold", "+\(rep) Reputation"],
@@ -301,7 +307,9 @@ final class GameViewModel: ObservableObject {
 
     private func doJourney() {
         guard var s = state else { return }
-        let luckMod = (s.role == .sailor ? 6 : 0) + factionBonus(.sailors) * 2
+        // Zawba'ah (Storms) and Paimon (Wind) master the desert roads.
+        let djinnTravel = (has(.zawbaah) ? 8 : 0) + (has(.paimon) ? 6 : 0)
+        let luckMod = (s.role == .sailor ? 6 : 0) + factionBonus(.sailors) * 2 + djinnTravel
         // Speed helps you cover more ground and slip past trouble on the road.
         let roll = Int.random(in: 0...100) + (s.stats.luck + luckMod) / 3 + s.stats.speed / 4
         if roll > 78 {
@@ -344,7 +352,7 @@ final class GameViewModel: ObservableObject {
         let roleBonus = (s.role == .wizardApprentice ? 8 : 0)
         let cluesInHand = s.pendingDungeonClues + (s.meta.blessing?.dungeonClueBonus ?? 0)
         let clueBonus = cluesInHand * 6
-        let helpBonus = homeBonus(.dungeonSearch) * 3 + factionBonus(.magicians) + factionBonus(.djinnSpirits)
+        let helpBonus = homeBonus(.dungeonSearch) * 3 + factionBonus(.magicians) + factionBonus(.djinnSpirits) + aliBabaCaveBonus
         let score = s.stats.luck + s.stats.wisdom + s.stats.magic + roleBonus + clueBonus + helpBonus + Int.random(in: 0...20)
 
         // Consume one clue per search if any.
@@ -381,8 +389,10 @@ final class GameViewModel: ObservableObject {
 
     private func doPalace() {
         guard var s = state else { return }
-        // Guard & noble favor lowers the honor needed to enter.
-        let requiredHonor = max(5, 15 - factionBonus(.guards) - factionBonus(.nobles))
+        SoundManager.shared.play(.palace)
+        // Guard & noble favor — and Jasmine's word at court — lower the honor
+        // needed to enter.
+        let requiredHonor = max(5, 15 - factionBonus(.guards) - factionBonus(.nobles) - jasmineEntryEase)
         if s.stats.honor < requiredHonor && !s.palaceUnlocked {
             present(ActionOutcome(title: "Turned Away",
                                   message: "The guards bar your path. You need at least \(requiredHonor) Honor or an invitation to enter Sinbad's palace.",
@@ -392,9 +402,16 @@ final class GameViewModel: ObservableObject {
         s.palaceUnlocked = true
 
         // The court is a living thing — each visit plays out differently.
-        // Favor (honor + reputation) tilts the odds toward the finer outcomes.
-        let favor = s.stats.honor + s.stats.reputation
-        let outcome = palaceOutcome(favor: favor, into: &s)
+        // Favor (honor + reputation) tilts the odds toward the finer outcomes;
+        // Jasmine's loyalty and the Djinns of Beauty & Judgment help at court.
+        let djinnCourt = (has(.maymunah) ? 8 : 0) + (has(.shamhurish) ? 8 : 0)
+        let favor = s.stats.honor + s.stats.reputation + jasmineFavorBoost + djinnCourt
+        var outcome = palaceOutcome(favor: favor, into: &s)
+        // Jasmine's friendship earns you a little extra Honor at court.
+        if jasminePalaceHonor > 0 && outcome.title != "Turned Away" {
+            s.stats.honor += jasminePalaceHonor
+            outcome.deltas.append("+\(jasminePalaceHonor) Honor (Jasmine)")
+        }
         state = s
         present(outcome)
     }
@@ -475,7 +492,8 @@ final class GameViewModel: ObservableObject {
         let names = ["Old Merchant Faruq", "Guard Captain Layla", "The Magician Idris",
                      "Sailor Yusuf", "Healer Amina", "The Thief Rashid", "Storyteller Nadia"]
         let zeparBonus = has(.zepar) ? 3 : 0
-        let rep = Int.random(in: 1...3) + zeparBonus
+        let maymunahBonus = has(.maymunah) ? 3 : 0   // Djinn of Beauty
+        let rep = Int.random(in: 1...3) + zeparBonus + maymunahBonus
         s.stats.reputation += rep
         var deltas = ["+\(rep) Reputation"]
         if let name = names.filter({ !s.connections.contains($0) }).randomElement(),
@@ -484,6 +502,7 @@ final class GameViewModel: ObservableObject {
             deltas.append("New ally: \(name)")
         }
         state = s
+        SoundManager.shared.play(.door)
         present(ActionOutcome(title: "Building Bonds",
                               message: "You share tea and stories, weaving yourself into Zahara's web of favors.",
                               deltas: deltas, tone: .good))
@@ -493,7 +512,7 @@ final class GameViewModel: ObservableObject {
         guard var s = state else { return }
         let cunningBonus = s.role == .marketOrphan ? 6 : 0
         let treasureBonus = (s.meta.blessing?.treasureBonus ?? 0) + homeBonus(.treasure)
-            + factionBonus(.thieves) + companionBonus(.treasure)
+            + factionBonus(.thieves) + companionBonus(.treasure) + aliBabaTreasureBonus
         let score = s.stats.luck + s.stats.cunning + cunningBonus + treasureBonus + Int.random(in: 0...25)
         if score > 55 {
             let gold = Int.random(in: 80...180)
@@ -505,8 +524,9 @@ final class GameViewModel: ObservableObject {
                 s.pendingDungeonClues += 1
                 deltas.append("+1 Dungeon Clue")
             }
-            // Sometimes a rare found item or crafting material.
-            if Int.random(in: 0...100) < 45 {
+            // Sometimes a rare found item or crafting material. Aladdin's
+            // friendship raises the chance of turning up something magical.
+            if Int.random(in: 0...100) < 45 + aladdinMagicFindBonus {
                 let findable = ItemCatalog.searchItems + CraftCatalog.materials
                 if let found = findable.randomElement() {
                     let (_, extra) = grant(found, to: &s)
@@ -519,6 +539,7 @@ final class GameViewModel: ObservableObject {
                 deltas.append("+\(homeBonus(.dust)) Dust")
             }
             state = s
+            SoundManager.shared.play(.treasure)
             present(ActionOutcome(title: "Buried Fortune!",
                                   message: "Your instincts pay off — a cache of coin and curios.",
                                   deltas: deltas, tone: .epic))
@@ -563,10 +584,16 @@ final class GameViewModel: ObservableObject {
         var power = s.stats.courage + s.stats.endurance + s.stats.magic / 2
         if has(.barbatos) { power += 6 }
         if has(.baal)     { power += 4 }
+        if has(.ifrit)    { power += 7 }   // Djinn of War
+        if has(.shiqq)    { power += 3 }   // fear cows the enemy
+        if has(.barqan)   { power += 3 }   // opening lightning
+        if has(.dasim)    { power += 3 }   // sows discord among foes
+        // The King of the Djinns empowers every bond you hold.
+        if KingOfDjinns.isBonded(s) { power += s.djinns.count }
         power += s.stats.speed / 3      // Speed lets you strike first
         power += (s.meta.blessing?.combatBonus ?? 0) + companionBonus(.combat)
         // Difficulty scales gently with the night number.
-        let scaledDifficulty = difficulty + s.night / 120
+        let scaledDifficulty = difficulty + s.night / 12
         let won = check(power, difficulty: scaledDifficulty, luck: s.stats.luck)
         if won {
             let gold = Int.random(in: 30...80)
@@ -699,7 +726,12 @@ final class GameViewModel: ObservableObject {
 
     var discoveredDungeons: [Dungeon] {
         guard let s = state else { return [] }
-        return DungeonCatalog.all.filter { s.discoveredDungeons.contains($0.id) }
+        var list = DungeonCatalog.all.filter { s.discoveredDungeons.contains($0.id) }
+        // Al-Mudhib's throne lives outside the ordinary catalog.
+        if s.discoveredDungeons.contains(KingOfDjinns.throneID) {
+            list.append(KingOfDjinns.throneDungeon)
+        }
+        return list
     }
 
     /// Dungeons neither discovered nor already conquered — the pool a search can reveal.
@@ -735,7 +767,7 @@ final class GameViewModel: ObservableObject {
         AudioManager.shared.setMood(.dungeon)
         // Scale room difficulty gently with the night number.
         var scaled = dungeon
-        let bump = s.night / 100
+        let bump = s.night / 10
         if bump > 0 {
             scaled.rooms = dungeon.rooms.map { room in
                 var r = room
@@ -784,6 +816,7 @@ final class GameViewModel: ObservableObject {
             var damage = Int.random(in: 2...4)
             if has(.phenex) { damage = max(1, damage - 1) }
             damage = max(1, damage - companionBonus(.dungeonSafety) / 3)   // companions soften blows
+            damage = max(1, damage - aladdinDungeonSafety)                 // Aladdin knows the traps
             s.stats.endurance = max(0, s.stats.endurance - damage)
             s.meta.injuries += 1
             run.log.insert("✘ \(room.name): the challenge wounds you. -\(damage) Endurance.", at: 0)
@@ -828,7 +861,23 @@ final class GameViewModel: ObservableObject {
                 deltas += extra
             }
             bumpRelationship("scheherazade", 3, in: &s)
+            bumpRelationship("aladdin", 3, in: &s)      // he lives for Djinn artifacts
             bumpFaction(.djinnSpirits, 5, in: &s)
+        }
+        // Al-Mudhib's throne: the King's crown, and a sovereign's blessing.
+        if run.dungeon.id == KingOfDjinns.throneID {
+            if !s.meta.artifacts.contains(KingOfDjinns.artifactID) {
+                s.meta.artifacts.append(KingOfDjinns.artifactID)
+                let (_, extra) = grant(KingOfDjinns.artifact, to: &s)
+                deltas.append("Artifact: \(KingOfDjinns.artifact.name)")
+                deltas += extra
+            }
+            s.stats.magic += 10
+            s.stats.wisdom += 8
+            deltas.append("+10 Magic, +8 Wisdom — the King's blessing")
+            bumpRelationship("scheherazade", 5, in: &s)
+            bumpRelationship("sinbad", 5, in: &s)
+            bumpFaction(.djinnSpirits, 15, in: &s)
         }
         // A chance at a piece of dungeon gear.
         if let gear = ItemCatalog.dungeonGear.randomElement(), Int.random(in: 0...100) < 60 {
@@ -867,10 +916,23 @@ final class GameViewModel: ObservableObject {
     /// Room kinds a Djinn's signature ability can overcome outright.
     private func abilityTargets(_ djinn: Djinn) -> Set<RoomKind> {
         switch djinn {
-        case .amon:      return [.monster, .boss, .trap]     // Amon's Flame
+        case .amon:      return [.monster, .boss, .trap]        // Amon's Flame
         case .dantalion: return [.puzzle, .trap, .djinnChamber] // Light of Truth
-        case .baal:      return Set(RoomKind.allCases) // Lightning Strike — anything
-        case .vinea:     return [.trap, .puzzle]              // Hidden Current
+        case .baal:      return Set(RoomKind.allCases)          // Lightning Strike — anything
+        case .vinea:     return [.trap, .puzzle]                // Hidden Current
+        // Additional Djinns.
+        case .shiqq:     return [.monster, .boss]               // Terror Gaze
+        case .nasnas:    return [.trap, .monster]               // Blink Step
+        case .ifrit:     return [.monster, .boss]               // Warflame Command
+        case .khanzan:   return [.trap, .puzzle, .djinnChamber] // Sacred Focus
+        case .barqan:    return [.monster, .boss]               // Thunder Strike
+        case .maymunah:  return [.puzzle, .djinnChamber]        // Radiant Charm
+        case .danhash:   return [.treasure, .puzzle]            // Joyful Omen
+        case .zalmbur:   return [.treasure]                     // Golden Bargain
+        case .sut:       return [.trap, .puzzle]                // False Mask
+        case .dasim:     return [.monster, .boss]               // Spark of Discord
+        case .zawbaah:   return [.trap, .monster]               // Eye of the Storm
+        case .shamhurish:return [.puzzle, .djinnChamber]        // Verdict of Truth
         default:         return []
         }
     }
@@ -878,7 +940,7 @@ final class GameViewModel: ObservableObject {
     /// Djinns whose ability can be invoked on the current room right now.
     func usableAbilities() -> [Djinn] {
         guard let run = activeRun, let room = run.currentRoom, !run.finished else { return [] }
-        return [Djinn.amon, .dantalion, .baal, .vinea].filter { djinn in
+        return Djinn.allCases.filter { djinn in
             has(djinn)
             && !run.abilitiesUsed.contains(djinn.rawValue)
             && abilityTargets(djinn).contains(room.kind)
@@ -978,13 +1040,8 @@ final class GameViewModel: ObservableObject {
         if let b = s.meta.blessing { summary.events.append("\(b.name)") }
 
         s.night += 1
-
-        if s.night > GameState.totalNights {
-            state = s
-            phase = .ended
-            save()
-            return
-        }
+        // The game no longer ends automatically — the player decides whether to
+        // continue or finish at each 100-night checkpoint (see below).
 
         // Injuries slowly recover on their own by one at night's turn.
         if s.meta.injuries > 0 && Int.random(in: 0...100) < 40 { s.meta.injuries -= 1 }
@@ -1005,8 +1062,8 @@ final class GameViewModel: ObservableObject {
         let titleAfter = TitleSystem.currentTitle(for: s)
         if titleAfter != titleBefore { summary.newTitle = titleAfter }
 
-        // Milestone every 100 nights (folded into the summary, no extra sheet).
-        if s.night % 100 == 0 {
+        // Milestone every 10 nights (folded into the summary, no extra sheet).
+        if s.night % 10 == 0 {
             if let (line, deltas) = applyMilestone(&s) {
                 summary.events.append(line)
                 summary.entries.append(NightSummary.Entry(title: "Milestone — Night \(s.night)",
@@ -1014,20 +1071,56 @@ final class GameViewModel: ObservableObject {
             }
         }
 
+        // The Throne of the Hidden Flame reveals itself once the King's
+        // conditions are met — a once-only, dramatic discovery.
+        if KingOfDjinns.isUnlocked(s),
+           !s.discoveredDungeons.contains(KingOfDjinns.throneID),
+           !s.completedDungeons.contains(KingOfDjinns.throneID) {
+            s.discoveredDungeons.append(KingOfDjinns.throneID)
+            let line = "A pillar of hidden flame rises beyond Zahara. Scheherazade whispers: \"The Throne of Al-Mudhib, King of the Djinns, has judged you worthy to find it.\""
+            summary.events.append(line)
+            summary.entries.append(NightSummary.Entry(title: "The King's Summons",
+                                                      deltas: ["Throne of the Hidden Flame revealed"], tone: "epic"))
+            noteInJournal(&s, "The Throne of the Hidden Flame has appeared. Al-Mudhib awaits.")
+        }
+
         s.meta.lastSummary = summary
         state = s
 
-        // Present the summary popup first…
-        nightSummary = summary
-
-        // …then queue an event to fire once the summary is dismissed.
-        // Priority: story choice > rare event > ordinary event.
-        bufferedEvent = StoryChoices.pending(for: s)
-            ?? RareEvents.maybeTrigger(for: s)
-            ?? RandomEvents.maybeTrigger(for: s)
+        // Every 100 nights (the night that just ended), show the grand
+        // retrospective with Continue / Finish choices instead of a normal
+        // nightly summary and event.
+        if endingNight % GameState.totalNights == 0 {
+            bufferedEvent = nil
+            journeyCheckpointNight = endingNight
+        } else {
+            // Present the summary popup first…
+            nightSummary = summary
+            // …then queue an event to fire once the summary is dismissed.
+            // Priority: story choice > character encounter > rare event > ordinary.
+            bufferedEvent = StoryChoices.pending(for: s)
+                ?? CharacterEvents.maybeTrigger(for: s)
+                ?? RareEvents.maybeTrigger(for: s)
+                ?? RandomEvents.maybeTrigger(for: s)
+        }
 
         beginNightTracking()
         AudioManager.shared.setMood(.city)
+        save()
+    }
+
+    /// Continue playing beyond a 100-night checkpoint.
+    func continueJourney() {
+        journeyCheckpointNight = nil
+    }
+
+    /// End the journey for good at a checkpoint — go to the final legend.
+    func finishJourney() {
+        guard var s = state else { return }
+        s.meta.journeyFinished = true
+        state = s
+        journeyCheckpointNight = nil
+        phase = .ended
         save()
     }
 
