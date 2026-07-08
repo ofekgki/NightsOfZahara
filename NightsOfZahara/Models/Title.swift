@@ -25,7 +25,9 @@ enum TitleSystem {
         PlayerTitle(name: "Djinn Binder")      { $0.djinns.count >= 3 },
         PlayerTitle(name: "Master of Artifacts") { ($0._meta?.artifacts.count ?? 0) >= 4 },
         PlayerTitle(name: "Hero of Zahara")    { $0.completedDungeons.count >= 5 && $0.stats.honor >= 40 },
-        PlayerTitle(name: "Legend of Zahara")  { $0.djinns.count >= 8 && $0.completedDungeons.count >= 8 }
+        PlayerTitle(name: "Lord of the Estate") { ($0._meta?.majorChoices.contains("home_mastered")) ?? false },
+        PlayerTitle(name: "Legend of Zahara")  { $0.djinns.count >= 8 && $0.completedDungeons.count >= 8 },
+        PlayerTitle(name: "Friend of the Genies") { $0.completedDungeons.count >= 15 }
     ]
 
     static func currentTitle(for s: GameState) -> String {

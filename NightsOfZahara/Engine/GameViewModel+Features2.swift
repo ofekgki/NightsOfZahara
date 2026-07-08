@@ -63,6 +63,19 @@ extension GameViewModel {
 
     func materialCount(_ id: String) -> Int { state?.inventory[id] ?? 0 }
 
+    /// Recipes currently unlocked by the player's Crafting Room level. Higher
+    /// levels reveal more recipes and higher-tier outputs.
+    func craftableRecipes() -> [CraftRecipe] {
+        let level = homeLevel(.crafting)
+        return CraftCatalog.recipes.filter { $0.minRoomLevel <= level }
+    }
+
+    /// The next Crafting Room level that would unlock at least one new recipe.
+    func nextCraftingUnlockLevel() -> Int? {
+        let level = homeLevel(.crafting)
+        return CraftCatalog.recipes.map { $0.minRoomLevel }.filter { $0 > level }.min()
+    }
+
     func craftCost(_ recipe: CraftRecipe) -> (gold: Int, dust: Int) {
         let discount = homeBonus(.craftDiscount)          // percent
         let gold = max(1, Int(Double(recipe.gold) * (1.0 - Double(discount) / 100.0)))
@@ -118,8 +131,23 @@ extension GameViewModel {
         s.gold -= cost
         let newLevel = homeLevel(room) + 1
         s.meta.homeRooms[room.rawValue] = newLevel
-        state = s
         HapticManager.play(.success)
+
+        // If every room is now at its maximum level, grant a one-time reward
+        // and the "Lord of the Estate" title.
+        let allMaxed = HomeRoom.allCases.allSatisfy { (s.meta.homeRooms[$0.rawValue] ?? 0) >= $0.maxLevel }
+        if allMaxed && !s.meta.majorChoices.contains("home_mastered") {
+            s.meta.majorChoices.append("home_mastered")
+            s.gold += 500
+            s.meta.magicalDust += 20
+            state = s
+            present(ActionOutcome(title: "Lord of the Estate",
+                                  message: "Your home in Zahara stands complete — every room built to its finest. Scheherazade sends a gift to mark the achievement, and a new title is yours.",
+                                  deltas: ["New title: Lord of the Estate", "+500 Gold", "+20 Dust"], tone: .epic))
+            return
+        }
+
+        state = s
         present(ActionOutcome(title: "\(room.title) — Level \(newLevel)",
                               message: "You improve your home in Zahara. \(room.benefit)",
                               deltas: ["-\(cost) Gold"], tone: .good))

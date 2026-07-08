@@ -79,6 +79,7 @@ struct ActionPreviewView: View {
         case .work:           return [.wealth, .reputation]
         case .study:          return [.wisdom, .magic]
         case .train:          return [.courage, .endurance]
+        case .prowl:          return [.speed, .cunning]
         case .journey:        return [.luck, .endurance, .speed]
         case .searchDungeon:  return [.luck, .wisdom, .magic]
         case .palace:         return [.honor, .reputation]

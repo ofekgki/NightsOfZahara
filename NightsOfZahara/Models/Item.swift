@@ -96,6 +96,13 @@ struct Item: Codable, Identifiable, Equatable {
         return parts.joined(separator: ", ")
     }
 
+    /// A short hint that a held item can be used (crafting material or consumable).
+    var usageHint: String? {
+        if category == .material { return "Crafting material — used to forge items" }
+        if consumable { return "Usable — tap Use to consume it" }
+        return nil
+    }
+
     /// A full info-tooltip explanation of what this item does.
     var infoText: String {
         if isEquippable {
@@ -141,7 +148,17 @@ enum ItemCatalog {
              effect: .grantStat(.wisdom, 6), detail: "Wisdom of the ancients. +6 Wisdom (permanent).", consumable: false, rarity: .epic, source: .shop),
         Item(id: "silk_robes", name: "Silk Robes", category: .charm, price: 100,
              effect: .none, detail: "Fine attire turns heads.", consumable: false, rarity: .rare, source: .shop,
-             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 5, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 0))
+             slot: .armor, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 5, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 0)),
+        // Travel gear (backpack slot).
+        Item(id: "camel_saddle", name: "Camel Saddle", category: .tool, price: 130,
+             effect: .none, detail: "A sturdy saddle for the long desert roads.", consumable: false, rarity: .rare, source: .shop,
+             slot: .travel, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 4, speed: 2)),
+        Item(id: "desert_cloak", name: "Desert Cloak", category: .tool, price: 115,
+             effect: .none, detail: "A hooded cloak that turns aside sun and sand.", consumable: false, rarity: .rare, source: .shop,
+             slot: .travel, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 2, courage: 0, cunning: 2, endurance: 0)),
+        Item(id: "swift_boots", name: "Swift Boots", category: .tool, price: 150,
+             effect: .none, detail: "Light boots made for quick feet.", consumable: false, rarity: .epic, source: .shop,
+             slot: .travel, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 0, cunning: 0, endurance: 0, speed: 6))
     ]
 
     // MARK: Search-only (treasure / journeys / events)

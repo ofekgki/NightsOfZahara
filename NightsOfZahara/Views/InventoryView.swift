@@ -114,9 +114,13 @@ struct InventoryView: View {
                     }
                 }
                 Text(item.detail).font(Theme.body(11)).foregroundStyle(Theme.sand)
+                if let hint = item.usageHint {
+                    Label(hint, systemImage: "checkmark.circle")
+                        .font(Theme.body(10).weight(.semibold)).foregroundStyle(Theme.gold)
+                }
             }
             Spacer()
-            if item.consumable {
+            if item.consumable && item.category != .material {
                 Button("Use") { game.useItem(item) }
                     .font(Theme.body(12).weight(.bold))
                     .padding(.horizontal, 12).padding(.vertical, 6)

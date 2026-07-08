@@ -33,10 +33,10 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **The night loop** — 100 playable nights; energy resets each night and scales as your legend grows (6 → 8 → 9 → 10). Reach the hundredth night to view a full-journey retrospective and **choose to continue or finish** — play never force-ends.
 - **5 starting roles** — Market Orphan, Wizard Apprentice, Merchant, Sailor, Storyteller — each with distinct stat bonuses, strengths, weaknesses and playstyles.
 - **10 character stats** — Wealth, Wisdom, Magic, Reputation, Honor, Luck, Courage, Cunning, Endurance and **Speed** — that drive every success roll. Wealth tracks your actual gold; every stat caps at **125** (shown as `Max`).
-- **12 nightly actions** — Work, Study, Train, Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat — each with a clear energy cost and an action-preview card.
-- **22 Djinns & 22 dungeons** — every Djinn has its own themed, room-by-room dungeon with related monsters and a named boss, plus a legendary **23rd figure**, Al-Mudhib the King of the Djinns, with a secret endgame dungeon.
+- **13 nightly actions** — Work, Study, Train, Prowl the Alleys (Speed & Cunning), Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat — each with a clear energy cost and an action-preview card.
+- **22 Djinns & 22 dungeons** — every Djinn has its own themed, room-by-room dungeon with related monsters and a named boss, plus a legendary **23rd figure**, Al-Mudhib the King of the Djinns, with a secret endgame dungeon. Dungeon rooms succeed on a **percentage chance** based on how far your stat sits from the requirement (15–85%), and dungeons above Hard demand notably higher stats.
 - **Interactive dungeon crawls** — advance through monsters, puzzles, traps, treasure and a boss to the Djinn chamber. Every bonded Djinn grants a **signature ability** that can clear a matching room outright (Amon's Flame, Terror Gaze, Blink Step, Warflame Command, Verdict of Truth…).
-- **King Sinbad's royal missions** — a palace quest board with escalating missions, live progress tracking and rewards.
+- **King Sinbad's palace & Court of Justice** — a royal quest board with escalating missions, plus a separate Court of Justice where you preside over disputes for Honor, Reputation or Wisdom.
 - **Major characters** — Ali Baba, Jasmine and Aladdin: recurring allies with their own relationship arcs, quests, dialogue and bonuses (see below).
 - **Events & choices** — mysterious merchants, sandstorms, palace invitations, whispering lamps, character encounters and branching **story choices** whose consequences persist to the ending.
 - **Economy & items** — a bazaar, consumable provisions, gear that boosts stats (heavy gear can cost you Speed), and gold-and-energy stat upgrades.
@@ -53,7 +53,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **Blessings & curses** — a nightly modifier that colors your fortunes, with a tap-to-read info icon.
 - **Injuries & fatigue** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer. Info icons explain every condition.
 - **Relationships & factions** — standing with Scheherazade, King Sinbad, three major characters and eight factions, shaped by your actions and feeding the ending. Factions show the concrete benefit they grant from **Friendly** upward.
-- **Titles & ranks** — from *Market Survivor* to *Legend of Zahara*, shown on your character sheet and in the finale.
+- **Titles & ranks** — from *Market Survivor* to *Legend of Zahara*, including *Lord of the Estate* (fully upgrade your home) and *Friend of the Genies* (conquer 15 dungeons), shown on your character sheet and in the finale.
 - **Milestone events** every 10 nights, with gifts and words from Scheherazade and Sinbad.
 - **Djinn artifacts** — each conquered dungeon yields a rare equippable artifact, each with an info icon spelling out its exact effect.
 - **Rarity, categories & unique inventory** — Common→Mythic tiers (Legendary now a bold amber gold), one-of-each items (duplicates become magical dust).
@@ -63,8 +63,8 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **Action previews** — confirm each action with a card showing energy, rewards, risks, helpful stats and estimated odds.
 - **Multiple endings** — named endings (King's Champion, Merchant Prince, Master of Djinns, Protector of Zahara, **Sovereign of the Djinns**…) chosen from your stats, Djinns, artifacts, relationships and title.
 - **Quest log** — main, side, dungeon, role, Djinn, treasure and character quests, plus quests unlocked by faction/relationship level-ups.
-- **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions (each craftable item may exist only once at a time).
-- **Home upgrades** — build ten rooms (Resting → +max energy, Work → +work gold, Library, Training, Crafting, Treasure…) for lasting passive bonuses.
+- **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions (each craftable item may exist only once at a time). A higher **Crafting Room** unlocks more recipes and higher-tier (legendary/mythic) gear.
+- **Home upgrades** — build ten rooms (Resting → +max energy, Work → +work gold, Library, Training, Crafting, Treasure…) for lasting passive bonuses. Finish every room to earn the *Lord of the Estate* title and a gift.
 - **Companions** — recruit NPC allies whose talents boost combat, treasure, dungeon safety, shop prices and more; some major characters join once your bond runs deep.
 - **Recommended stats** — dungeons show recommended stats, endurance and spoils before you enter, and grow harder to *find* the higher their level.
 
@@ -139,7 +139,7 @@ Every Djinn grants a permanent stat bonus, a passive perk, and a signature abili
 | **Shamhurish** | Judgment | The Court Beneath the Sand | ★★★★★ |
 | 👑 **Al-Mudhib** | King of the Djinns | The Throne of the Hidden Flame | ★★★★★★ |
 
-**Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — several dungeons conquered, the trust of Scheherazade and Sinbad, a high night number, strong Wisdom/Magic/Honor/Reputation, and meaningful moral choices. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, and opens the rarest ending.
+**Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — six dungeons conquered, the trust of Scheherazade and Sinbad, at least three stats of 85+, and meaningful moral choices. Once unlocked it sits pinned at the **top of the dungeon list in its own section** and costs **12 energy** to enter. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, adds him to your character page, and lets you **finish your legend at any time** (even before night 100) for the rarest ending.
 
 ---
 

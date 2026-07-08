@@ -47,6 +47,14 @@ struct GameState: Codable {
 
     static let totalNights = 100
 
+    /// Total Djinn figures to bond: the 22 collectible Djinns + Al-Mudhib, the King.
+    static var totalDjinnFigures: Int { Djinn.allCases.count + 1 }
+
+    /// How many Djinn figures the player has bonded (collectible + the King).
+    var bondedDjinnFigures: Int {
+        djinns.count + (completedDungeons.contains(KingOfDjinns.throneID) ? 1 : 0)
+    }
+
     // MARK: - Derived
 
     /// The journey ends only when the player chooses to end it at a

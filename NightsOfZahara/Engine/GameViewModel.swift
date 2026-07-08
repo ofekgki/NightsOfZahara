@@ -179,6 +179,12 @@ final class GameViewModel: ObservableObject {
         return roll >= difficulty
     }
 
+    /// A delta line for a stat gain that reads "Honor - Max" once the stat is
+    /// capped. Call AFTER applying the change, passing the post-change state.
+    func statGainLabel(_ kind: StatKind, _ amount: Int, in s: GameState) -> String {
+        s.stats[kind] >= Stats.cap ? "\(kind.title) - Max" : "+\(amount) \(kind.title)"
+    }
+
     func present(_ outcome: ActionOutcome) {
         self.outcome = outcome
         addJournal(outcome.message)
@@ -240,6 +246,7 @@ final class GameViewModel: ObservableObject {
         case .work:           doWork()
         case .study:          doStudy()
         case .train:          doTrain()
+        case .prowl:          doProwl()
         case .journey:        doJourney()
         case .searchDungeon:  doSearchDungeon()
         case .palace:         doPalace()
@@ -285,8 +292,8 @@ final class GameViewModel: ObservableObject {
         s.stats.wisdom += wis
         s.stats.magic += mag
         state = s
-        var deltas = ["+\(wis) Wisdom"]
-        if mag > 0 { deltas.append("+\(mag) Magic") }
+        var deltas = [statGainLabel(.wisdom, wis, in: s)]
+        if mag > 0 { deltas.append(statGainLabel(.magic, mag, in: s)) }
         present(ActionOutcome(title: "Study",
                               message: "You pore over scrolls of Djinn lore and ancient tongues.",
                               deltas: deltas, tone: .good))
@@ -301,7 +308,21 @@ final class GameViewModel: ObservableObject {
         state = s
         present(ActionOutcome(title: "Training",
                               message: "Sweat and steel sharpen your body and nerve.",
-                              deltas: ["+\(cour) Courage", "+\(end) Endurance"],
+                              deltas: [statGainLabel(.courage, cour, in: s), statGainLabel(.endurance, end, in: s)],
+                              tone: .good))
+    }
+
+    /// Prowl Zahara's back alleys — sharpen Speed and Cunning.
+    private func doProwl() {
+        guard var s = state else { return }
+        let spd = Int.random(in: 1...3)
+        let cun = Int.random(in: 1...3) + (s.role == .marketOrphan ? 1 : 0)
+        s.stats.speed += spd
+        s.stats.cunning += cun
+        state = s
+        present(ActionOutcome(title: "Prowling the Alleys",
+                              message: "You slip through Zahara's shadows, quick of foot and quicker of wit.",
+                              deltas: [statGainLabel(.speed, spd, in: s), statGainLabel(.cunning, cun, in: s)],
                               tone: .good))
     }
 
@@ -428,10 +449,15 @@ final class GameViewModel: ObservableObject {
             let gold = Int.random(in: 80...160)
             s.gold += gold; s.stats.honor += 3
             bumpRelationship("sinbad", 3, in: &s)
-            if !s.connections.contains("Palace Advisor") { s.connections.append("Palace Advisor") }
+            var deltas = ["+\(gold) Gold", statGainLabel(.honor, 3, in: s)]
+            // Only announce the Palace Advisor the first time you meet him.
+            if !s.connections.contains("Palace Advisor") {
+                s.connections.append("Palace Advisor")
+                deltas.append("New ally: Palace Advisor")
+            }
             return ActionOutcome(title: "Audience with Sinbad",
                                  message: "King Sinbad, the legendary sailor-king, receives you and names you a friend of the court.",
-                                 deltas: ["+\(gold) Gold", "+3 Honor", "New ally: Palace Advisor"], tone: .epic)
+                                 deltas: deltas, tone: .epic)
         case 80...89:
             // The king hints at a royal mission.
             s.pendingDungeonClues += 1; s.stats.honor += 1
@@ -630,19 +656,33 @@ final class GameViewModel: ObservableObject {
 
     // MARK: - Shop / items / upgrades
 
-    func buy(_ item: Item) {
-        guard var s = state else { return }
+    /// True if the item is a unique (non-consumable) one the player already holds.
+    func alreadyOwnsUnique(_ item: Item) -> Bool {
+        !item.consumable && (state?.inventory[item.id] ?? 0) > 0
+    }
+
+    /// Buy an item. Returns a short feedback message and does NOT open a global
+    /// sheet, so the shop stays open after each purchase.
+    @discardableResult
+    func buy(_ item: Item) -> String {
+        guard var s = state else { return "" }
+        // Can't buy a duplicate of a unique item already in the pack.
+        if alreadyOwnsUnique(item) {
+            return "You already own \(item.name)."
+        }
         let price = shopPrice(item, in: s)
         guard s.gold >= price else {
-            outcome = ActionOutcome(title: "Not Enough Gold",
-                                    message: "You cannot afford \(item.name).", tone: .bad)
-            return
+            return "You can't afford \(item.name) (\(price) gold)."
         }
         s.gold -= price
         let (msg, extra) = grant(item, to: &s)
         state = s
-        present(ActionOutcome(title: "Purchased", message: msg,
-                              deltas: ["-\(price) Gold"] + extra, tone: .good))
+        HapticManager.play(.success)
+        addJournal("Bought \(item.name).")
+        nightEntries.append(NightSummary.Entry(title: "Purchased \(item.name)",
+                                               deltas: ["-\(price) Gold"] + extra, tone: "good"))
+        save()
+        return "\(msg) (−\(price) gold)"
     }
 
     /// Uses a consumable from the inventory (e.g. food, keys, maps).
@@ -756,27 +796,45 @@ final class GameViewModel: ObservableObject {
     }
 
     func enterDungeon(_ dungeon: Dungeon) {
-        guard var s = state, s.energy >= 4 else {
+        let cost = dungeon.entryEnergyCost
+        guard var s = state, s.energy >= cost else {
             outcome = ActionOutcome(title: "Too Tired",
-                                    message: "Entering a dungeon costs 4 energy. Rest first.", tone: .bad)
+                                    message: "Entering \(dungeon.name) costs \(dungeon.entryEnergyCost) energy. Rest first.", tone: .bad)
             return
         }
-        s.energy -= 4
+        s.energy -= cost
         state = s
         save()
         AudioManager.shared.setMood(.dungeon)
-        // Scale room difficulty gently with the night number.
+        // Scale room difficulty with the night number, and stiffen dungeons
+        // that are above Hard (difficulty > 3).
+        let nightBump = s.night / 10
+        let hardBump = dungeon.difficulty > 3 ? (dungeon.difficulty - 3) * 2 : 0
+        let totalBump = nightBump + hardBump
         var scaled = dungeon
-        let bump = s.night / 10
-        if bump > 0 {
+        if totalBump > 0 {
             scaled.rooms = dungeon.rooms.map { room in
                 var r = room
-                r.difficulty += bump
+                r.difficulty += totalBump
                 return r
             }
         }
         activeRun = DungeonRun(dungeon: scaled,
                                log: ["You step into \(dungeon.name). The air is thick with old magic."])
+    }
+
+    /// Percentage chance to clear a room, from the player's stat difference
+    /// against the room's requirement.
+    func successChance(statValue: Int, requirement: Int) -> Int {
+        switch statValue - requirement {
+        case ..<(-20):       return 8
+        case (-20) ..< (-10): return 15
+        case (-10) ..< 0:    return 33
+        case 0 ..< 10:       return 50
+        case 10 ..< 20:      return 65
+        case 20 ..< 40:      return 75
+        default:             return 85
+        }
     }
 
     /// Resolve the current room and advance, or end the run on failure.
@@ -788,8 +846,12 @@ final class GameViewModel: ObservableObject {
         if room.kind == .puzzle, has(.dantalion) { testValue += 5 }
         if (room.kind == .monster || room.kind == .boss), has(.amon) { testValue += 4 }
         if room.kind == .djinnChamber, has(.baal) { testValue += 3 }
+        testValue += s.stats.luck / 6      // luck still nudges the odds
 
-        let success = check(testValue, difficulty: room.difficulty, luck: s.stats.luck)
+        // Percentage chance based on how far your stat sits from the room's
+        // requirement (see `successChance`).
+        let chance = successChance(statValue: testValue, requirement: room.difficulty)
+        let success = Int.random(in: 0..<100) < chance
 
         if success {
             run.log.insert("✔ \(room.name): you prevail. (\(room.kind.testedStat.title) held firm)", at: 0)
@@ -1014,6 +1076,59 @@ final class GameViewModel: ObservableObject {
 
     func seekAudience() {
         _ = perform(.palace)
+    }
+
+    /// The King's Court of Justice — a different purpose from a palace audience.
+    /// Like the palace it needs Reputation/Honor, but here you preside over law
+    /// and truth rather than court politics.
+    func attendCourt() {
+        guard var s = state else { return }
+        guard s.energy >= 2 else {
+            outcome = ActionOutcome(title: "Too Tired",
+                                    message: "Attending the court costs 2 energy.", tone: .bad)
+            return
+        }
+        let requiredHonor = max(5, 15 - factionBonus(.guards) - factionBonus(.nobles) - jasmineEntryEase)
+        if s.stats.honor < requiredHonor && !s.palaceUnlocked {
+            present(ActionOutcome(title: "Barred from the Court",
+                                  message: "The magistrates turn you away. You need at least \(requiredHonor) Honor to sit in judgment.",
+                                  tone: .bad))
+            return
+        }
+        s.energy -= 2
+        state = s
+        doCourt()
+        creditFactions(for: .palace)
+        creditCharacters(for: .palace)
+    }
+
+    private func doCourt() {
+        guard var s = state else { return }
+        s.palaceUnlocked = true
+        // Shamhurish, Djinn of Judgment, all but guarantees a just verdict.
+        let roll = has(.shamhurish) ? 100 : (Int.random(in: 0..<100) + (s.stats.wisdom + s.stats.honor) / 8)
+        if roll > 66 {
+            let gold = Int.random(in: 40...90)
+            s.gold += gold; s.stats.honor += 2; s.stats.reputation += 2
+            state = s
+            present(ActionOutcome(title: "A Just Verdict",
+                                  message: "You weigh the evidence and deliver a fair judgment. Zahara respects a wise arbiter.",
+                                  deltas: ["+\(gold) Gold", statGainLabel(.honor, 2, in: s), statGainLabel(.reputation, 2, in: s)], tone: .good))
+        } else if roll > 30 {
+            s.stats.wisdom += 2
+            state = s
+            present(ActionOutcome(title: "Hearing the Cases",
+                                  message: "You sit among the magistrates and study the law of Zahara.",
+                                  deltas: [statGainLabel(.wisdom, 2, in: s)], tone: .good))
+        } else {
+            let repLoss = min(s.stats.reputation, Int.random(in: 1...3))
+            s.stats.reputation -= repLoss
+            s.stats.honor += 1
+            state = s
+            present(ActionOutcome(title: "A Bribe Refused",
+                                  message: "A merchant offers coin to sway your ruling. You refuse — but he spreads spiteful rumors.",
+                                  deltas: ["-\(repLoss) Reputation", statGainLabel(.honor, 1, in: s)], tone: .neutral))
+        }
     }
 
     // MARK: - Night flow

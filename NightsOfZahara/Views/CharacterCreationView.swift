@@ -136,23 +136,62 @@ struct RoleCardView: View {
     }
 }
 
-/// A simple wrapping row of small chips.
+/// A wrapping row of small chips. Chips fill one row and only overflow wraps
+/// to the next line — the layout never breaks, however narrow the space.
 struct FlowChips: View {
     /// (label, isPositive)
     let items: [(String, Bool)]
 
     var body: some View {
-        // Use a LazyVGrid-like wrap via adaptive grid.
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 78), spacing: 6)], alignment: .leading, spacing: 6) {
+        FlowLayout(spacing: 6) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 Text(item.0)
                     .font(Theme.body(11).weight(.semibold))
+                    .fixedSize()
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background((item.1 ? Theme.success : Theme.danger).opacity(0.22))
                     .foregroundStyle(item.1 ? Theme.success : Theme.danger)
                     .clipShape(Capsule())
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// A minimal flow layout: places subviews left-to-right, wrapping a subview to
+/// the next line only when it doesn't fit the available width.
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 6
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
+        var x: CGFloat = 0, y: CGFloat = 0, rowHeight: CGFloat = 0, widest: CGFloat = 0
+        for sub in subviews {
+            let size = sub.sizeThatFits(.unspecified)
+            if x + size.width > maxWidth, x > 0 {
+                widest = max(widest, x - spacing)
+                x = 0; y += rowHeight + spacing; rowHeight = 0
+            }
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
+        widest = max(widest, x - spacing)
+        return CGSize(width: min(widest, maxWidth), height: y + rowHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let maxWidth = bounds.width
+        var x: CGFloat = 0, y: CGFloat = 0, rowHeight: CGFloat = 0
+        for sub in subviews {
+            let size = sub.sizeThatFits(.unspecified)
+            if x + size.width > maxWidth, x > 0 {
+                x = 0; y += rowHeight + spacing; rowHeight = 0
+            }
+            sub.place(at: CGPoint(x: bounds.minX + x, y: bounds.minY + y),
+                      proposal: ProposedViewSize(size))
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
         }
     }
 }

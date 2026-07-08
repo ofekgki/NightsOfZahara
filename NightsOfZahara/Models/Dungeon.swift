@@ -123,14 +123,27 @@ struct Dungeon: Codable, Identifiable, Equatable {
         return seen
     }
 
-    /// A recommended minimum for each tested stat, scaled by difficulty.
+    /// Recommended minimum for a tested stat, scaled by difficulty. Dungeons
+    /// above Hard (difficulty > 3) demand notably higher stats.
+    var requirementTarget: Int {
+        let base = 10 + difficulty * 6
+        return difficulty > 3 ? base + (difficulty - 3) * 8 : base
+    }
+
+    /// A recommended minimum for each tested stat. Endurance is listed
+    /// separately via `recommendedEndurance`, so it is not repeated here.
     var recommendedStats: [(StatKind, Int)] {
-        let target = 10 + difficulty * 6
-        return testedStats.map { ($0, target) }
+        testedStats.filter { $0 != .endurance }.map { ($0, requirementTarget) }
     }
 
     /// Recommended endurance to survive the crawl.
-    var recommendedEndurance: Int { 12 + difficulty * 7 }
+    var recommendedEndurance: Int {
+        let base = 12 + difficulty * 7
+        return difficulty > 3 ? base + (difficulty - 3) * 8 : base
+    }
+
+    /// Energy cost to enter. The King's throne (difficulty 6) costs far more.
+    var entryEnergyCost: Int { difficulty >= 6 ? 12 : 4 }
 
     /// Short human summary of what conquering it yields.
     var rewardSummary: String {

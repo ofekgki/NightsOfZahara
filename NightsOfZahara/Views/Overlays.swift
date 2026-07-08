@@ -13,33 +13,38 @@ struct OutcomeView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: outcome.tone.icon)
-                .font(.system(size: 46))
-                .foregroundStyle(outcome.tone.color)
-                .padding(.top, 8)
+            // Scrollable so the icon and all content stay fully visible even in
+            // a compact sheet (e.g. equipping gear with many stat changes).
+            ScrollView {
+                VStack(spacing: 16) {
+                    Image(systemName: outcome.tone.icon)
+                        .font(.system(size: 46))
+                        .foregroundStyle(outcome.tone.color)
 
-            Text(outcome.title)
-                .font(Theme.title(24))
-                .foregroundStyle(Theme.parchment)
-                .multilineTextAlignment(.center)
+                    Text(outcome.title)
+                        .font(Theme.title(24))
+                        .foregroundStyle(Theme.parchment)
+                        .multilineTextAlignment(.center)
 
-            Text(outcome.message)
-                .font(Theme.body(15))
-                .foregroundStyle(Theme.sand)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                    Text(outcome.message)
+                        .font(Theme.body(15))
+                        .foregroundStyle(Theme.sand)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
 
-            if !outcome.deltas.isEmpty {
-                VStack(spacing: 6) {
-                    ForEach(outcome.deltas, id: \.self) { delta in
-                        Text(delta)
-                            .font(Theme.body(15).weight(.semibold))
-                            .foregroundStyle(outcome.tone.color)
+                    if !outcome.deltas.isEmpty {
+                        VStack(spacing: 6) {
+                            ForEach(outcome.deltas, id: \.self) { delta in
+                                Text(delta)
+                                    .font(Theme.body(15).weight(.semibold))
+                                    .foregroundStyle(outcome.tone.color)
+                            }
+                        }
                     }
                 }
+                .padding(.top, 28)
+                .frame(maxWidth: .infinity)
             }
-
-            Spacer(minLength: 0)
 
             PrimaryButton(title: "Continue") { dismiss() }
                 .padding(.horizontal)

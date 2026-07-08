@@ -139,6 +139,18 @@ extension GameViewModel {
 
     func itemLevel(_ item: Item) -> Int { state?.meta.itemLevels[item.id] ?? 0 }
 
+    /// The equip bonus summary at the item's CURRENT upgrade level (so reforging
+    /// with Magical Dust visibly raises the stats it grants).
+    func effectiveEquipSummary(_ item: Item) -> String {
+        guard let base = item.equipBonus else { return "" }
+        let mult = 1.0 + Double(itemLevel(item)) * 0.25
+        let parts: [String] = StatKind.allCases.compactMap { k in
+            let v = Int(Double(base[k]) * mult)
+            return v != 0 ? "\(v > 0 ? "+" : "")\(v) \(k.title)" : nil
+        }
+        return parts.joined(separator: ", ")
+    }
+
     /// Cost to upgrade: rises with rarity and current level.
     func upgradeItemCost(_ item: Item) -> (gold: Int, dust: Int) {
         let lvl = itemLevel(item)

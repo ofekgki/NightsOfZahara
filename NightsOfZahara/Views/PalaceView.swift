@@ -16,6 +16,7 @@ struct PalaceView: View {
                 if let s = game.state {
                     banner(s)
                     audienceCard(s)
+                    courtCard(s)
                     missionsCard(s)
                 }
             }
@@ -52,6 +53,20 @@ struct PalaceView: View {
             PrimaryButton(title: "Enter the Court", icon: "figure.walk",
                           enabled: s.energy >= 2) {
                 game.seekAudience()
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .zaharaCard()
+    }
+
+    private func courtCard(_ s: GameState) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionTitle(text: "The Court of Justice")
+            Text("Preside over the King's court of law: judge disputes, uphold the truth and earn Honor, Reputation or Wisdom. Also needs standing at court. (2 energy)")
+                .font(Theme.body(12)).foregroundStyle(Theme.sand)
+            PrimaryButton(title: "Sit in Judgment", icon: "scalemass.fill",
+                          enabled: s.energy >= 2) {
+                game.attendCourt()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

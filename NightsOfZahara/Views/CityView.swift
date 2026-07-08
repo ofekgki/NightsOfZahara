@@ -134,7 +134,7 @@ struct CityView: View {
                 miniStat(.magic, s.stats.magic)
             }
             HStack(spacing: 14) {
-                Label("\(s.djinns.count)/\(Djinn.allCases.count) Djinns", systemImage: "flame")
+                Label("\(s.bondedDjinnFigures)/\(GameState.totalDjinnFigures) Djinns", systemImage: "flame")
                 Label("\(s.completedDungeons.count) Dungeons", systemImage: "building.columns")
                 Label("\(s.treasuresFound) Treasures", systemImage: "shippingbox")
             }

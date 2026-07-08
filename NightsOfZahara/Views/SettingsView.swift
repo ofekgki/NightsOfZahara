@@ -60,8 +60,6 @@ struct SettingsView: View {
                     .disabled(!settings.musicOn)
                 Image(systemName: "speaker.wave.3.fill").foregroundStyle(Theme.sand)
             }
-            Text("An original, procedurally-generated Arabian ambience — it needs no sound files.")
-                .font(Theme.body(11)).foregroundStyle(Theme.sand.opacity(0.7))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .zaharaCard()

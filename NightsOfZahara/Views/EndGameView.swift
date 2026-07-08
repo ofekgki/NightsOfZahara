@@ -57,7 +57,7 @@ struct EndGameView: View {
             row("Strongest Djinn", strongestDjinn(s))
             row("Key Artifact", keyArtifact(s))
             row("Final Gold", "\(s.gold)")
-            row("Djinns Bonded", "\(s.djinns.count) / \(Djinn.allCases.count)")
+            row("Djinns Bonded", "\(s.bondedDjinnFigures) / \(GameState.totalDjinnFigures)")
             if KingOfDjinns.isBonded(s) { row("King of the Djinns", "Crowned by Al-Mudhib") }
             row("Dungeons Conquered", "\(s.completedDungeons.count)")
             row("Treasures Found", "\(s.treasuresFound)")

@@ -10,6 +10,7 @@ import SwiftUI
 struct ShopView: View {
     @EnvironmentObject private var game: GameViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var lastMessage: String?
 
     var body: some View {
         ScrollView {
@@ -23,10 +24,21 @@ struct ShopView: View {
                             .foregroundStyle(Theme.gold)
                     }
 
+                    if let msg = lastMessage {
+                        Label(msg, systemImage: "bag.fill.badge.plus")
+                            .font(Theme.body(12).weight(.semibold))
+                            .foregroundStyle(Theme.success)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .zaharaCard(padding: 10)
+                    }
+
                     ForEach(ItemCatalog.shopItems) { item in
                         let price = game.shopPrice(item, in: s)
-                        ShopRow(item: item, price: price, canAfford: s.gold >= price) {
-                            game.buy(item)
+                        // Buying updates the banner and keeps the shop open.
+                        ShopRow(item: item, price: price,
+                                canAfford: s.gold >= price,
+                                owned: game.alreadyOwnsUnique(item)) {
+                            withAnimation { lastMessage = game.buy(item) }
                         }
                     }
                 }
@@ -53,6 +65,7 @@ struct ShopRow: View {
     let item: Item
     let price: Int
     let canAfford: Bool
+    var owned: Bool = false
     let buy: () -> Void
 
     var body: some View {
@@ -70,16 +83,24 @@ struct ShopRow: View {
                 Text(item.detail).font(Theme.body(12)).foregroundStyle(Theme.sand)
             }
             Spacer()
-            Button(action: buy) {
-                Text("\(price)")
-                    .font(Theme.body(14).weight(.bold))
-                    .padding(.horizontal, 14).padding(.vertical, 8)
-                    .background(canAfford ? Theme.goldSheen : LinearGradient(colors: [.gray], startPoint: .top, endPoint: .bottom))
-                    .foregroundStyle(Theme.deepNight)
-                    .clipShape(Capsule())
+            if owned {
+                Text("Owned")
+                    .font(Theme.body(13).weight(.bold))
+                    .padding(.horizontal, 12).padding(.vertical, 8)
+                    .foregroundStyle(Theme.success)
+            } else {
+                Button(action: buy) {
+                    Text("\(price)")
+                        .font(Theme.body(14).weight(.bold))
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(canAfford ? Theme.goldSheen : LinearGradient(colors: [.gray], startPoint: .top, endPoint: .bottom))
+                        .foregroundStyle(Theme.deepNight)
+                        .clipShape(Capsule())
+                }
+                .disabled(!canAfford)
             }
-            .disabled(!canAfford)
         }
         .zaharaCard(padding: 12)
+        .opacity(owned ? 0.7 : 1)
     }
 }

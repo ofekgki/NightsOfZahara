@@ -21,6 +21,7 @@ struct CharacterView: View {
                             profile(s)
                             statsCard(s)
                             djinnCard(s)
+                            if KingOfDjinns.isBonded(s) { kingCard(s) }
                             connectionsCard(s)
                             achievementsCard(s)
                             Button(role: .destructive) { showAbandon = true } label: {
@@ -99,7 +100,7 @@ struct CharacterView: View {
 
     private func djinnCard(_ s: GameState) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionTitle(text: "Djinns (\(s.djinns.count)/\(Djinn.allCases.count))")
+            SectionTitle(text: "Djinns (\(s.bondedDjinnFigures)/\(GameState.totalDjinnFigures))")
             if s.djinns.isEmpty {
                 Text("You have bonded with no Djinns yet. Conquer their dungeons to earn them.")
                     .font(Theme.body(13)).foregroundStyle(Theme.sand)
@@ -115,6 +116,30 @@ struct CharacterView: View {
                     }
                 }
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .zaharaCard()
+    }
+
+    /// Shown once the King of the Djinns has been captured: he appears on the
+    /// character page, and you may end your legend at any time (even before 100).
+    private func kingCard(_ s: GameState) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionTitle(text: "King of the Djinns")
+            HStack(spacing: 12) {
+                Image(systemName: "crown.fill").font(.system(size: 26)).foregroundStyle(Theme.brightGold).frame(width: 34)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Al-Mudhib").font(Theme.heading(16)).foregroundStyle(Theme.parchment)
+                    Text("You have been crowned sovereign of the Djinns.")
+                        .font(Theme.body(12)).foregroundStyle(Theme.gold)
+                }
+                Spacer()
+            }
+            PrimaryButton(title: "Finish the Legend", icon: "flag.checkered") {
+                game.finishJourney()
+            }
+            Text("Your legend is complete enough to be told — end it whenever you wish.")
+                .font(Theme.body(11).italic()).foregroundStyle(Theme.sand.opacity(0.7))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .zaharaCard()
@@ -142,7 +167,7 @@ struct CharacterView: View {
             SectionTitle(text: "Deeds")
             achievement("Treasures found", "\(s.treasuresFound)", "shippingbox")
             achievement("Dungeons conquered", "\(s.completedDungeons.count)", "building.columns")
-            achievement("Artifacts held", "\(s.meta.artifacts.count)/\(Djinn.allCases.count)", "wand.and.stars")
+            achievement("Artifacts held", "\(s.meta.artifacts.count)/\(GameState.totalDjinnFigures)", "wand.and.stars")
             achievement("Highest stat", s.stats.highest.title, s.stats.highest.icon)
             achievement("Gold amassed", "\(s.gold)", "creditcard")
             achievement("Magical dust", "\(s.meta.magicalDust)", "sparkles")

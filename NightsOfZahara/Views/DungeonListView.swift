@@ -24,10 +24,26 @@ struct DungeonListView: View {
                     }
                     .padding(.vertical, 30).padding(.horizontal)
                 } else {
-                    ForEach(game.discoveredDungeons) { dungeon in
+                    let energy = game.state?.energy ?? 0
+                    let all = game.discoveredDungeons
+                    let throne = all.first { $0.id == KingOfDjinns.throneID }
+                    let regular = all.filter { $0.id != KingOfDjinns.throneID }
+
+                    // The King's throne always sits at the very top, in its own section.
+                    if let throne {
+                        SectionTitle(text: "👑 The King's Throne")
+                        DungeonRow(dungeon: throne,
+                                   completed: game.isCompleted(throne),
+                                   canEnter: energy >= throne.entryEnergyCost) {
+                            game.enterDungeon(throne)
+                        }
+                        SectionTitle(text: "Djinn Dungeons")
+                    }
+
+                    ForEach(regular) { dungeon in
                         DungeonRow(dungeon: dungeon,
                                    completed: game.isCompleted(dungeon),
-                                   canEnter: (game.state?.energy ?? 0) >= 4) {
+                                   canEnter: energy >= dungeon.entryEnergyCost) {
                             game.enterDungeon(dungeon)
                         }
                     }
@@ -94,7 +110,7 @@ struct DungeonRow: View {
                     .font(Theme.body(12).italic()).foregroundStyle(Theme.success)
             } else {
                 Button(action: enter) {
-                    Label("Enter (4 energy)", systemImage: "figure.walk.motion")
+                    Label("Enter (\(dungeon.entryEnergyCost) energy)", systemImage: "figure.walk.motion")
                         .font(Theme.body(14).weight(.semibold))
                         .frame(maxWidth: .infinity).padding(.vertical, 10)
                         .background(canEnter ? Theme.goldSheen : LinearGradient(colors: [.gray], startPoint: .top, endPoint: .bottom))

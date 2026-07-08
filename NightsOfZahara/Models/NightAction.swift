@@ -25,7 +25,7 @@ enum RiskLevel: String {
 }
 
 enum NightAction: String, CaseIterable, Identifiable {
-    case work, study, train, journey, searchDungeon
+    case work, study, train, prowl, journey, searchDungeon
     case palace, connections, searchTreasure, rest, shop, upgrade, eat
 
     var id: String { rawValue }
@@ -35,6 +35,7 @@ enum NightAction: String, CaseIterable, Identifiable {
         case .work:           return "Work"
         case .study:          return "Study"
         case .train:          return "Train"
+        case .prowl:          return "Prowl the Alleys"
         case .journey:        return "Journey"
         case .searchDungeon:  return "Search for Dungeon"
         case .palace:         return "Enter Palace"
@@ -52,6 +53,7 @@ enum NightAction: String, CaseIterable, Identifiable {
         case .work:           return "hammer"
         case .study:          return "book"
         case .train:          return "figure.strengthtraining.traditional"
+        case .prowl:          return "figure.run"
         case .journey:        return "map"
         case .searchDungeon:  return "magnifyingglass"
         case .palace:         return "building.columns"
@@ -67,7 +69,7 @@ enum NightAction: String, CaseIterable, Identifiable {
     var energyCost: Int {
         switch self {
         case .rest: return 1
-        case .work, .study, .train, .palace, .connections, .upgrade: return 2
+        case .work, .study, .train, .prowl, .palace, .connections, .upgrade: return 2
         case .journey, .searchDungeon, .searchTreasure: return 3
         // Shopping and eating spend gold / consumables rather than energy,
         // so they stay useful (e.g. food that restores energy).
@@ -79,6 +81,7 @@ enum NightAction: String, CaseIterable, Identifiable {
         switch self {
         case .rest, .shop, .eat, .upgrade:      return .none
         case .work, .study, .train, .connections: return .low
+        case .prowl:                            return .low
         case .searchTreasure, .searchDungeon:   return .medium
         case .journey, .palace:                 return .medium
         }
@@ -89,6 +92,7 @@ enum NightAction: String, CaseIterable, Identifiable {
         case .work:           return "Gold & reputation"
         case .study:          return "Wisdom & magic"
         case .train:          return "Courage & endurance"
+        case .prowl:          return "Speed & cunning"
         case .journey:        return "Treasure, clues, danger"
         case .searchDungeon:  return "Discover a dungeon"
         case .palace:         return "Honor & royal favor"

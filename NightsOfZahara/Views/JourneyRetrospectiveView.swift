@@ -55,7 +55,7 @@ struct JourneyRetrospectiveView: View {
             SectionTitle(text: "\(s.characterName)'s Journey So Far")
             row("Current Title", TitleSystem.currentTitle(for: s))
             row("Starting Role", s.role.rawValue)
-            row("Djinns Bonded", "\(s.djinns.count) / \(Djinn.allCases.count)")
+            row("Djinns Bonded", "\(s.bondedDjinnFigures) / \(GameState.totalDjinnFigures)")
             if KingOfDjinns.isBonded(s) { row("King of the Djinns", "Crowned by Al-Mudhib") }
             row("Dungeons Conquered", "\(s.completedDungeons.count)")
             row("Artifacts Held", "\(s.meta.artifacts.count)")

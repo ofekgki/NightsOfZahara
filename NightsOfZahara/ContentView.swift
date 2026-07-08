@@ -45,7 +45,7 @@ struct ContentView: View {
         // Result of an action / event.
         .sheet(item: $game.outcome) { outcome in
             OutcomeView(outcome: outcome)
-                .presentationDetents([.height(300)])
+                .presentationDetents([.medium, .large])
         }
     }
 

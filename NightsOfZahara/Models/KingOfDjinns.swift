@@ -48,14 +48,15 @@ enum KingOfDjinns {
     // MARK: - State
 
     /// Whether the throne has revealed itself and can be entered.
+    /// Requires broad mastery — at least three stats of 85+, though not every
+    /// stat need reach 85 — plus deep bonds and meaningful choices.
     static func isUnlocked(_ s: GameState) -> Bool {
-        s.completedDungeons.count >= 6
-        && s.meta.relationship("scheherazade") >= 15
-        && s.meta.relationship("sinbad") >= 15
-        && s.night >= 70
-        && s.stats.wisdom >= 30 && s.stats.magic >= 30
-        && s.stats.honor >= 30 && s.stats.reputation >= 30
-        && !s.meta.majorChoices.isEmpty
+        let highStats = StatKind.allCases.filter { s.stats[$0] >= 85 }.count
+        return s.completedDungeons.count >= 6
+            && s.meta.relationship("scheherazade") >= 15
+            && s.meta.relationship("sinbad") >= 15
+            && highStats >= 3
+            && !s.meta.majorChoices.isEmpty
     }
 
     /// Whether the player has conquered the throne and bonded the King.

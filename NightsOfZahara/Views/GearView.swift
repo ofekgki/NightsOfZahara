@@ -76,8 +76,9 @@ struct GearView: View {
                 Text("\(item.name) · \(game.itemLevelName(game.itemLevel(item)))")
                     .font(Theme.body(14).weight(.semibold)).foregroundStyle(item.rarity.color)
                 Text(item.detail).font(Theme.body(11)).foregroundStyle(Theme.sand)
-                if !item.equipSummary.isEmpty {
-                    Text(item.equipSummary).font(Theme.body(11).weight(.semibold)).foregroundStyle(Theme.success)
+                let summary = game.effectiveEquipSummary(item)
+                if !summary.isEmpty {
+                    Text(summary).font(Theme.body(11).weight(.semibold)).foregroundStyle(Theme.success)
                 }
             }
             Spacer()
@@ -96,6 +97,10 @@ struct GearView: View {
                 Text(item.name).font(Theme.body(13)).foregroundStyle(Theme.parchment)
                 Text("\(item.rarity.title) · \(game.itemLevelName(game.itemLevel(item)))")
                     .font(Theme.body(10)).foregroundStyle(Theme.sand)
+                let summary = game.effectiveEquipSummary(item)
+                if !summary.isEmpty {
+                    Text(summary).font(Theme.body(10).weight(.semibold)).foregroundStyle(Theme.success)
+                }
             }
             InfoDot(title: item.name, message: item.infoText, color: item.rarity.color)
             Spacer()

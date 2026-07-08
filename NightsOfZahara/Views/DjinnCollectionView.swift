@@ -15,7 +15,7 @@ struct DjinnCollectionView: View {
             ScrollView {
                 VStack(spacing: 14) {
                     if let s = game.state {
-                        Text("\(s.djinns.count) of \(Djinn.allCases.count) Djinns bonded")
+                        Text("\(s.bondedDjinnFigures) of \(GameState.totalDjinnFigures) Djinns bonded")
                             .font(Theme.body(14)).foregroundStyle(Theme.sand)
                             .frame(maxWidth: .infinity)
                         kingBanner(s)

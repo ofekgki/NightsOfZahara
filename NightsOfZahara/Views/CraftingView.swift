@@ -15,8 +15,16 @@ struct CraftingView: View {
             VStack(spacing: 14) {
                 if let s = game.state {
                     header(s)
-                    ForEach(CraftCatalog.recipes) { recipe in
+                    ForEach(game.craftableRecipes()) { recipe in
                         recipeCard(recipe, s)
+                    }
+                    if let next = game.nextCraftingUnlockLevel() {
+                        Label("Upgrade your Crafting Room to level \(next) to unlock more — and higher-tier — recipes.",
+                              systemImage: "hammer.circle.fill")
+                            .font(Theme.body(11).italic())
+                            .foregroundStyle(Theme.sand.opacity(0.8))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .zaharaCard(padding: 12)
                     }
                 }
             }
