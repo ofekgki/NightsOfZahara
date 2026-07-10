@@ -163,6 +163,7 @@ extension GameViewModel {
         case .study:         return lvl(.library)
         case .magicStudy:    return lvl(.magic)
         case .train:         return lvl(.training)
+        case .prowl:         return lvl(.hideout)
         case .dust:          return lvl(.storage)
         case .treasure:      return lvl(.treasure) * 10
         case .craftDiscount: return lvl(.crafting) * 10

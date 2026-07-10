@@ -68,8 +68,8 @@ enum NightAction: String, CaseIterable, Identifiable {
 
     var energyCost: Int {
         switch self {
-        case .rest: return 1
-        case .work, .study, .train, .prowl, .palace, .connections, .upgrade: return 2
+        case .rest, .upgrade: return 1
+        case .work, .study, .train, .prowl, .palace, .connections: return 2
         case .journey, .searchDungeon, .searchTreasure: return 3
         // Shopping and eating spend gold / consumables rather than energy,
         // so they stay useful (e.g. food that restores energy).

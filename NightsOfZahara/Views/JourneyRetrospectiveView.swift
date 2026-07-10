@@ -61,7 +61,7 @@ struct JourneyRetrospectiveView: View {
             row("Artifacts Held", "\(s.meta.artifacts.count)")
             row("Treasures Found", "\(s.treasuresFound)")
             row("Gold", "\(s.gold)")
-            row("Greatest Strength", "\(s.stats.highest.title) \(s.stats[s.stats.highest])")
+            row("Greatest Strength", greatestStrength(s))
             row("Scheherazade", Faction.standing(s.meta.relationship("scheherazade")))
             row("King Sinbad", Faction.standing(s.meta.relationship("sinbad")))
             row("Allies", "\(s.connections.count)")
@@ -103,6 +103,15 @@ struct JourneyRetrospectiveView: View {
             Spacer()
             Text(value).font(Theme.body(15).weight(.semibold)).foregroundStyle(Theme.brightGold)
         }
+    }
+
+    /// If several stats are maxed, celebrate the breadth with a special title
+    /// instead of naming a single strongest stat.
+    private func greatestStrength(_ s: GameState) -> String {
+        let maxed = StatKind.allCases.filter { s.stats[$0] >= Stats.cap }.count
+        if maxed >= 3 { return "Master of All Trades (\(maxed) stats maxed)" }
+        if maxed >= 2 { return "Jack of Many Talents (\(maxed) stats maxed)" }
+        return "\(s.stats.highest.title) \(s.stats[s.stats.highest])"
     }
 
     private func reflection(_ s: GameState) -> String {

@@ -84,7 +84,15 @@ struct EndGameView: View {
     }
 
     private func strongestDjinn(_ s: GameState) -> String {
-        s.djinns.max { $0.statBonus.endurance + $0.statBonus.magic < $1.statBonus.endurance + $1.statBonus.magic }?.name ?? "None"
+        // Power = artifact rarity rank + its upgrade level, so a Legendary at max
+        // level equals a Mythic at Masterwork.
+        func power(_ d: Djinn) -> Int {
+            let art = ArtifactCatalog.artifact(for: d)
+            let rarityRank = Rarity.allCases.firstIndex(of: art.rarity) ?? 0
+            let level = s.meta.itemLevels[art.id] ?? 0
+            return rarityRank + level
+        }
+        return s.djinns.max { power($0) < power($1) }?.name ?? "None"
     }
 
     private func keyArtifact(_ s: GameState) -> String {

@@ -40,7 +40,7 @@ enum ArtifactCatalog {
         case .zagan:     return ("art_zagan", "Seed of Zagan", "A seed that renews all life.", s(0,0,0,0,0,8,0,0,6), .mythic)
         case .shiqq:     return ("art_shiqq", "Veil of Shiqq", "A shroud woven from nightmares; foes quail before its wearer.", s(0,0,4,0,0,0,3,4,0), .legendary)
         case .nasnas:    return ("art_nasnas", "Anklet of Nasnas", "A feather-light anklet that quickens every step.", s(0,0,0,0,0,3,0,0,0,7), .legendary)
-        case .ifrit:     return ("art_ifrit", "Warbrand of Ifrit", "A blade wreathed in battlefield fire — devastating, but heavy.", s(0,0,2,0,0,0,7,0,4,-2), .legendary)
+        case .ifrit:     return ("art_ifrit", "Warbrand of Ifrit", "A blade wreathed in battlefield fire — devastating, but heavy.", s(0,0,2,0,0,0,7,0,4,-2), .mythic)
         case .khanzan:   return ("art_khanzan", "Prayer Beads of Khanzan", "Beads that ward the spirit against curse and fear.", s(0,6,2,0,3,0,0,0,0), .legendary)
         case .barqan:    return ("art_barqan", "Stormrod of Barqan", "A rod humming with caged lightning.", s(0,0,6,0,0,0,0,0,0,4), .legendary)
         case .maymunah:  return ("art_maymunah", "Glass Rose of Maymunah", "A rose of enchanted glass that charms all who see it.", s(0,0,0,7,4,0,0,2,0), .legendary)
@@ -48,8 +48,8 @@ enum ArtifactCatalog {
         case .zalmbur:   return ("art_zalmbur", "Endless Coin of Zalmbur", "A coin that always returns to its bearer's purse.", s(0,0,0,3,0,3,0,5,0), .legendary)
         case .sut:       return ("art_sut", "Mask of Sut", "A mask that hides the truth of any face.", s(0,0,2,0,0,3,0,7,0), .legendary)
         case .dasim:     return ("art_dasim", "Broken Oath of Dasim", "A shattered seal that turns allies to rivals.", s(0,0,0,2,0,0,5,4,0), .legendary)
-        case .zawbaah:   return ("art_zawbaah", "Eye of Zawba'ah", "A calm eye that endures at the heart of any storm.", s(0,0,0,0,0,3,0,0,5,4), .legendary)
-        case .shamhurish:return ("art_shamhurish", "Scales of Shamhurish", "Golden scales that weigh every truth.", s(0,6,0,2,7,0,0,0,0), .legendary)
+        case .zawbaah:   return ("art_zawbaah", "Eye of Zawba'ah", "A calm eye that endures at the heart of any storm.", s(0,0,0,0,0,3,0,0,5,4), .mythic)
+        case .shamhurish:return ("art_shamhurish", "Scales of Shamhurish", "Golden scales that weigh every truth.", s(0,6,0,2,7,0,0,0,0), .mythic)
         }
     }
 }

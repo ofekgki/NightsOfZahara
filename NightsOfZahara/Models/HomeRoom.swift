@@ -9,7 +9,7 @@
 import SwiftUI
 
 enum HomeRoom: String, CaseIterable, Identifiable, Codable {
-    case resting, work, library, training, magic, storage, treasure, crafting, map, guest
+    case resting, work, library, training, hideout, magic, storage, treasure, crafting, map, guest
 
     var id: String { rawValue }
 
@@ -19,6 +19,7 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
         case .work:     return "Work Room"
         case .library:  return "Library"
         case .training: return "Training Room"
+        case .hideout:  return "Hideout"
         case .magic:    return "Magic Room"
         case .storage:  return "Storage Room"
         case .treasure: return "Treasure Room"
@@ -34,6 +35,7 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
         case .work:     return "bag.fill"
         case .library:  return "books.vertical.fill"
         case .training: return "figure.strengthtraining.traditional"
+        case .hideout:  return "figure.run"
         case .magic:    return "wand.and.stars"
         case .storage:  return "archivebox.fill"
         case .treasure: return "shippingbox.fill"
@@ -48,11 +50,12 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
         case .resting:  return "+1 Maximum Energy, per level."
         case .work:     return "+20 gold earned from Work, per level."
         case .library:  return "+1 Wisdom from Study, per level."
-        case .training: return "+1 Courage from Training, per level."
+        case .training: return "+1 Courage and +1 Endurance from Training, per level."
+        case .hideout:  return "+1 Speed and +1 Cunning from Prowling, per level."
         case .magic:    return "+1 Magic from Study, per level."
         case .storage:  return "+1 Magical Dust from finds, per level."
         case .treasure: return "+10% treasure-search fortune, per level."
-        case .crafting: return "Crafting & reforging cost less, per level."
+        case .crafting: return "Cheaper crafting and unlocks higher recipes, per level."
         case .map:      return "+1 dungeon-search fortune, per level."
         case .guest:    return "Lets you host companions (level 1 required)."
         }
@@ -67,4 +70,4 @@ enum HomeRoom: String, CaseIterable, Identifiable, Codable {
 }
 
 /// Which gameplay aspect a home bonus applies to.
-enum HomeAspect { case maxEnergy, workIncome, study, magicStudy, train, dust, treasure, craftDiscount, dungeonSearch }
+enum HomeAspect { case maxEnergy, workIncome, study, magicStudy, train, prowl, dust, treasure, craftDiscount, dungeonSearch }

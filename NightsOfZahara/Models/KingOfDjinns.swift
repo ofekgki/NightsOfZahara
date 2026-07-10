@@ -52,7 +52,8 @@ enum KingOfDjinns {
     /// stat need reach 85 — plus deep bonds and meaningful choices.
     static func isUnlocked(_ s: GameState) -> Bool {
         let highStats = StatKind.allCases.filter { s.stats[$0] >= 85 }.count
-        return s.completedDungeons.count >= 6
+        return s.night >= 70
+            && s.completedDungeons.count >= 15
             && s.meta.relationship("scheherazade") >= 15
             && s.meta.relationship("sinbad") >= 15
             && highStats >= 3

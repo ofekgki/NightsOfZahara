@@ -129,6 +129,8 @@ enum ItemCatalog {
              effect: .grantStat(.luck, 2), detail: "A soothing brew. +2 Luck when drunk.", consumable: true, rarity: .rare, source: .shop),
         Item(id: "healing_soup", name: "Healing Soup", category: .potion, price: 55,
              effect: .healInjury(1), detail: "Mends wounds. Heals an injury.", consumable: true, rarity: .rare, source: .shop),
+        Item(id: "super_food", name: "Super Food", category: .food, price: 300,
+             effect: .healInjury(3), detail: "A miraculous feast. Heals 3 injuries.", consumable: true, rarity: .epic, source: .shop),
         Item(id: "curved_blade", name: "Curved Blade", category: .weapon, price: 120,
              effect: .none, detail: "A fine scimitar.", consumable: false, rarity: .rare, source: .shop,
              slot: .weapon, equipBonus: Stats(wealth: 0, wisdom: 0, magic: 0, reputation: 0, honor: 0, luck: 0, courage: 4, cunning: 0, endurance: 0, speed: -1)),

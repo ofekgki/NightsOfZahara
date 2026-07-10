@@ -49,6 +49,8 @@ struct DungeonRun {
     var finished: Bool = false
     var conquered: Bool = false
     var rewardClaimed: Bool = false
+    /// Wounds taken this run — too many forces a retreat.
+    var wounds: Int = 0
     /// Djinn abilities already invoked this run (by raw value).
     var abilitiesUsed: Set<String> = []
 
@@ -151,15 +153,42 @@ final class GameViewModel: ObservableObject {
         SaveManager.save(s)
     }
 
-    /// Wealth tracks the player's actual fortune: it rises and falls with the
-    /// gold they currently hold, rather than manual upgrades alone.
+    /// Wealth tracks the player's actual fortune: their gold plus the amount
+    /// and rarity of the items they own (rare 1, epic 2, legendary 3, mythic 4).
     private func syncWealth(_ s: inout GameState) {
-        s.stats.wealth = min(Stats.cap, 5 + s.gold / 40)
+        var itemWorth = 0
+        for (id, count) in s.inventory {
+            guard let item = ItemCatalog.item(id: id) else { continue }
+            switch item.rarity {
+            case .rare:      itemWorth += 1 * count
+            case .epic:      itemWorth += 2 * count
+            case .legendary: itemWorth += 3 * count
+            case .mythic:    itemWorth += 4 * count
+            case .common:    break
+            }
+        }
+        s.stats.wealth = min(Stats.cap, 5 + s.gold / 40 + itemWorth)
     }
 
-    /// Enforce the hard stat ceiling everywhere (e.g. after equipping gear).
+    /// The total bonus the currently-equipped gear adds to a given stat.
+    private func equippedStatBonus(_ kind: StatKind, in s: GameState) -> Int {
+        var total = 0
+        for (_, id) in s.meta.equipped {
+            guard let item = ItemCatalog.item(id: id), let base = item.equipBonus else { continue }
+            let mult = 1.0 + Double(s.meta.itemLevels[id] ?? 0) * 0.25
+            total += Int(Double(base[kind]) * mult)
+        }
+        return total
+    }
+
+    /// Enforce the stat ceiling AND floor. Without items every stat sits at
+    /// least at 1; items only add on top, so a stat never drops below
+    /// 1 + its total equipped bonus (item #10).
     private func clampStats(_ s: inout GameState) {
-        for k in StatKind.allCases { s.stats[k] = s.stats[k] }   // subscript clamps 0...cap
+        for k in StatKind.allCases {
+            let floor = max(1, 1 + equippedStatBonus(k, in: s))
+            s.stats[k] = max(floor, min(Stats.cap, s.stats[k]))
+        }
     }
 
     // MARK: - Djinn helpers
@@ -281,7 +310,7 @@ final class GameViewModel: ObservableObject {
         SoundManager.shared.play(.coins)
         present(ActionOutcome(title: "A Night's Work",
                               message: "You earn your keep in Zahara's bustle.",
-                              deltas: ["+\(gold) Gold", "+\(rep) Reputation"],
+                              deltas: ["+\(gold) Gold", statGainLabel(.reputation, rep, in: s)],
                               tone: .good))
     }
 
@@ -302,7 +331,7 @@ final class GameViewModel: ObservableObject {
     private func doTrain() {
         guard var s = state else { return }
         let cour = Int.random(in: 1...3) + homeBonus(.train)
-        let end = Int.random(in: 1...2)
+        let end = Int.random(in: 1...2) + homeBonus(.train)   // Training Room boosts Endurance too
         s.stats.courage += cour
         s.stats.endurance += end
         state = s
@@ -315,8 +344,8 @@ final class GameViewModel: ObservableObject {
     /// Prowl Zahara's back alleys — sharpen Speed and Cunning.
     private func doProwl() {
         guard var s = state else { return }
-        let spd = Int.random(in: 1...3)
-        let cun = Int.random(in: 1...3) + (s.role == .marketOrphan ? 1 : 0)
+        let spd = Int.random(in: 1...3) + homeBonus(.prowl)       // Hideout boosts Speed
+        let cun = Int.random(in: 1...3) + (s.role == .marketOrphan ? 1 : 0) + homeBonus(.prowl)  // and Cunning
         s.stats.speed += spd
         s.stats.cunning += cun
         state = s
@@ -344,15 +373,18 @@ final class GameViewModel: ObservableObject {
             let gold = Int.random(in: 40...110)
             s.gold += gold
             s.treasuresFound += 1
+            // Traveling the sea roads wins favor with the Sailors of the Port.
+            bumpFaction(.sailors, 2, in: &s)
             state = s
             present(ActionOutcome(title: "Fortune on the Road",
-                                  message: "The journey rewards you with coin and small treasures.",
-                                  deltas: ["+\(gold) Gold", "+1 Treasure"], tone: .good))
+                                  message: "The journey rewards you with coin and small treasures, and the sailors mark you a fellow traveler.",
+                                  deltas: ["+\(gold) Gold", "+1 Treasure", "+Sailors' favor"], tone: .good))
         } else if roll > 20 {
+            bumpFaction(.sailors, 1, in: &s)
             state = s
             present(ActionOutcome(title: "A Quiet Journey",
-                                  message: "The road is long and uneventful, but you return safely.",
-                                  tone: .neutral))
+                                  message: "The road is long and uneventful, but you return safely — and a little better known among the sailors.",
+                                  deltas: ["+Sailors' favor"], tone: .neutral))
         } else {
             // Bandit encounter.
             resolveCombat(name: "Desert Bandits", difficulty: 14, context: "on the road")
@@ -362,8 +394,11 @@ final class GameViewModel: ObservableObject {
     private func doSearchDungeon() {
         guard var s = state else { return }
 
-        // The easiest still-undiscovered dungeon is the one you might find.
-        guard let target = undiscoveredDungeons.min(by: { $0.difficulty < $1.difficulty }) else {
+        // Pick from the easiest few still-undiscovered dungeons at random, so the
+        // hint (and the dungeon you can find) varies between searches instead of
+        // being stuck on a single one.
+        let candidates = undiscoveredDungeons.sorted { $0.difficulty < $1.difficulty }.prefix(4)
+        guard let target = candidates.randomElement() else {
             present(ActionOutcome(title: "Nothing Left to Find",
                                   message: "All known dungeons have already been discovered.",
                                   tone: .neutral))
@@ -521,11 +556,16 @@ final class GameViewModel: ObservableObject {
         let maymunahBonus = has(.maymunah) ? 3 : 0   // Djinn of Beauty
         let rep = Int.random(in: 1...3) + zeparBonus + maymunahBonus
         s.stats.reputation += rep
-        var deltas = ["+\(rep) Reputation"]
+        var deltas = [statGainLabel(.reputation, rep, in: s)]
         if let name = names.filter({ !s.connections.contains($0) }).randomElement(),
            Int.random(in: 0...100) < 55 {
             s.connections.append(name)
             deltas.append("New ally: \(name)")
+            // Befriending the sailor wins favor with the Sailors of the Port.
+            if name == "Sailor Yusuf" {
+                bumpFaction(.sailors, 4, in: &s)
+                deltas.append("+Sailors' favor")
+            }
         }
         state = s
         SoundManager.shared.play(.door)
@@ -686,13 +726,22 @@ final class GameViewModel: ObservableObject {
     }
 
     /// Uses a consumable from the inventory (e.g. food, keys, maps).
-    func useItem(_ item: Item) {
-        guard var s = state, (s.inventory[item.id] ?? 0) > 0 else { return }
+    /// Uses a consumable. Returns feedback and does NOT open a global sheet, so
+    /// the food/inventory menu stays open after eating.
+    @discardableResult
+    func useItem(_ item: Item) -> String {
+        guard var s = state, (s.inventory[item.id] ?? 0) > 0 else { return "" }
         s.inventory[item.id]! -= 1
         if s.inventory[item.id]! <= 0 { s.inventory[item.id] = nil }
+        let injuriesBefore = s.meta.injuries
         applyEffect(item.effect, to: &s)
         state = s
-        present(ActionOutcome(title: "Used \(item.name)", message: item.detail, tone: .good))
+        HapticManager.play(.success)
+        let healed = injuriesBefore - s.meta.injuries
+        addJournal("Used \(item.name).")
+        save()
+        if healed > 0 { return "\(item.name): healed \(healed) injur\(healed == 1 ? "y" : "ies")." }
+        return "\(item.name): \(item.detail)"
     }
 
     func applyEffect(_ effect: ItemEffect, to s: inout GameState) {
@@ -727,8 +776,8 @@ final class GameViewModel: ObservableObject {
         return has(.ugo) ? Int(Double(base) * 0.8) : base
     }
 
-    /// Each upgrade costs 2 energy plus gold.
-    static let upgradeEnergyCost = 2
+    /// Each upgrade costs 1 energy plus gold.
+    static let upgradeEnergyCost = 1
 
     /// A stat that has reached the cap can no longer be improved.
     func isStatMaxed(_ kind: StatKind) -> Bool {
@@ -874,15 +923,19 @@ final class GameViewModel: ObservableObject {
                 run.log.insert("You have conquered \(run.dungeon.name)!", at: 0)
             }
         } else {
-            // Take a wound; the run may end if endurance breaks.
+            // Take a wound — the penalty falls on the stat that was tested,
+            // not always Endurance. (clampStats keeps it at its item-aware floor.)
             var damage = Int.random(in: 2...4)
             if has(.phenex) { damage = max(1, damage - 1) }
             damage = max(1, damage - companionBonus(.dungeonSafety) / 3)   // companions soften blows
             damage = max(1, damage - aladdinDungeonSafety)                 // Aladdin knows the traps
-            s.stats.endurance = max(0, s.stats.endurance - damage)
+            let failedStat = room.kind.testedStat
+            s.stats[failedStat] = max(0, s.stats[failedStat] - damage)
             s.meta.injuries += 1
-            run.log.insert("✘ \(room.name): the challenge wounds you. -\(damage) Endurance.", at: 0)
-            if s.stats.endurance <= 3 {
+            run.wounds += 1
+            run.log.insert("✘ \(room.name): the challenge wounds you. -\(damage) \(failedStat.title).", at: 0)
+            // Too many wounds (or a broken body) forces a retreat.
+            if run.wounds >= 4 || s.stats.endurance <= 3 {
                 run.finished = true
                 run.conquered = false
                 run.log.insert("Too wounded to go on, you retreat from \(run.dungeon.name).", at: 0)
@@ -999,14 +1052,21 @@ final class GameViewModel: ObservableObject {
         }
     }
 
-    /// Djinns whose ability can be invoked on the current room right now.
+    /// The Djinn whose artifact is currently equipped, if any.
+    func equippedArtifactDjinn() -> Djinn? {
+        guard let item = equippedItem(.artifact) else { return nil }
+        return Djinn.allCases.first { ArtifactCatalog.artifact(for: $0).id == item.id }
+    }
+
+    /// The Djinn ability that can be invoked right now: only the Djinn whose
+    /// artifact you have equipped, and only once per labyrinth capture attempt.
     func usableAbilities() -> [Djinn] {
-        guard let run = activeRun, let room = run.currentRoom, !run.finished else { return [] }
-        return Djinn.allCases.filter { djinn in
-            has(djinn)
-            && !run.abilitiesUsed.contains(djinn.rawValue)
-            && abilityTargets(djinn).contains(room.kind)
-        }
+        guard let run = activeRun, let room = run.currentRoom, !run.finished,
+              run.abilitiesUsed.isEmpty,                       // one use per run
+              let djinn = equippedArtifactDjinn(),             // must match equipped artifact
+              has(djinn),
+              abilityTargets(djinn).contains(room.kind) else { return [] }
+        return [djinn]
     }
 
     /// Invoke a Djinn's ability to clear the current room without a check.
@@ -1172,6 +1232,11 @@ final class GameViewModel: ObservableObject {
         // bonus to maximum energy, reduced by lingering injuries.
         s.maxEnergy = s.energyForCurrentEra + (newMod?.energyDelta ?? 0) + homeBonus(.maxEnergy)
         s.energy = max(3, s.maxEnergy - s.meta.injuries)
+
+        // Warn the player at the start of the night if they are still injured.
+        if s.meta.injuries > 0 {
+            summary.events.append("⚠️ You are wounded (\(s.meta.injuries) injur\(s.meta.injuries == 1 ? "y" : "ies")). Injuries sap your rolls and energy — Rest, eat, or see a healer to recover.")
+        }
 
         // Title advancement note.
         let titleAfter = TitleSystem.currentTitle(for: s)

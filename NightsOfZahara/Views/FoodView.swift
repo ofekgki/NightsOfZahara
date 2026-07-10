@@ -10,6 +10,7 @@ import SwiftUI
 struct FoodView: View {
     @EnvironmentObject private var game: GameViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var lastMessage: String?
 
     /// Consumable food/potion items the player currently holds.
     private func heldConsumables(_ s: GameState) -> [(Item, Int)] {
@@ -31,6 +32,13 @@ struct FoodView: View {
                             .font(Theme.body(15).weight(.semibold)).foregroundStyle(Theme.gold)
                     }
 
+                    if let msg = lastMessage {
+                        Label(msg, systemImage: "fork.knife.circle.fill")
+                            .font(Theme.body(12).weight(.semibold)).foregroundStyle(Theme.success)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .zaharaCard(padding: 10)
+                    }
+
                     let held = heldConsumables(s)
                     if held.isEmpty {
                         VStack(spacing: 8) {
@@ -49,7 +57,7 @@ struct FoodView: View {
                                     Text(item.detail).font(Theme.body(12)).foregroundStyle(Theme.sand)
                                 }
                                 Spacer()
-                                Button("Use") { game.useItem(item) }
+                                Button("Use") { withAnimation { lastMessage = game.useItem(item) } }
                                     .font(Theme.body(14).weight(.bold))
                                     .padding(.horizontal, 14).padding(.vertical, 8)
                                     .background(Theme.goldSheen)
