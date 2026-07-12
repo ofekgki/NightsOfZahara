@@ -39,7 +39,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **King Sinbad's palace & Court of Justice** — a royal quest board with escalating missions, plus a separate Court of Justice where you preside over disputes for Honor, Reputation or Wisdom.
 - **Major characters** — Ali Baba, Jasmine and Aladdin: recurring allies with their own relationship arcs, quests, dialogue and bonuses (see below).
 - **Events & choices** — mysterious merchants, sandstorms, palace invitations, whispering lamps, character encounters and branching **story choices** whose consequences persist to the ending.
-- **Economy & items** — a bazaar, consumable provisions, gear that boosts stats (heavy gear can cost you Speed), and gold-and-energy stat upgrades.
+- **Economy & items** — a bazaar, consumable provisions (including **Super Food** that heals 3 injuries), gear that boosts stats (heavy gear can cost you Speed), and gold-and-energy stat upgrades. Your **Wealth** stat reflects both your gold and the rarity of the items you own.
 - **Sound & music** — a procedural *Hijaz*-scale ambient score, plus real sound effects for work, treasure, shops/connections and the palace.
 - **Local save/load** — the whole run persists automatically via `Codable` (JSON file + `UserDefaults` mirror).
 - **Endgame** — a computed final title and a generated legend recapping your deeds, told in the grand style of the thousand nights.
@@ -64,7 +64,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **Multiple endings** — named endings (King's Champion, Merchant Prince, Master of Djinns, Protector of Zahara, **Sovereign of the Djinns**…) chosen from your stats, Djinns, artifacts, relationships and title.
 - **Quest log** — main, side, dungeon, role, Djinn, treasure and character quests, plus quests unlocked by faction/relationship level-ups.
 - **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions (each craftable item may exist only once at a time). A higher **Crafting Room** unlocks more recipes and higher-tier (legendary/mythic) gear.
-- **Home upgrades** — build ten rooms (Resting → +max energy, Work → +work gold, Library, Training, Crafting, Treasure…) for lasting passive bonuses. Finish every room to earn the *Lord of the Estate* title and a gift.
+- **Home upgrades** — build eleven rooms (Resting → +max energy, Work → +work gold, Library, Training → +Endurance from training, Hideout → Speed & Cunning from Prowl, Crafting, Treasure…) for lasting passive bonuses. Finish every room to earn the *Lord of the Estate* title and a gift.
 - **Companions** — recruit NPC allies whose talents boost combat, treasure, dungeon safety, shop prices and more; some major characters join once your bond runs deep.
 - **Recommended stats** — dungeons show recommended stats, endurance and spoils before you enter, and grow harder to *find* the higher their level.
 
@@ -139,7 +139,7 @@ Every Djinn grants a permanent stat bonus, a passive perk, and a signature abili
 | **Shamhurish** | Judgment | The Court Beneath the Sand | ★★★★★ |
 | 👑 **Al-Mudhib** | King of the Djinns | The Throne of the Hidden Flame | ★★★★★★ |
 
-**Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — six dungeons conquered, the trust of Scheherazade and Sinbad, at least three stats of 85+, and meaningful moral choices. Once unlocked it sits pinned at the **top of the dungeon list in its own section** and costs **12 energy** to enter. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, adds him to your character page, and lets you **finish your legend at any time** (even before night 100) for the rarest ending.
+**Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — at least **night 70**, **fifteen dungeons conquered**, the deep trust of Scheherazade and Sinbad, at least three stats of 85+, and meaningful moral choices. Once unlocked it sits pinned at the **top of the dungeon list in its own section** and costs **12 energy** to enter. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, adds him to your character page, and lets you **finish your legend at any time** (even before night 100) for the rarest ending.
 
 ---
 
