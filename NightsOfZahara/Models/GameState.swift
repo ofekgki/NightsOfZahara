@@ -16,7 +16,7 @@ struct GameState: Codable {
     // Progression
     var night: Int = 1
     var energy: Int = 6
-    var maxEnergy: Int = 6
+    var maxEnergy: Int = 5
     var gold: Int
 
     // Character
@@ -64,10 +64,10 @@ struct GameState: Codable {
     /// The 100-night checkpoints where the grand retrospective is offered.
     var isCheckpointNight: Bool { night % GameState.totalNights == 0 }
 
-    /// Max energy scales as the legend grows (6 → 8 → 9 → 10) across 100 nights.
+    /// Max energy scales as the legend grows (5 → 8 → 9 → 10) across 100 nights.
     var energyForCurrentEra: Int {
         switch night {
-        case ...20:  return 6
+        case ...20:  return 5
         case ...50:  return 8
         case ...80:  return 9
         default:     return 10
@@ -92,8 +92,8 @@ struct GameState: Codable {
             characterName: name.isEmpty ? "Wanderer" : name,
             role: role,
             night: 1,
-            energy: 6,
-            maxEnergy: 6,
+            energy: 5,
+            maxEnergy: 5,
             gold: 50 + role.startingGold,
             stats: stats,
             journal: ["Scheherazade greets you in Zahara. \"Your first of a thousand nights begins...\""]

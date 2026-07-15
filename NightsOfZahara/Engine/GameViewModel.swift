@@ -934,8 +934,8 @@ final class GameViewModel: ObservableObject {
             s.meta.injuries += 1
             run.wounds += 1
             run.log.insert("✘ \(room.name): the challenge wounds you. -\(damage) \(failedStat.title).", at: 0)
-            // Too many wounds (or a broken body) forces a retreat.
-            if run.wounds >= 4 || s.stats.endurance <= 3 {
+            // Four failed rooms force a retreat from the dungeon.
+            if run.wounds >= 4 {
                 run.finished = true
                 run.conquered = false
                 run.log.insert("Too wounded to go on, you retreat from \(run.dungeon.name).", at: 0)
