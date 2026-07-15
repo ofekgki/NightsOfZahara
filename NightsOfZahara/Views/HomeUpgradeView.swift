@@ -52,6 +52,13 @@ struct HomeUpgradeView: View {
             Spacer()
             if maxed {
                 Text("Max").font(Theme.body(12).weight(.bold)).foregroundStyle(Theme.success)
+            } else if game.isHomeUpgradeNightLocked(room) {
+                let unlockNight = game.homeLevelUnlockNight(level + 1)
+                VStack(spacing: 1) {
+                    Image(systemName: "lock.fill").font(.system(size: 12)).foregroundStyle(Theme.sand.opacity(0.7))
+                    Text("Night \(unlockNight)").font(Theme.body(10).weight(.semibold)).foregroundStyle(Theme.sand.opacity(0.7))
+                }
+                .padding(.horizontal, 10).padding(.vertical, 7)
             } else {
                 Button {
                     game.upgradeHome(room)

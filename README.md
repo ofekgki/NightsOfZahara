@@ -26,6 +26,24 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 <img src="Screenshots/city.png" width="260" alt="City of Zahara" />
 </div>
 
+<div align="center">
+<img src="Screenshots/actions.png" width="200" alt="Night actions" />
+&nbsp;
+<img src="Screenshots/character.png" width="200" alt="Character sheet" />
+&nbsp;
+<img src="Screenshots/djinns.png" width="200" alt="Djinn collection" />
+</div>
+
+<div align="center">
+<img src="Screenshots/inventory.png" width="200" alt="Inventory" />
+&nbsp;
+<img src="Screenshots/night-summary.png" width="200" alt="Night summary" />
+</div>
+
+<div align="center">
+<sub>Night actions · Character sheet · Djinn collection · Inventory · Night summary</sub>
+</div>
+
 ---
 
 ## 🎮 Features
@@ -36,7 +54,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **13 nightly actions** — Work, Study, Train, Prowl the Alleys (Speed & Cunning), Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat — each with a clear energy cost and an action-preview card.
 - **22 Djinns & 22 dungeons** — every Djinn has its own themed, room-by-room dungeon with related monsters and a named boss, plus a legendary **23rd figure**, Al-Mudhib the King of the Djinns, with a secret endgame dungeon. Dungeon rooms succeed on a **percentage chance** based on how far your stat sits from the requirement (15–85%), and dungeons above Hard demand notably higher stats.
 - **Interactive dungeon crawls** — advance through monsters, puzzles, traps, treasure and a boss to the Djinn chamber. Every bonded Djinn grants a **signature ability** that can clear a matching room outright (Amon's Flame, Terror Gaze, Blink Step, Warflame Command, Verdict of Truth…).
-- **King Sinbad's palace & Court of Justice** — a royal quest board with escalating missions, plus a separate Court of Justice where you preside over disputes for Honor, Reputation or Wisdom.
+- **King Sinbad's palace & Court of Justice** — a royal quest board with escalating missions that grow from humble errands into grand late-game commissions (bond twelve Djinns, conquer ten dungeons, become the realm's paragon of honor), plus a separate Court of Justice where you preside over disputes for Honor, Reputation or Wisdom.
 - **Major characters** — Ali Baba, Jasmine and Aladdin: recurring allies with their own relationship arcs, quests, dialogue and bonuses (see below).
 - **Events & choices** — mysterious merchants, sandstorms, palace invitations, whispering lamps, character encounters and branching **story choices** whose consequences persist to the ending.
 - **Economy & items** — a bazaar, consumable provisions (including **Super Food** that heals 3 injuries), gear that boosts stats (heavy gear can cost you Speed), and gold-and-energy stat upgrades. Your **Wealth** stat reflects both your gold and the rarity of the items you own.
@@ -62,7 +80,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **Detailed monsters** — every monster/boss room shows a full stat card (level, HP, attack, defense, magic, special, weakness, reward).
 - **Action previews** — confirm each action with a card showing energy, rewards, risks, helpful stats and estimated odds.
 - **Multiple endings** — named endings (King's Champion, Merchant Prince, Master of Djinns, Protector of Zahara, **Sovereign of the Djinns**…) chosen from your stats, Djinns, artifacts, relationships and title.
-- **Quest log** — main, side, dungeon, role, Djinn, treasure and character quests, plus quests unlocked by faction/relationship level-ups.
+- **Quest log** — main, side, dungeon, role, Djinn, treasure and character quests, plus quests unlocked by faction/relationship level-ups and **late-game quests** that surface only as your legend deepens (master ten labyrinths, gather a court of eight Djinns, and follow Scheherazade's whispers toward the Hidden Flame).
 - **Crafting** — gather materials from dungeons/journeys and forge charms, rings and potions (each craftable item may exist only once at a time). A higher **Crafting Room** unlocks more recipes and higher-tier (legendary/mythic) gear.
 - **Home upgrades** — build eleven rooms (Resting → +max energy, Work → +work gold, Library, Training → +Endurance from training, Hideout → Speed & Cunning from Prowl, Crafting, Treasure…) for lasting passive bonuses. Finish every room to earn the *Lord of the Estate* title and a gift.
 - **Companions** — recruit NPC allies whose talents boost combat, treasure, dungeon safety, shop prices and more; some major characters join once your bond runs deep.
