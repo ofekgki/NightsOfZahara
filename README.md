@@ -22,27 +22,17 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 
 <div align="center">
 <img src="Screenshots/onboarding.png" width="260" alt="Title screen" />
-&nbsp;&nbsp;
-<img src="Screenshots/city.png" width="260" alt="City of Zahara" />
 </div>
 
-<div align="center">
-<img src="Screenshots/actions.png" width="200" alt="Night actions" />
-&nbsp;
-<img src="Screenshots/character.png" width="200" alt="Character sheet" />
-&nbsp;
-<img src="Screenshots/djinns.png" width="200" alt="Djinn collection" />
-</div>
+---
 
-<div align="center">
-<img src="Screenshots/inventory.png" width="200" alt="Inventory" />
-&nbsp;
-<img src="Screenshots/night-summary.png" width="200" alt="Night summary" />
-</div>
+## 📸 Screenshots
 
-<div align="center">
-<sub>Night actions · Character sheet · Djinn collection · Inventory · Night summary</sub>
-</div>
+|            City of Zahara            |             Night Actions             |             Character Sheet              |
+| :----------------------------------: | :-----------------------------------: | :--------------------------------------: |
+| <img src="Screenshots/city.png" width="230" alt="City of Zahara" /> | <img src="Screenshots/actions.png" width="230" alt="Night actions" /> | <img src="Screenshots/character.png" width="230" alt="Character sheet" /> |
+|          **Djinn Collection**          |             **Inventory**             |             **Night Summary**             |
+| <img src="Screenshots/djinns.png" width="230" alt="Djinn collection" /> | <img src="Screenshots/inventory.png" width="230" alt="Inventory" /> | <img src="Screenshots/night-summary.png" width="230" alt="Night summary" /> |
 
 ---
 
