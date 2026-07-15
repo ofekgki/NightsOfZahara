@@ -68,6 +68,7 @@ struct GameState: Codable {
     var energyForCurrentEra: Int {
         switch night {
         case ...20:  return 5
+        case ...35:  return 6
         case ...50:  return 8
         case ...80:  return 9
         default:     return 10

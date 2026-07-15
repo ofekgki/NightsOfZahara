@@ -30,7 +30,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 
 ## 🎮 Features
 
-- **The night loop** — 100 playable nights; energy resets each night and scales as your legend grows (6 → 8 → 9 → 10). Reach the hundredth night to view a full-journey retrospective and **choose to continue or finish** — play never force-ends.
+- **The night loop** — 100 playable nights; energy resets each night and scales as your legend grows (5 → 6 → 8 → 9 → 10). Reach the hundredth night to view a full-journey retrospective and **choose to continue or finish** — play never force-ends.
 - **5 starting roles** — Market Orphan, Wizard Apprentice, Merchant, Sailor, Storyteller — each with distinct stat bonuses, strengths, weaknesses and playstyles.
 - **10 character stats** — Wealth, Wisdom, Magic, Reputation, Honor, Luck, Courage, Cunning, Endurance and **Speed** — that drive every success roll. Wealth tracks your actual gold; every stat caps at **125** (shown as `Max`).
 - **13 nightly actions** — Work, Study, Train, Prowl the Alleys (Speed & Cunning), Journey, Search for Dungeon, Enter Palace, Build Connections, Search for Treasure, Rest, Shop, Upgrade, Eat — each with a clear energy cost and an action-preview card.
@@ -51,7 +51,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 - **Procedural Arabian music + SFX** — an original ambient score synthesized live (different moods for city, palace, shop, dungeon and victory) alongside real effect sounds. Mute + volume in Settings.
 - **Night Summary** — a story-page recap of each night: deeds, gold/stat changes, injuries, events, blessing and title changes.
 - **Blessings & curses** — a nightly modifier that colors your fortunes, with a tap-to-read info icon.
-- **Injuries & fatigue** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer. Info icons explain every condition.
+- **Injuries & fatigue** — lose fights or dungeon rooms and you get hurt; injuries sap rolls and energy, healed by rest, food, potions or a healer. Info icons explain every condition. Fail **four rooms** in a single dungeon and you're forced to retreat — and lose the dungeon's location until you find it again.
 - **Relationships & factions** — standing with Scheherazade, King Sinbad, three major characters and eight factions, shaped by your actions and feeding the ending. Factions show the concrete benefit they grant from **Friendly** upward.
 - **Titles & ranks** — from *Market Survivor* to *Legend of Zahara*, including *Lord of the Estate* (fully upgrade your home) and *Friend of the Genies* (conquer 15 dungeons), shown on your character sheet and in the finale.
 - **Milestone events** every 10 nights, with gifts and words from Scheherazade and Sinbad.
