@@ -120,8 +120,35 @@ extension GameViewModel {
 
     func homeNextCost(_ room: HomeRoom) -> Int { room.cost(toLevel: homeLevel(room) + 1) }
 
+    /// The highest room level unlocked by the current night. Room levels open
+    /// up over time — level 1 from the start, level 2 at night 35, level 3 at
+    /// night 60.
+    func homeLevelCap(forNight night: Int) -> Int {
+        switch night {
+        case ..<35: return 1
+        case ..<60: return 2
+        default:    return 3
+        }
+    }
+
+    /// The night at which a given room level becomes buildable.
+    func homeLevelUnlockNight(_ level: Int) -> Int {
+        switch level {
+        case ...1: return 0
+        case 2:    return 35
+        default:   return 60
+        }
+    }
+
+    /// True when the next level of a room is gated behind a future night.
+    func isHomeUpgradeNightLocked(_ room: HomeRoom) -> Bool {
+        guard let s = state, homeLevel(room) < room.maxLevel else { return false }
+        return homeLevel(room) + 1 > homeLevelCap(forNight: s.night)
+    }
+
     func canUpgradeHome(_ room: HomeRoom) -> Bool {
         guard let s = state, homeLevel(room) < room.maxLevel else { return false }
+        guard homeLevel(room) + 1 <= homeLevelCap(forNight: s.night) else { return false }
         return s.gold >= homeNextCost(room)
     }
 

@@ -70,21 +70,21 @@ enum QuestCatalogGeneral {
         Quest(id: "sq_first_steps", type: .main,
               name: "First Steps in Zahara",
               description: "Scheherazade urges you to make a name for yourself among the people.",
-              objective: .reachReputation(20), rewardGold: 100, rewardStat: (.wisdom, 2),
+              objective: .reachReputation(20), rewardGold: 60, rewardStat: (.wisdom, 1),
               risk: .none, location: "Zahara Market", npc: "Scheherazade",
               completion: "\"You are becoming known,\" Scheherazade smiles. \"The city listens now.\""),
 
         Quest(id: "sq_lost_caravan", type: .side,
               name: "The Lost Caravan",
               description: "A merchant's caravan vanished in the dunes. Brave a journey and search for clues.",
-              objective: .findTreasures(4), rewardGold: 160, rewardItemID: "brass_ring",
+              objective: .findTreasures(4), rewardGold: 100, rewardItemID: "brass_ring",
               risk: .medium, location: "The Deep Desert", npc: "Faruq the Merchant",
               completion: "You recover the caravan's lost goods. Faruq rewards you handsomely."),
 
         Quest(id: "sq_first_djinn", type: .djinn,
               name: "Echo of the Lamp",
               description: "A whisper from an ancient lamp calls you to bond with your first Djinn.",
-              objective: .bondDjinns(1), rewardGold: 200, rewardStat: (.magic, 3),
+              objective: .bondDjinns(1), rewardGold: 130, rewardStat: (.magic, 2),
               risk: .high, location: "A Hidden Dungeon", npc: "Scheherazade",
               completion: "A Djinn now answers your call. Scheherazade nods with quiet pride."),
 
@@ -247,7 +247,48 @@ enum QuestCatalogGeneral {
               objective: .bondDjinns(4), rewardGold: 500, rewardStat: (.magic, 6),
               risk: .high, location: "The Cave of Wonders", npc: "Aladdin",
               completion: "The Ring Djinn bows to you both. A legend among legends is written.",
-              available: { ($0._meta?.relationship("aladdin") ?? 0) >= 80 })
+              available: { ($0._meta?.relationship("aladdin") ?? 0) >= 80 }),
+
+        // ── Late-game quests (surface only deep into a run) ──
+        Quest(id: "lq_deep_delver", type: .dungeon,
+              name: "Master of the Labyrinths",
+              description: "Idris has charted every known dungeon beneath Zahara. He challenges you to conquer ten and prove yourself their master.",
+              objective: .conquerDungeons(10), rewardGold: 900, rewardStat: (.courage, 6),
+              risk: .high, location: "The Dungeons", npc: "The Magician Idris",
+              completion: "Idris seals his charts. \"Ten labyrinths, ten victories. You are the deep's master now.\"",
+              available: { $0.night >= 50 && $0.completedDungeons.count >= 6 }),
+
+        Quest(id: "lq_djinn_court", type: .djinn,
+              name: "A Court of Djinns",
+              description: "Scheherazade whispers that a soul who binds eight Djinns commands a court of living legends. Prove the old tales true.",
+              objective: .bondDjinns(8), rewardGold: 1000, rewardStat: (.magic, 8),
+              risk: .high, location: "Scheherazade's Tower", npc: "Scheherazade",
+              completion: "Eight Djinns answer to you now. \"The tales were true,\" Scheherazade breathes.",
+              available: { $0.completedDungeons.count >= 6 && ($0._meta?.relationship("scheherazade") ?? 0) >= 20 }),
+
+        Quest(id: "lq_grand_hoard", type: .treasure,
+              name: "The Sultan's Hoard",
+              description: "Rashid swears that a hoard beyond counting waits for one who has already plundered the desert twenty times over.",
+              objective: .findTreasures(24), rewardGold: 800, rewardStat: (.luck, 6),
+              risk: .medium, location: "The Deep Desert", npc: "The Thief Rashid",
+              completion: "Rashid whistles low. \"Never seen a hoard like it. You've outdone the sultans themselves.\"",
+              available: { $0.treasuresFound >= 15 }),
+
+        Quest(id: "lq_hidden_flame", type: .main,
+              name: "Whispers of the Hidden Flame",
+              description: "Scheherazade has read of Al-Mudhib, King of the Djinns, who tests only the worthiest. Deepen your mastery of magic, for his throne answers to no lamp.",
+              objective: .reachStat(.magic, 75), rewardGold: 1200, rewardStat: (.wisdom, 8),
+              risk: .high, location: "Scheherazade's Tower", npc: "Scheherazade",
+              completion: "\"The hidden flame stirs,\" Scheherazade says softly. \"When you are ready, its throne will find you.\"",
+              available: { $0.night >= 60 && $0.completedDungeons.count >= 8 && ($0._meta?.relationship("scheherazade") ?? 0) >= 15 }),
+
+        Quest(id: "lq_kings_right_hand", type: .main,
+              name: "The King's Right Hand",
+              description: "King Sinbad, now your closest confidant, would raise you to rule at his side — if your honor can match the crown itself.",
+              objective: .reachHonor(85), rewardGold: 1500, rewardStat: (.reputation, 8),
+              risk: .low, location: "Sinbad's Palace", npc: "King Sinbad",
+              completion: "Sinbad sets a hand on your shoulder. \"Rule beside me. Zahara could ask for no truer hand.\"",
+              available: { $0.night >= 60 && ($0._meta?.relationship("sinbad") ?? 0) >= 25 })
     ]
 
     static func quest(id: String) -> Quest? { all.first { $0.id == id } }

@@ -65,8 +65,12 @@ struct CraftingView: View {
                     let have = game.materialCount(mat)
                     reqLine(name: ItemCatalog.item(id: mat)?.name ?? mat, have: have, need: need)
                 }
-                reqLine(name: "Magical Dust", have: s.meta.magicalDust, need: cost.dust)
-                reqLine(name: "Gold", have: s.gold, need: cost.gold)
+                if cost.dust > 0 {
+                    reqLine(name: "Magical Dust", have: s.meta.magicalDust, need: cost.dust)
+                }
+                if cost.gold > 0 {
+                    reqLine(name: "Gold", have: s.gold, need: cost.gold)
+                }
             }
             let owned = game.alreadyCrafted(recipe)
             Button {
