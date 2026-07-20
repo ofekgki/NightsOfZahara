@@ -8,6 +8,8 @@
 
 Built with **SwiftUI** · **MVVM** · Local save · iOS 26
 
+Video Demonstraion is in the project files.
+
 </div>
 
 ---
@@ -33,6 +35,46 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 | <img src="Screenshots/city.png" width="230" alt="City of Zahara" /> | <img src="Screenshots/actions.png" width="230" alt="Night actions" /> | <img src="Screenshots/character.png" width="230" alt="Character sheet" /> |
 |          **Djinn Collection**          |             **Inventory**             |             **Night Summary**             |
 | <img src="Screenshots/djinns.png" width="230" alt="Djinn collection" /> | <img src="Screenshots/inventory.png" width="230" alt="Inventory" /> | <img src="Screenshots/night-summary.png" width="230" alt="Night summary" /> |
+
+---
+
+## 📖 How to Play
+
+New to Zahara? Here's what each screen and action is for.
+
+### The five screens (bottom tabs)
+
+| Screen | What it's for |
+|--------|---------------|
+| 🏙️ **City** | Your hub. Shows the HUD (night, energy, gold), an *At a Glance* summary of your stats and progress, and doorways to **Sinbad's Palace**, the **Djinn Dungeons**, **Quests**, **Equipment**, **Crafting** and your **Home** — plus *The Chronicle*, a log of your recent nights. |
+| ✨ **Actions** | Where you spend the night. Pick an action card to raise stats, earn gold, explore or rest. Each card shows its **energy cost** and **risk**; tapping one opens a preview with the odds before you commit. When your energy runs out, **End Night** to advance. |
+| 👤 **Character** | Your full sheet: all **10 stats** with bars, your role, current night and era, active **title**, injuries/fatigue, and your bonded **Djinns**. This is where you read who your character has become. |
+| 🔥 **Djinns** | The collection of all **22 Djinns + the King** (23 in total). Each card shows the Djinn's bonus, signature ability and its dungeon — sealed, discovered or bonded. Track how close you are to a full set. |
+| 🎒 **Inventory** | Everything you carry: shop goods, dungeon spoils, crafting materials, magical dust and dungeon clues. Use consumables, and open **Manage Equipment** to equip gear and artifacts. |
+
+Reached from the **City** screen: **Sinbad's Palace** (royal missions & the Court of Justice), your **Home** (build rooms for passive bonuses), the **Crafting** bench, the **Quest log**, **Companions**, the **Codex** (lore) and **Settings**.
+
+### The night actions
+
+Every night you have a pool of **energy**. Actions cost energy (or gold), and riskier ones can wound you — but they pay the most.
+
+| Action | Energy | Risk | What it does |
+|--------|:------:|------|--------------|
+| 🔨 **Work** | 2 | Low | Labor in the bazaar for **gold and reputation**. |
+| 📖 **Study** | 2 | Low | Pore over scrolls to raise **Wisdom and Magic**. |
+| 🏋️ **Train** | 2 | Low | Toughen up for **Courage and Endurance**. |
+| 🏃 **Prowl the Alleys** | 2 | Low | Work the shadows for **Speed and Cunning**. |
+| 🗺️ **Journey** | 3 | Risky | Travel the desert for **treasure and dungeon clues** — but you may face danger. |
+| 🔍 **Search for Dungeon** | 3 | Risky | Hunt for a hidden **Djinn dungeon** to reveal its location (harder dungeons are rarer). |
+| 🏛️ **Enter Palace** | 2 | Risky | Seek an audience for **honor and royal favor**, and take on the King's missions. |
+| 🧑‍🤝‍🧑 **Build Connections** | 2 | Low | Win **reputation** and recruit **allies** across the city. |
+| 📦 **Search for Treasure** | 3 | Risky | Dig for **gold, gems and items** — luck helps. |
+| 🌙 **Rest** | 1 | Safe | Restore **2 energy** and **mend one injury** (once per night). |
+| 🛒 **Visit Shop** | 0 | Safe | Spend **gold** on food, potions and gear. |
+| ⬆️ **Upgrade Stats** | 1 | Safe | Pay **gold** to permanently raise a chosen stat. |
+| 🍽️ **Eat Food** | 0 | Safe | Consume provisions to **restore energy** or heal. |
+
+> **Dungeons:** entering a Djinn's dungeon crawls through rooms of monsters, puzzles and traps. Each room is a **percentage roll** of your stat vs. its requirement; succeed to the end to **bond the Djinn** and win its artifact. Fail four rooms and you're forced to retreat — and lose the dungeon's location. Equip a Djinn's artifact to use its **signature ability** once per attempt.
 
 ---
 
