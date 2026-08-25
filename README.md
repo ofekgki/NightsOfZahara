@@ -38,7 +38,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 
 ---
 
-## 📖 How to Play
+## How to Play
 
 New to Zahara? Here's what each screen and action is for.
 
