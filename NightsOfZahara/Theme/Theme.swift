@@ -1,10 +1,5 @@
-//
-//  Theme.swift
-//  Nights Of Zahara
-//
 //  Arabian-fantasy visual theme: warm desert colors, gold, sand,
 //  purple and night-blue. Central place for colors, gradients and fonts.
-//
 
 import SwiftUI
 

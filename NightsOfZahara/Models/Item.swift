@@ -1,9 +1,4 @@
-//
-//  Item.swift
-//  Nights Of Zahara
-//
 //  Shop / inventory items: effects, categories, rarity, source and equipment.
-//
 
 import SwiftUI
 

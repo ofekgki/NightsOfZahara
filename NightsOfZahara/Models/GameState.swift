@@ -1,10 +1,5 @@
-//
-//  GameState.swift
-//  Nights Of Zahara
-//
 //  The complete, Codable snapshot of a playthrough. This is what gets
 //  saved to and loaded from disk.
-//
 
 import Foundation
 

@@ -1,10 +1,5 @@
-//
-//  Stats.swift
-//  Nights Of Zahara
-//
 //  The character stats and a small helper enum for iterating /
 //  displaying them in the UI.
-//
 
 import SwiftUI
 

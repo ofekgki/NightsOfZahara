@@ -1,10 +1,5 @@
-//
-//  Codex.swift
-//  Nights Of Zahara
-//
 //  The Lore Book. Entries unlock gradually as the player progresses; locked
 //  entries show only a hint of what's to come.
-//
 
 import Foundation
 

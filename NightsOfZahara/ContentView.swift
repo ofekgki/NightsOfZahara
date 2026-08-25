@@ -1,10 +1,5 @@
-//
-//  ContentView.swift
-//  Nights Of Zahara
-//
 //  Root router: switches between onboarding, the main game and the ending
 //  based on the engine's phase. Also hosts the global event & outcome sheets.
-//
 
 import SwiftUI
 

@@ -1,9 +1,4 @@
-//
-//  ShopView.swift
-//  Nights Of Zahara
-//
 //  The market shop: buy food, potions, gear, charms and maps with gold.
-//
 
 import SwiftUI
 

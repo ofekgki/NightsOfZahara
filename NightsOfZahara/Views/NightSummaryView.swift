@@ -1,10 +1,5 @@
-//
-//  NightSummaryView.swift
-//  Nights Of Zahara
-//
 //  A story-page recap of the night that just ended, shown when a new night
 //  begins.
-//
 
 import SwiftUI
 

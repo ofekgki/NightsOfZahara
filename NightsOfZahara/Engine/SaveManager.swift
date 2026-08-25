@@ -1,10 +1,5 @@
-//
-//  SaveManager.swift
-//  Nights Of Zahara
-//
 //  Local persistence for a single save slot using a JSON file in the
 //  app's Documents directory, with UserDefaults as a light fallback.
-//
 
 import Foundation
 

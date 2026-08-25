@@ -1,13 +1,8 @@
-//
-//  KingOfDjinns.swift
-//  Nights Of Zahara
-//
 //  Al-Mudhib — the legendary King of the Djinns. He is NOT a regular
 //  collectible Djinn: his Throne of the Hidden Flame is a secret endgame
 //  dungeon that reveals itself only after major late-game progress, and
 //  conquering it grants his crown, empowers every Djinn bond, and opens the
 //  rarest ending in Zahara.
-//
 
 import SwiftUI
 

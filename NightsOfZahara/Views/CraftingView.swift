@@ -1,9 +1,4 @@
-//
-//  CraftingView.swift
-//  Nights Of Zahara
-//
 //  Craft charms, rings and potions from gathered materials + magical dust.
-//
 
 import SwiftUI
 

@@ -1,10 +1,6 @@
-//
-//  GearView.swift
-//  Nights Of Zahara
-//
 //  Equipment slots and item upgrades. Equip owned gear into six slots and
 //  reforge equippable items with gold + magical dust.
-//
+
 
 import SwiftUI
 

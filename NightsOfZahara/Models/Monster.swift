@@ -1,11 +1,6 @@
-//
-//  Monster.swift
-//  Nights Of Zahara
-//
 //  Detailed monster data shown on monster/boss rooms during a dungeon crawl.
 //  Monsters are generated procedurally from the room, dungeon and night so
 //  they scale with difficulty.
-//
 
 import Foundation
 

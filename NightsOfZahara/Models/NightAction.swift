@@ -1,10 +1,5 @@
-//
-//  NightAction.swift
-//  Nights Of Zahara
-//
 //  The actions a player can take during a night, with energy cost,
 //  icon and risk level metadata used by the action screen.
-//
 
 import SwiftUI
 

@@ -1,9 +1,4 @@
-//
-//  Title.swift
-//  Nights Of Zahara
-//
 //  Player titles / ranks earned through progression, plus the endgame titles.
-//
 
 import Foundation
 

@@ -1,9 +1,4 @@
-//
-//  Faction.swift
-//  Nights Of Zahara
-//
 //  The factions of Zahara and reputation standing with each.
-//
 
 import SwiftUI
 

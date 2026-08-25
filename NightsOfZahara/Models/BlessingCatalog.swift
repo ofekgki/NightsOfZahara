@@ -1,10 +1,5 @@
-//
-//  BlessingCatalog.swift
-//  Nights Of Zahara
-//
 //  The pool of nightly blessings and curses. One may be granted at the start
 //  of a night, affecting that night's fortunes.
-//
 
 import Foundation
 

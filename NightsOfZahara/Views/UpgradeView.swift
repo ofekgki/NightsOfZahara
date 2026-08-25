@@ -1,9 +1,4 @@
-//
-//  UpgradeView.swift
-//  Nights Of Zahara
-//
 //  Spend gold and energy to permanently raise a stat.
-//
 
 import SwiftUI
 

@@ -1,12 +1,7 @@
-//
-//  MajorCharacters.swift
-//  Nights Of Zahara
-//
 //  The recurring major characters of Zahara — Ali Baba, Jasmine and Aladdin —
 //  each with a relationship that deepens through tiers and unlocks quests,
 //  bonuses, companionship and even endings. (Scheherazade and King Sinbad are
 //  handled separately as the framing narrators.)
-//
 
 import SwiftUI
 

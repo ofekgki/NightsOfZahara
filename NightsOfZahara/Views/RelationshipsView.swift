@@ -1,9 +1,4 @@
-//
-//  RelationshipsView.swift
-//  Nights Of Zahara
-//
 //  Standing with key figures (Scheherazade, Sinbad) and the factions of Zahara.
-//
 
 import SwiftUI
 

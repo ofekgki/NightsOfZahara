@@ -1,12 +1,8 @@
-//
-//  SoundManager.swift
-//  Nights Of Zahara
-//
 //  File-based audio: a looping background music track and short one-shot
 //  sound effects tied to actions. Music obeys the user's music setting;
 //  effects obey the SFX setting. Every call is defensively guarded so a
 //  missing file or audio failure never affects gameplay.
-//
+
 
 import AVFoundation
 

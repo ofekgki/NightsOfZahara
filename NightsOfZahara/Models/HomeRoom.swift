@@ -1,10 +1,5 @@
-//
-//  HomeRoom.swift
-//  Nights Of Zahara
-//
 //  The player's home in Zahara and the rooms they can build/upgrade for
 //  long-term passive bonuses.
-//
 
 import SwiftUI
 

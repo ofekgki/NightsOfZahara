@@ -1,10 +1,5 @@
-//
-//  GameEvent.swift
-//  Nights Of Zahara
-//
-//  Transient random events that can appear between nights. Events are not
+// Transient random events that can appear between nights. Events are not
 //  persisted — they resolve immediately through the player's choice.
-//
 
 import Foundation
 

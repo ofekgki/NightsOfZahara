@@ -1,10 +1,5 @@
-//
-//  QuestLogView.swift
-//  Nights Of Zahara
-//
 //  The quest log: active side/role/dungeon/Djinn/treasure quests with live
 //  progress, plus quests available to accept.
-//
 
 import SwiftUI
 

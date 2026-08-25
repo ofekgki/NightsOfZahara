@@ -1,9 +1,4 @@
-//
-//  CommonViews.swift
-//  Nights Of Zahara
-//
 //  Small reusable views shared across screens.
-//
 
 import SwiftUI
 

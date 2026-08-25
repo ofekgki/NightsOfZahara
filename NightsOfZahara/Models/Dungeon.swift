@@ -1,10 +1,5 @@
-//
-//  Dungeon.swift
-//  Nights Of Zahara
-//
 //  Dungeon definitions: types, rooms and the starter dungeons that can
 //  be discovered and conquered to bond with a Djinn.
-//
 
 import SwiftUI
 

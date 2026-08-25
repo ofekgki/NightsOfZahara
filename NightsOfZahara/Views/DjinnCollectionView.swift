@@ -1,9 +1,4 @@
-//
-//  DjinnCollectionView.swift
-//  Nights Of Zahara
-//
 //  All ten Djinns with locked / unlocked status, domain, bonus and ability.
-//
 
 import SwiftUI
 

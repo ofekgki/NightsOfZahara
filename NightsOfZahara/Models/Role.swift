@@ -1,9 +1,4 @@
-//
-//  Role.swift
-//  Nights Of Zahara
-//
 //  The five starting roles, their bonuses, weaknesses and flavour.
-//
 
 import SwiftUI
 

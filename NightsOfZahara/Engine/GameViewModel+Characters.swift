@@ -1,10 +1,6 @@
-//
-//  GameViewModel+Characters.swift
-//  Nights Of Zahara
-//
 //  Relationship bonuses and bond-building for the major characters
 //  (Ali Baba, Jasmine, Aladdin) and how they feed into the action resolvers.
-//
+
 
 import SwiftUI
 

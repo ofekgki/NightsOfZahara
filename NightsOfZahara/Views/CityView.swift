@@ -1,10 +1,5 @@
-//
-//  CityView.swift
-//  Nights Of Zahara
-//
 //  The main hub of Zahara: HUD, quick actions, palace/dungeon entries,
 //  the story journal and the "End Night" control.
-//
 
 import SwiftUI
 

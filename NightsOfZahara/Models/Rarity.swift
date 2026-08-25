@@ -1,9 +1,4 @@
-//
-//  Rarity.swift
-//  Nights Of Zahara
-//
 //  Item rarity tiers and where an item may be obtained.
-//
 
 import SwiftUI
 

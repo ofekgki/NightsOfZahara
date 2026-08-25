@@ -1,10 +1,5 @@
-//
-//  NightActionsView.swift
-//  Nights Of Zahara
-//
 //  Grid of action cards. Instant actions resolve through the engine;
 //  shop / upgrade / eat open dedicated sheets.
-//
 
 import SwiftUI
 

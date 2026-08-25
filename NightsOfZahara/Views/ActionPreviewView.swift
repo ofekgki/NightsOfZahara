@@ -1,10 +1,5 @@
-//
-//  ActionPreviewView.swift
-//  Nights Of Zahara
-//
 //  Shown before an action is confirmed: energy cost, likely rewards, risk,
 //  the stats that help, and an estimated chance of a good outcome.
-//
 
 import SwiftUI
 

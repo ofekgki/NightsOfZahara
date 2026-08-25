@@ -1,9 +1,4 @@
-//
-//  PalaceView.swift
-//  Nights Of Zahara
-//
 //  King Sinbad's palace: seek an audience and take on / claim royal missions.
-//
 
 import SwiftUI
 

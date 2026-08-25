@@ -1,10 +1,5 @@
-//
-//  CharacterView.swift
-//  Nights Of Zahara
-//
 //  Full character sheet: all nine stats, role, Djinns, connections and
 //  achievements, plus a way to abandon the run.
-//
 
 import SwiftUI
 

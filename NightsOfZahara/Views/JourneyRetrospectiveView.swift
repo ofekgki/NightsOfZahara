@@ -1,11 +1,6 @@
-//
-//  JourneyRetrospectiveView.swift
-//  Nights Of Zahara
-//
 //  Shown at each 100-night checkpoint instead of a nightly summary: a grand
 //  retrospective of the whole journey so far, with a choice to continue
 //  onward or to end the journey and read the final legend.
-//
 
 import SwiftUI
 

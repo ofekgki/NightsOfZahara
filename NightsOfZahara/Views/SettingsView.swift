@@ -1,9 +1,4 @@
-//
-//  SettingsView.swift
-//  Nights Of Zahara
-//
 //  Music / SFX / haptics controls, save status, credits and progress reset.
-//
 
 import SwiftUI
 

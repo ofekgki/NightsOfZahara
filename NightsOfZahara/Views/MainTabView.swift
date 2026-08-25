@@ -1,9 +1,4 @@
-//
-//  MainTabView.swift
-//  Nights Of Zahara
-//
 //  The five bottom tabs: City, Actions, Character, Djinns, Inventory.
-//
 
 import SwiftUI
 

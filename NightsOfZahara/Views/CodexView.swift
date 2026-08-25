@@ -1,10 +1,5 @@
-//
-//  CodexView.swift
-//  Nights Of Zahara
-//
 //  The Lore Book. Browse unlocked entries by category; locked entries hint
 //  at what remains to be discovered.
-//
 
 import SwiftUI
 

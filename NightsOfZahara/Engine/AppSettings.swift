@@ -1,10 +1,5 @@
-//
-//  AppSettings.swift
-//  Nights Of Zahara
-//
 //  Device-level settings (music, sfx, haptics) persisted in UserDefaults —
 //  separate from the per-playthrough game save.
-//
 
 import SwiftUI
 import Combine

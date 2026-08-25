@@ -1,10 +1,5 @@
-//
-//  GameViewModel+Features.swift
-//  Nights Of Zahara
-//
 //  Expansion systems: unique inventory & dust, equipment, item upgrades,
 //  relationships & factions, milestones, titles and the Scheherazade tutorial.
-//
 
 import SwiftUI
 

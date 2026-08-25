@@ -1,10 +1,5 @@
-//
-//  PalaceQuest.swift
-//  Nights Of Zahara
-//
 //  Royal missions granted by King Sinbad in the palace. Each quest sets a
 //  goal; when the goal is met the player may claim gold and honor.
-//
 
 import Foundation
 

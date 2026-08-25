@@ -1,10 +1,5 @@
-//
-//  ArtifactCatalog.swift
-//  Nights Of Zahara
-//
 //  Magical artifacts tied to each Djinn, awarded for conquering that Djinn's
 //  dungeon. Modeled as equippable Items in the `.artifact` slot.
-//
 
 import Foundation
 

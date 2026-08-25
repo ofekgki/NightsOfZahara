@@ -1,10 +1,5 @@
-//
-//  GameViewModel.swift
-//  Nights Of Zahara
-//
 //  The game engine (MVVM). Owns the GameState, resolves nightly actions,
 //  runs dungeons, handles combat/events and drives persistence.
-//
 
 import SwiftUI
 import Combine

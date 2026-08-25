@@ -1,9 +1,4 @@
-//
-//  FoodView.swift
-//  Nights Of Zahara
-//
 //  Eat food from your pack to restore energy or gain small benefits.
-//
 
 import SwiftUI
 

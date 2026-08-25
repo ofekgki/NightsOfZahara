@@ -1,9 +1,4 @@
-//
-//  CharacterCreationView.swift
-//  Nights Of Zahara
-//
 //  Name the hero and choose one of the five starting roles.
-//
 
 import SwiftUI
 

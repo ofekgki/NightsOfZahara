@@ -1,9 +1,4 @@
-//
-//  CompanionView.swift
-//  Nights Of Zahara
-//
 //  Meet and recruit companions who travel with you and lend their talents.
-//
 
 import SwiftUI
 

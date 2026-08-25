@@ -1,10 +1,5 @@
-//
-//  Companion.swift
-//  Nights Of Zahara
-//
 //  NPC companions the player can recruit in Zahara. Each grants a passive
 //  bonus and has a personal companion quest.
-//
 
 import SwiftUI
 

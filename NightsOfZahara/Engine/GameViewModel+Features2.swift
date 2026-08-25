@@ -1,10 +1,5 @@
-//
-//  GameViewModel+Features2.swift
-//  Nights Of Zahara
-//
 //  Side quests, crafting, home upgrades, companions and the shared faction /
 //  home / companion bonus helpers used by the action resolvers.
-//
 
 import SwiftUI
 

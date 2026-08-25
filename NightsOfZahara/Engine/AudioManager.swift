@@ -1,12 +1,7 @@
-//
-//  AudioManager.swift
-//  Nights Of Zahara
-//
 //  Procedural background music — no audio files required. A gentle looping
 //  arpeggio on an Arabian "Hijaz" scale plus a low drone, synthesized with
 //  AVAudioEngine. Each area (mood) uses a different scale/tempo. All calls
 //  are defensively guarded so audio failure never affects gameplay.
-//
 
 import AVFoundation
 

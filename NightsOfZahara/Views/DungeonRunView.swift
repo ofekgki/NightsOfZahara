@@ -1,11 +1,5 @@
-//
-//  DungeonRunView.swift
-//  Nights Of Zahara
-//
 //  The interactive dungeon crawl: advance room by room, fight, solve and
 //  claim the Djinn at the end.
-//
-
 import SwiftUI
 
 struct DungeonRunView: View {

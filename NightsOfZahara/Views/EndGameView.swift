@@ -1,10 +1,5 @@
-//
-//  EndGameView.swift
-//  Nights Of Zahara
-//
 //  Shown when the player ends their journey: a final title, legend and summary
 //  of the life they built, told in the spirit of the thousand nights.
-//
 
 import SwiftUI
 

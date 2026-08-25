@@ -1,9 +1,4 @@
-//
-//  OnboardingView.swift
-//  Nights Of Zahara
-//
 //  Title screen: begin a new legend or continue an existing one.
-//
 
 import SwiftUI
 

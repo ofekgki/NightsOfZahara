@@ -1,9 +1,4 @@
-//
-//  HapticManager.swift
-//  Nights Of Zahara
-//
 //  Light wrapper around UIKit haptics, gated by the user's settings.
-//
 
 import UIKit
 

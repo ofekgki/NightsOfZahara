@@ -1,9 +1,3 @@
-//
-//  NightsOfZaharaApp.swift
-//  NightsOfZahara
-//
-//  Created by Ofek Kanari on 07/07/2026.
-//
 
 import SwiftUI
 

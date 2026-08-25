@@ -1,11 +1,6 @@
-//
-//  CharacterEvents.swift
-//  Nights Of Zahara
-//
 //  Dialogue events for the major characters. Each character has a one-time
 //  introduction (fired when the player first crosses its path) and recurring
 //  bond-deepening encounters that raise the relationship and offer choices.
-//
 
 import Foundation
 

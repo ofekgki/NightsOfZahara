@@ -1,10 +1,5 @@
-//
-//  Quest.swift
-//  Nights Of Zahara
-//
 //  The general quest log: main, side, dungeon, role, Djinn, companion and
 //  treasure quests. (Palace missions live in PalaceQuest / the palace board.)
-//
 
 import SwiftUI
 

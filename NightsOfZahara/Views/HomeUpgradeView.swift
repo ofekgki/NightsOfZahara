@@ -1,9 +1,4 @@
-//
-//  HomeUpgradeView.swift
-//  Nights Of Zahara
-//
 //  Build and upgrade the rooms of your home in Zahara for lasting bonuses.
-//
 
 import SwiftUI
 

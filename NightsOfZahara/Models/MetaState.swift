@@ -1,11 +1,6 @@
-//
-//  MetaState.swift
-//  Nights Of Zahara
-//
 //  A single Codable container for all the "expansion" state. It is stored on
 //  GameState as ONE optional property, so old saves (which lack it) still
 //  decode cleanly and are back-filled with defaults on load.
-//
 
 import Foundation
 

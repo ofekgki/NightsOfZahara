@@ -1,9 +1,4 @@
-//
-//  Overlays.swift
-//  Nights Of Zahara
-//
 //  The action-outcome sheet and random-event sheet.
-//
 
 import SwiftUI
 

@@ -1,9 +1,4 @@
-//
-//  DungeonListView.swift
-//  Nights Of Zahara
-//
 //  Lists discovered dungeons and launches an interactive crawl.
-//
 
 import SwiftUI
 

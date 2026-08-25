@@ -1,9 +1,4 @@
-//
-//  MonsterCardView.swift
-//  Nights Of Zahara
-//
 //  Detailed stat card for a dungeon monster / boss.
-//
 
 import SwiftUI
 

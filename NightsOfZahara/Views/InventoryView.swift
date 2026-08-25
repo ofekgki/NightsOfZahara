@@ -1,10 +1,5 @@
-//
-//  InventoryView.swift
-//  Nights Of Zahara
-//
 //  The player's pack, grouped by item source, with rarity, equip status,
 //  materials and magical dust. Each unique item exists only once.
-//
 
 import SwiftUI
 

@@ -1,10 +1,5 @@
-//
-//  RareAndStoryEvents.swift
-//  Nights Of Zahara
-//
 //  Rare, conditional events and branching story choices whose consequences
 //  persist through the rest of the playthrough (via meta.majorChoices).
-//
 
 import Foundation
 

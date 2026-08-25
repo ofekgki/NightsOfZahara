@@ -1,12 +1,7 @@
-//
-//  Djinn.swift
-//  Nights Of Zahara
-//
 //  The Djinns of Zahara — their domains, bonuses and signature abilities.
 //  The original ten remain unchanged; twelve more Djinns join the roster.
 //  (Al-Mudhib, King of the Djinns, is a separate legendary figure — see
 //  KingOfDjinns.swift — and is deliberately NOT part of this collection.)
-//
 
 import SwiftUI
 

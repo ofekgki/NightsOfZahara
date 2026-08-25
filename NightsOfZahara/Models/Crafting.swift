@@ -1,10 +1,6 @@
-//
-//  Crafting.swift
-//  Nights Of Zahara
-//
 //  Crafting materials, recipes and their output items. Materials are gathered
 //  from dungeons, journeys and treasure; recipes spend materials + dust + gold.
-//
+
 
 import Foundation
 
