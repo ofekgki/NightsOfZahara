@@ -14,7 +14,7 @@ Video Demonstraion is in the project files.
 
 ---
 
-## ✨ Overview
+## Overview
 
 You arrive in **Zahara**, a magical desert city of markets, storytellers, sailors and palace intrigue. Guided by the sorceress **Scheherazade** and ruled by the legendary sailor-king **Sinbad**, you live out your legend one night at a time. Every night you spend a limited pool of energy on actions that shape your stats, wealth, reputation and fate.
 
@@ -28,7 +28,7 @@ Your goal: brave journeys, uncover hidden **Djinn dungeons**, conquer them to bo
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 |            City of Zahara            |             Night Actions             |             Character Sheet              |
 | :----------------------------------: | :-----------------------------------: | :--------------------------------------: |
@@ -46,11 +46,11 @@ New to Zahara? Here's what each screen and action is for.
 
 | Screen | What it's for |
 |--------|---------------|
-| 🏙️ **City** | Your hub. Shows the HUD (night, energy, gold), an *At a Glance* summary of your stats and progress, and doorways to **Sinbad's Palace**, the **Djinn Dungeons**, **Quests**, **Equipment**, **Crafting** and your **Home** — plus *The Chronicle*, a log of your recent nights. |
-| ✨ **Actions** | Where you spend the night. Pick an action card to raise stats, earn gold, explore or rest. Each card shows its **energy cost** and **risk**; tapping one opens a preview with the odds before you commit. When your energy runs out, **End Night** to advance. |
-| 👤 **Character** | Your full sheet: all **10 stats** with bars, your role, current night and era, active **title**, injuries/fatigue, and your bonded **Djinns**. This is where you read who your character has become. |
-| 🔥 **Djinns** | The collection of all **22 Djinns + the King** (23 in total). Each card shows the Djinn's bonus, signature ability and its dungeon — sealed, discovered or bonded. Track how close you are to a full set. |
-| 🎒 **Inventory** | Everything you carry: shop goods, dungeon spoils, crafting materials, magical dust and dungeon clues. Use consumables, and open **Manage Equipment** to equip gear and artifacts. |
+|  **City** | Your hub. Shows the HUD (night, energy, gold), an *At a Glance* summary of your stats and progress, and doorways to **Sinbad's Palace**, the **Djinn Dungeons**, **Quests**, **Equipment**, **Crafting** and your **Home** — plus *The Chronicle*, a log of your recent nights. |
+|  **Actions** | Where you spend the night. Pick an action card to raise stats, earn gold, explore or rest. Each card shows its **energy cost** and **risk**; tapping one opens a preview with the odds before you commit. When your energy runs out, **End Night** to advance. |
+|  **Character** | Your full sheet: all **10 stats** with bars, your role, current night and era, active **title**, injuries/fatigue, and your bonded **Djinns**. This is where you read who your character has become. |
+|  **Djinns** | The collection of all **22 Djinns + the King** (23 in total). Each card shows the Djinn's bonus, signature ability and its dungeon — sealed, discovered or bonded. Track how close you are to a full set. |
+|  **Inventory** | Everything you carry: shop goods, dungeon spoils, crafting materials, magical dust and dungeon clues. Use consumables, and open **Manage Equipment** to equip gear and artifacts. |
 
 Reached from the **City** screen: **Sinbad's Palace** (royal missions & the Court of Justice), your **Home** (build rooms for passive bonuses), the **Crafting** bench, the **Quest log**, **Companions**, the **Codex** (lore) and **Settings**.
 
@@ -60,25 +60,25 @@ Every night you have a pool of **energy**. Actions cost energy (or gold), and ri
 
 | Action | Energy | Risk | What it does |
 |--------|:------:|------|--------------|
-| 🔨 **Work** | 2 | Low | Labor in the bazaar for **gold and reputation**. |
-| 📖 **Study** | 2 | Low | Pore over scrolls to raise **Wisdom and Magic**. |
-| 🏋️ **Train** | 2 | Low | Toughen up for **Courage and Endurance**. |
-| 🏃 **Prowl the Alleys** | 2 | Low | Work the shadows for **Speed and Cunning**. |
-| 🗺️ **Journey** | 3 | Risky | Travel the desert for **treasure and dungeon clues** — but you may face danger. |
-| 🔍 **Search for Dungeon** | 3 | Risky | Hunt for a hidden **Djinn dungeon** to reveal its location (harder dungeons are rarer). |
-| 🏛️ **Enter Palace** | 2 | Risky | Seek an audience for **honor and royal favor**, and take on the King's missions. |
-| 🧑‍🤝‍🧑 **Build Connections** | 2 | Low | Win **reputation** and recruit **allies** across the city. |
-| 📦 **Search for Treasure** | 3 | Risky | Dig for **gold, gems and items** — luck helps. |
-| 🌙 **Rest** | 1 | Safe | Restore **2 energy** and **mend one injury** (once per night). |
-| 🛒 **Visit Shop** | 0 | Safe | Spend **gold** on food, potions and gear. |
-| ⬆️ **Upgrade Stats** | 1 | Safe | Pay **gold** to permanently raise a chosen stat. |
-| 🍽️ **Eat Food** | 0 | Safe | Consume provisions to **restore energy** or heal. |
+|  **Work** | 2 | Low | Labor in the bazaar for **gold and reputation**. |
+|  **Study** | 2 | Low | Pore over scrolls to raise **Wisdom and Magic**. |
+|  **Train** | 2 | Low | Toughen up for **Courage and Endurance**. |
+|  **Prowl the Alleys** | 2 | Low | Work the shadows for **Speed and Cunning**. |
+|  **Journey** | 3 | Risky | Travel the desert for **treasure and dungeon clues** — but you may face danger. |
+|  **Search for Dungeon** | 3 | Risky | Hunt for a hidden **Djinn dungeon** to reveal its location (harder dungeons are rarer). |
+|  **Enter Palace** | 2 | Risky | Seek an audience for **honor and royal favor**, and take on the King's missions. |
+|  **Build Connections** | 2 | Low | Win **reputation** and recruit **allies** across the city. |
+|  **Search for Treasure** | 3 | Risky | Dig for **gold, gems and items** — luck helps. |
+|  **Rest** | 1 | Safe | Restore **2 energy** and **mend one injury** (once per night). |
+|  **Visit Shop** | 0 | Safe | Spend **gold** on food, potions and gear. |
+|  **Upgrade Stats** | 1 | Safe | Pay **gold** to permanently raise a chosen stat. |
+|  **Eat Food** | 0 | Safe | Consume provisions to **restore energy** or heal. |
 
 > **Dungeons:** entering a Djinn's dungeon crawls through rooms of monsters, puzzles and traps. Each room is a **percentage roll** of your stat vs. its requirement; succeed to the end to **bond the Djinn** and win its artifact. Fail four rooms and you're forced to retreat — and lose the dungeon's location. Equip a Djinn's artifact to use its **signature ability** once per attempt.
 
 ---
 
-## 🎮 Features
+##  Features
 
 - **The night loop** — 100 playable nights; energy resets each night and scales as your legend grows (5 → 6 → 8 → 9 → 10). Reach the hundredth night to view a full-journey retrospective and **choose to continue or finish** — play never force-ends.
 - **5 starting roles** — Market Orphan, Wizard Apprentice, Merchant, Sailor, Storyteller — each with distinct stat bonuses, strengths, weaknesses and playstyles.
@@ -120,7 +120,7 @@ Every night you have a pool of **energy**. Actions cost energy (or gold), and ri
 
 ---
 
-## 🧭 The Gameplay Loop
+##  The Gameplay Loop
 
 ```
 Start night → energy restored → choose an action → energy spent →
@@ -133,7 +133,7 @@ A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search fo
 
 ---
 
-## 🧑‍🎨 Starting Roles
+##  Starting Roles
 
 | Role | Focus | Key Bonuses |
 |------|-------|-------------|
@@ -145,7 +145,7 @@ A typical night: *Work* the bazaar for gold, *Study* to raise Wisdom, *Search fo
 
 ---
 
-## 🤝 Major Characters
+##  Major Characters
 
 Two figures frame your whole story, and three more great figures of Zahara have their own relationship arcs (tiers **Friendly → Trusted → Loyal → Legendary Bond**), quests, dialogue events and endings:
 
@@ -159,7 +159,7 @@ Two figures frame your whole story, and three more great figures of Zahara have 
 
 ---
 
-## 🔥 The Djinns & Their Dungeons
+##  The Djinns & Their Dungeons
 
 Every Djinn grants a permanent stat bonus, a passive perk, and a signature ability, and hides in a unique dungeon with themed monsters and a named boss.
 
@@ -187,13 +187,13 @@ Every Djinn grants a permanent stat bonus, a passive perk, and a signature abili
 | **Ifrit** | War | The Battlefield of Ashes | ★★★★★ |
 | **Zawba'ah** | Storms | The Cyclone Ruins | ★★★★★ |
 | **Shamhurish** | Judgment | The Court Beneath the Sand | ★★★★★ |
-| 👑 **Al-Mudhib** | King of the Djinns | The Throne of the Hidden Flame | ★★★★★★ |
+|  **Al-Mudhib** | **King of the Djinns** | The Throne of the Hidden Flame | ★★★★★★ |
 
 **Al-Mudhib** is not a regular collectible Djinn. His throne is a **secret endgame dungeon** that reveals itself only after major progress — at least **night 70**, **fifteen dungeons conquered**, the deep trust of Scheherazade and Sinbad, at least three stats of 85+, and meaningful moral choices. Once unlocked it sits pinned at the **top of the dungeon list in its own section** and costs **12 energy** to enter. Conquering it crowns you sovereign of the Djinns, empowers every bond you hold, adds him to your character page, and lets you **finish your legend at any time** (even before night 100) for the rarest ending.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 The project follows **MVVM** with a single game engine and `Codable` state.
 
@@ -245,7 +245,7 @@ NightsOfZahara/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Requirements
 - macOS with **Xcode 26+**
@@ -276,7 +276,7 @@ A run is stored as `zahara_save.json` in the app's Documents directory, mirrored
 
 ---
 
-## 📜 World & Naming
+##  World & Naming
 
 - **Game:** Nights Of Zahara  ·  **City / hub:** Zahara
 - **Sorceress / narrator:** Scheherazade  ·  **King:** Sinbad
